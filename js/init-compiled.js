@@ -17,10 +17,11 @@ function update(newBook) {
         title: v.get("title"),
         authors: v.get("authors") && v.get("authors").map(function (v) {
           return v.get("name");
-        }).join("<br>"),
+        }),
         ISBNs: v.get("ISBNs") && v.get("ISBNs").map(function (v) {
           return "" + v.type + ": " + v.value;
-        }).join("<br>")
+        }),
+        button: "Edit"
       });
     });
   }).fail(function (err) {
@@ -31,9 +32,6 @@ function update(newBook) {
 function saveToParse(data, authorRelations) {
   var book = new Book();
 
-  // book.set(data);
-  // book.relation('authors').add(authorRelations); // FIXME change to array of pointers instead of relation?
-  // book.save(null, {
   book.save(data, {
     success: update,
     error: function (book, error) {
@@ -83,6 +81,12 @@ model = {
       ebk: ""
     }
   },
+  selectAll: function selectAll() {
+    this.select();
+  },
+  selectISBN: function selectISBN() {
+    this.setSelectionRange(5, 19);
+  },
   submit: function submit() {
     var data = {},
 
@@ -113,8 +117,16 @@ model = {
       data.authors = returnedAuthors;
       saveToParse(data, returnedAuthors);
     });
-  }
-};
+  },
+  editOrSubmit: function editOrSubmit(event, scope) {
+    if (scope.book.button === "Edit") {
+      // edit()
+      scope.book.button = "Submit";
+    } else {
+      // submit()
+      scope.book.button = "Edit";
+    }
+  } };
 
 rivets.bind(document.body, model);
 update();

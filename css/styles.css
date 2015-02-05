@@ -14,12 +14,23 @@ body {
   border-width: 0 1px 1px 1px;
 }
 
-tr:nth-child(even) {
+tr:nth-child(odd) {
   background-color: #E0F2F7;
+}
+tr:nth-child(1) {
+  background-color: transparent;
 }
 #instructions {
   color: grey;
 }
 #authors {
   width: 98%;
+}
+input[readonly] {
+  display: block;
+  border: none;
+  background-color: transparent;
+}
+td button {
+  height: 100%;
 }

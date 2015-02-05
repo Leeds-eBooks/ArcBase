@@ -11,8 +11,9 @@ function update(newBook) {
     results.forEach(v => {
       model.books.push({
         title: v.get('title'),
-        authors: v.get('authors') && v.get('authors').map(v => v.get('name')).join('<br>'),
-        ISBNs: v.get('ISBNs') && v.get('ISBNs').map(v => `${v.type}: ${v.value}`).join('<br>')
+        authors: v.get('authors') && v.get('authors').map(v => v.get('name')),
+        ISBNs: v.get('ISBNs') && v.get('ISBNs').map(v => `${v.type}: ${v.value}`),
+        button: 'Edit'
       });
     });
   }).fail(function(err) {
@@ -23,9 +24,6 @@ function update(newBook) {
 function saveToParse(data, authorRelations) {
   var book=new Book();
 
-  // book.set(data);
-  // book.relation('authors').add(authorRelations); // FIXME change to array of pointers instead of relation?
-  // book.save(null, {
   book.save(data, {
     success: update,
     error: function(book, error) {
@@ -71,6 +69,12 @@ model={
       ebk: ''
     }
   },
+  selectAll() {
+    this.select();
+  },
+  selectISBN() {
+    this.setSelectionRange(5,19);
+  },
   submit() {
     var data={},
         // inputs=document.querySelectorAll('#inputs input'),
@@ -96,7 +100,16 @@ model={
       data.authors=returnedAuthors;
       saveToParse(data, returnedAuthors);
     });
-  }
+  },
+  editOrSubmit(event, scope) {
+    if (scope.book.button==='Edit') {
+      // edit()
+      scope.book.button='Submit';
+    } else {
+      // submit()
+      scope.book.button='Edit';
+    }
+  },
 };
 
 rivets.bind(document.body, model);
