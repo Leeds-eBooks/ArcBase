@@ -27,9 +27,10 @@ tr:nth-child(1) {
   width: 98%;
 }
 input[readonly] {
-  display: block;
+  /*display: block;*/
   border: none;
   background-color: transparent;
+  cursor: pointer;
 }
 td button {
   height: 100%;

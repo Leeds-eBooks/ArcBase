@@ -42,16 +42,14 @@
         <td><button rv-on-click="submit">Submit</button></td>
       </tr>
       <tr rv-each-book="books">
+        <td><input type="text" rv-value="book.title" rv-on-click="selectAll" readonly></td>
+        <td><input type="text" rv-each-author="book.authors" rv-value="author" rv-on-click="selectAll" readonly></td>
         <td>
-          <input type="text" rv-value="book.title" rv-on-click="selectAll" readonly>
+          <label id="pbk">pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label><br>
+          <label id="hbk">hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label><br>
+          <label id="ebk">ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label>
         </td>
-        <td>
-          <input type="text" rv-each-author="book.authors" rv-value="author" rv-on-click="selectAll" readonly>
-        </td>
-        <td>
-          <input type="text" rv-each-isbn="book.ISBNs" rv-value="isbn" rv-on-click="selectISBN" readonly>
-        </td>
-        <td><button rv-on-click="editOrSubmit">{book.button}</button></td>
+        <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
       </tr>
     </table>
   </div>
