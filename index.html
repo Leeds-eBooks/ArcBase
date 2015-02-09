@@ -27,13 +27,17 @@
       </thead>
       <tr id="instructions">
         <td></td>
-        <td>Lastname, Firstname(s)<br><em>separate multiple authors with <strong>;</strong> (semi-colon)</em></td>
+        <td>Lastname, Firstname(s)</td>
         <td>spaces and hyphens are ok</td>
         <td></td>
       </tr>
       <tr id="inputs">
         <td><input rv-value="inputs.title" type="text" id="title" placeholder="new title"></td>
-        <td><input rv-value="inputs.authors" type="text" id="authors" placeholder="authors"></td>
+        <td class="authors">
+          <input rv-each-authorinput="inputs.authors" rv-value="authorinput.value" type="text" placeholder="authors">
+          <!-- <input rv-value="authorinput" type="text" placeholder="authors"> -->
+          <button class="add-input" rv-on-click="addAuthor">Add another author</button>
+        </td>
         <td>
           <label id="pbk">pbk: <input rv-value="inputs.ISBNs.pbk" type="text" class="ISBNs"></label><br>
           <label id="hbk">hbk: <input rv-value="inputs.ISBNs.hbk" type="text" class="ISBNs"></label><br>
@@ -42,12 +46,15 @@
         <td><button rv-on-click="submit">Submit</button></td>
       </tr>
       <tr rv-each-book="books">
-        <td><input type="text" rv-value="book.title" rv-on-click="selectAll" readonly></td>
-        <td><input type="text" rv-each-author="book.authors" rv-value="author" rv-on-click="selectAll" readonly></td>
+        <td><input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></td>
+        <td class="authors">
+          <input type="text" rv-each-author="book.authors" rv-value="author.value" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another author</button>
+        </td>
         <td>
-          <label id="pbk">pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label><br>
-          <label id="hbk">hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label><br>
-          <label id="ebk">ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" readonly></label>
+          <label id="pbk">pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label><br>
+          <label id="hbk">hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label><br>
+          <label id="ebk">ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label>
         </td>
         <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
       </tr>

@@ -6,6 +6,13 @@ var table = document.querySelector("#main table"),
     Author = Parse.Object.extend("Author"),
     model;
 
+rivets.binders.readonly = function (el, value) {
+  el.readOnly = !!value;
+};
+rivets.formatters.opposite = function (value) {
+  return !value;
+};
+
 function update(newBook) {
   var query = new Parse.Query(Book);
   if (newBook) {
@@ -20,7 +27,7 @@ function update(newBook) {
         existingBook.id = v.id;
         existingBook.title = v.get("title");
         existingBook.authors = v.get("authors") && v.get("authors").map(function (v) {
-          return v.get("name");
+          return { value: v.get("name") };
         });
         existingBook.ISBNs = v.get("ISBNs") && v.get("ISBNs").reduce(function (obj, current) {
           obj[current.type] = current.value;
@@ -32,14 +39,20 @@ function update(newBook) {
           id: v.id,
           title: v.get("title"),
           authors: v.get("authors") && v.get("authors").map(function (v) {
-            return v.get("name");
+            return { value: v.get("name") };
           }),
           ISBNs: v.get("ISBNs") && v.get("ISBNs").reduce(function (obj, current) {
             obj[current.type] = current.value;
             return obj;
           }, {}),
-          button: "Edit"
-        });
+          /* Methods */
+          button: "Edit",
+          addAuthor: function addAuthor(event, scope) {
+            scope.book.authors.push({ value: "" });
+          },
+          isEditing: function isEditing() {
+            return this.button === "Submit";
+          } });
       }
     });
   }).fail(function (err) {
@@ -59,7 +72,6 @@ function saveToParse(data, authorRelations, bookToEdit) {
       }
     });
   }
-  console.log(bookToEdit);
 
   if (bookToEdit) {
     book.then(save);
@@ -102,7 +114,7 @@ model = {
   books: [],
   inputs: {
     title: "",
-    authors: "",
+    authors: [{ value: "" }],
     ISBNs: {
       pbk: "",
       hbk: "",
@@ -114,9 +126,9 @@ model = {
       this.select();
     }
   },
-  // selectISBN() {
-  //   this.setSelectionRange(5,19);
-  // },
+  addAuthor: function addAuthor() {
+    model.inputs.authors.push({ value: "" });
+  },
   submit: function submit(event, modelArg, bookToEdit) {
     // TODO improve!
     var data = {},
@@ -125,48 +137,41 @@ model = {
         tempKey,
         authors = [];
 
-    function addToAuthors(v) {
-      authors.push(v.trim());
-    }
+    if (inputModel.title.trim()) {
+      for (var key in inputModel) {
+        tempInput = inputModel[key];
+        tempKey = key;
 
-    for (var key in inputModel) {
-      tempInput = inputModel[key];
-      tempKey = key;
-
-      if (tempKey === "authors") {
-        if (bookToEdit) {
-          tempInput.forEach(addToAuthors);
+        if (tempKey === "authors") {
+          tempInput.forEach(function (v) {
+            v.value.trim() && authors.push(v.value.trim().replace(/\s{1,}/g, " "));
+          });
+        } else if (tempKey === "ISBNs") {
+          data.ISBNs = Object.keys(tempInput).map(function (v) {
+            return { type: v, value: tempInput[v].replace(/\D+/g, "") };
+          });
         } else {
-          tempInput.split(";").forEach(addToAuthors);
+          if ("function" !== typeof tempInput && tempKey !== "button") {
+            data[tempKey] = tempInput.trim().replace(/\s{1,}/g, " ");
+          }
         }
-      } else if (tempKey === "ISBNs") {
-        data.ISBNs = Object.keys(tempInput).map(function (v) {
-          return { type: v, value: tempInput[v].replace(/\D+/g, "") };
-        });
-      } else {
-        data[tempKey] = tempInput;
       }
+      getParseAuthors(authors).then(function (returnedAuthors) {
+        data.authors = returnedAuthors;
+        saveToParse(data, returnedAuthors, bookToEdit);
+      });
+    } else {
+      alert("Every book needs a title...");
     }
-    getParseAuthors(authors).then(function (returnedAuthors) {
-      data.authors = returnedAuthors;
-      saveToParse(data, returnedAuthors, bookToEdit);
-    });
   },
   editOrSubmit: function editOrSubmit(event, scope) {
     if (scope.book.button === "Edit") {
       scope.book.button = "Submit";
-      setReadOnly(this.parentNode.parentNode.querySelectorAll("input"), false);
     } else {
       model.submit(null, null, scope.book); // TODO improve!
-      scope.book.button = "&hellip;";
-      setReadOnly(this.parentNode.parentNode.querySelectorAll("input"), true);
+      scope.book.button = "<img class=\"loading\" src=\"images/loading.gif\">";
     }
   } };
-function setReadOnly(ElementList, bool) {
-  Array.from(ElementList).forEach(function (v) {
-    v.readOnly = bool;
-  });
-}
 
 rivets.bind(document.body, model);
 update();
