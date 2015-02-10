@@ -14,13 +14,16 @@ rivets.formatters.opposite=function(value) {
 function update(newBook) {
   var query=new Parse.Query(Book);
   if (newBook) {query.equalTo('objectId',newBook.id);}
-  query.include('authors').find().then(function(results) {
+  query.include('authors').descending('pubdate').find().then(function(results) {
     results.forEach(v => {
       var existingBook=model.books.find(book => book.id===v.id);
       if (existingBook) {
+        console.log(existingBook.title);
         existingBook.id=v.id;
         existingBook.title=v.get('title');
         existingBook.authors=v.get('authors') && v.get('authors').map(v => {return {value:v.get('name')};});
+        existingBook.pubdate=v.get('pubdate');
+        existingBook.shortdesc=v.get('shortdesc');
         existingBook.ISBNs=v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
           obj[current.type]=current.value;
           return obj;
@@ -31,6 +34,8 @@ function update(newBook) {
           id: v.id,
           title: v.get('title'),
           authors: v.get('authors') && v.get('authors').map(v => {return {value:v.get('name')};}),
+          pubdate: v.get('pubdate'),
+          shortdesc: v.get('shortdesc'),
           ISBNs: v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
             obj[current.type]=current.value;
             return obj;
@@ -104,6 +109,8 @@ model={
   inputs: {
     title: '',
     authors: [{value:''}],
+    pubdate: '',
+    shortdesc: '',
     ISBNs: {
       pbk: '',
       hbk: '',
@@ -134,7 +141,7 @@ model={
           });
         } else {
           if ('function'!==typeof tempInput && tempKey!=='button') {
-            data[tempKey]=tempInput.trim().replace(/\s{1,}/g,' ');
+            data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
           }
         }
       }

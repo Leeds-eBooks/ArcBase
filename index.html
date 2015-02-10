@@ -11,7 +11,8 @@
   <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.4.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/rivets/0.7.2/rivets.bundled.min.js"></script>
+  <script type="text/javascript" src="bower_components/sightglass/index.js"></script>
+  <script type="text/javascript" src="bower_components/rivets/dist/rivets.min.js"></script>
   <script type="text/javascript" src="js/browser-polyfill.js"></script>
 </head>
 
@@ -23,12 +24,16 @@
         <th>Title</th>
         <th>Authors</th>
         <th>ISBNs</th>
+        <th>Pub Date</th>
+        <th>Short description</th>
         <th></th>
       </thead>
       <tr id="instructions">
         <td></td>
         <td>Lastname, Firstname(s)</td>
         <td>spaces and hyphens are ok</td>
+        <td></td>
+        <td>Max. 350 characters (for Nielsen)</td>
         <td></td>
       </tr>
       <tr id="inputs">
@@ -43,6 +48,8 @@
           <label id="hbk">hbk: <input rv-value="inputs.ISBNs.hbk" type="text" class="ISBNs"></label><br>
           <label id="ebk">ebk: <input rv-value="inputs.ISBNs.ebk" type="text" class="ISBNs"></label>
         </td>
+        <td><input type="date" rv-value="inputs.pubdate"></td>
+        <td><textarea maxlength="350" cols="30" rows="3" rv-value="inputs.shortdesc"></textarea></td>
         <td><button rv-on-click="submit">Submit</button></td>
       </tr>
       <tr rv-each-book="books">
@@ -56,6 +63,8 @@
           <label id="hbk">hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label><br>
           <label id="ebk">ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label>
         </td>
+        <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
+        <td><textarea maxlength="350" cols="30" rows="3" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
         <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
       </tr>
     </table>
