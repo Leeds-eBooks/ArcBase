@@ -1,1 +1,5 @@
 keys.js
+.ftppass
+.sass-cache
+node_modules
+dist

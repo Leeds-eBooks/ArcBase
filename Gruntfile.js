@@ -1,0 +1,61 @@
+module.exports = function(grunt) {
+
+  require('load-grunt-tasks')(grunt);
+
+  grunt.initConfig({
+    "clean": ["dist"],
+    "copy": {
+      main: {
+        files: [
+          {expand: true, src: [
+            'index.html',
+            'keys.js',
+            'LICENSE',
+            'js/**',
+            '!js/init.js',
+            'bower_components/rivets/dist/rivets.js',
+            'bower_components/rivets/LICENSE',
+            'bower_components/sightglass/index.js',
+            'bower_components/sightglass/LICENSE',
+            'css/reset.css',
+            'images/**'
+          ], dest: 'dist'}
+        ]
+      }
+    },
+    "6to5": {
+      options: {
+        sourceMap: true
+      },
+      dist: {
+        files: {
+          "dist/js/init-compiled.js": "js/init.js"
+        }
+      }
+    },
+    "sass": {
+      dist: {
+        options: {
+          style: 'compressed'
+        },
+        files: {
+          'dist/css/styles.css': 'css/styles.scss'
+        }
+      }
+    },
+    'ftp-deploy': {
+      build: {
+        auth: {
+          host: 'ftp.arctour.co.uk',
+          port: 21,
+          authKey: 'ben'
+        },
+        src: 'dist',
+        dest: '/public_html/arcbase'
+      }
+    }
+  });
+
+  grunt.registerTask('default', ['clean','copy','sass','6to5','ftp-deploy']);
+
+};

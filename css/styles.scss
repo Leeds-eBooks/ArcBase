@@ -23,23 +23,27 @@ tr:nth-child(1) {
 #instructions {
   color: grey;
 }
-/*#authors {
-  width: 98%;
-}*/
+
 input[readonly], textarea[readonly] {
   /*display: block;*/
   border: none;
   background-color: transparent;
   cursor: pointer;
 }
-.authors > * {
-  display: block;
+
+.authors {
+  > * {
+    display: block;
+  }
 }
-td button {
-  height: 100%;
-}
-td button.add-input {
-  height: auto;
+
+td {
+  button {
+    height: 100%;
+    &.add-input {
+      height: auto;
+    }
+  }
 }
 .loading {
   height: 1em;
