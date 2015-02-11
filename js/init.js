@@ -51,6 +51,19 @@ function update(newBook) {
         });
       }
     });
+    if (newBook) {
+      model.inputs={
+        title: '',
+        authors: [{value:''}],
+        pubdate: '',
+        shortdesc: '',
+        ISBNs: {
+          pbk: '',
+          hbk: '',
+          ebk: ''
+        }
+      };
+    }
   }).fail(function(err) {
     console.log(JSON.stringify(err));
   });
@@ -128,7 +141,13 @@ model={
         inputModel=bookToEdit||model.inputs,
         tempInput,tempKey,authors=[];
 
-    if (inputModel.title.trim()) {
+    if (!inputModel.title.trim()) {
+      alert('Every book needs a title...');
+      return false;
+    } else if (inputModel.authors[inputModel.authors.length-1].value.trim() && !inputModel.authors.every(v => ~v.value.indexOf(','))) {
+      alert('Author names must be Lastname, Firstname');
+      return false;
+    } else {
       for (var key in inputModel) {
         tempInput=inputModel[key];
         tempKey=key;
@@ -149,16 +168,16 @@ model={
         data.authors=returnedAuthors;
         saveToParse(data, returnedAuthors, bookToEdit);
       });
-    } else {
-      alert('Every book needs a title...');
+      return true;
     }
   },
   editOrSubmit(event, scope) {
     if (scope.book.button==='Edit') {
       scope.book.button='Submit';
     } else {
-      model.submit(null, null, scope.book); // TODO improve!
-      scope.book.button='<img class="loading" src="images/loading.gif">';
+      if (model.submit(null, null, scope.book)) { // TODO improve!
+        scope.book.button='<img class="loading" src="images/loading.gif">';
+      }
     }
   },
 };
