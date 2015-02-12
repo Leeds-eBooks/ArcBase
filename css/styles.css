@@ -2,6 +2,7 @@ html {
   width: 100%;
   height: 100%;
 }
+
 body {
   background: #eee;
   text-align: center;
@@ -21,9 +22,11 @@ body {
 tr:nth-child(odd) {
   background-color: #E0F2F7;
 }
+
 tr:nth-child(1) {
   background-color: transparent;
 }
+
 #instructions {
   color: grey;
 }
@@ -35,34 +38,31 @@ input[readonly], textarea[readonly] {
   cursor: pointer;
 }
 
-.authors {
-  > * {
-    display: block;
-  }
-  input + button {
-    margin-top: 0.25em;
-  }
-  .author-button {
-    border: 1px solid cornflowerblue;
-    padding: 0.2em;
-    border-radius: 0.25em;
-    & + .author-button {
-      margin-top: 0.25em;
-    }
-    &:active {
-      background-color: cornflowerblue;
-    }
-  }
+.authors > * {
+  display: block;
+}
+.authors input + button {
+  margin-top: 0.25em;
+}
+.authors .author-button {
+  border: 1px solid cornflowerblue;
+  padding: 0.2em;
+  border-radius: 0.25em;
+}
+.authors .author-button + .author-button {
+  margin-top: 0.25em;
+}
+.authors .author-button:active {
+  background-color: cornflowerblue;
 }
 
-td {
-  button {
-    height: 100%;
-    &.add-input {
-      height: auto;
-    }
-  }
+td button {
+  height: 100%;
 }
+td button.add-input {
+  height: auto;
+}
+
 .loading {
   height: 1em;
 }
@@ -74,11 +74,11 @@ td {
   width: 100%;
   height: 100%;
   -webkit-transition: -webkit-transform 0.2s ease-out;
-  -webkit-transition:         transform 0.2s ease-out;
-          transition:         transform 0.2s ease-out;
+  -webkit-transition: transform 0.2s ease-out;
+  transition: transform 0.2s ease-out;
   -webkit-transform: translateY(1000px);
-      -ms-transform: translateY(1000px);
-          transform: translateY(1000px);
+  -ms-transform: translateY(1000px);
+  transform: translateY(1000px);
 }
 
 .author-modal {
@@ -88,24 +88,25 @@ td {
   left: 10%;
   width: 80%;
   background-color: snow;
-  box-shadow: 1em 1em 8em rgba(0,0,0,0.2);
-
-  .author-header {
-    font-size: 2em;
-    margin: 1em 0;
-    width: 100%;
-    text-align: center;
-  }
-
-  button {
-    position: absolute;
-    top: 1em;
-    left: auto;
-    right: 1em;
-  }
+  box-shadow: 1em 1em 8em rgba(0, 0, 0, 0.2);
 }
+.author-modal .author-header {
+  font-size: 2em;
+  margin: 1em 0;
+  width: 100%;
+  text-align: center;
+}
+.author-modal button {
+  position: absolute;
+  top: 1em;
+  left: auto;
+  right: 1em;
+}
+
 .modal-in {
   -webkit-transform: translateY(0);
-      -ms-transform: translateY(0);
-          transform: translateY(0);
+  -ms-transform: translateY(0);
+  transform: translateY(0);
 }
+
+/*# sourceMappingURL=styles.css.map */

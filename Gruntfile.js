@@ -13,6 +13,7 @@ module.exports = function(grunt) {
             'LICENSE',
             'js/**',
             '!js/init.js',
+            '!js/init-compiled.js',
             'bower_components/rivets/dist/rivets.js',
             'bower_components/rivets/LICENSE',
             'bower_components/sightglass/index.js',
@@ -31,6 +32,11 @@ module.exports = function(grunt) {
         files: {
           "dist/js/init-compiled.js": "js/init.js"
         }
+      },
+      dev: {
+        files: {
+          "js/init-compiled.js": "js/init.js"
+        }
       }
     },
     "sass": {
@@ -40,6 +46,14 @@ module.exports = function(grunt) {
         },
         files: {
           'dist/css/styles.css': 'css/styles.scss'
+        }
+      },
+      dev: {
+        options: {
+          style: 'expanded'
+        },
+        files: {
+          'css/styles.css': 'css/styles.scss'
         }
       }
     },
@@ -57,5 +71,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['clean','copy','sass','6to5','ftp-deploy']);
+  grunt.registerTask('dev', ['sass:dev','6to5:dev']);
 
 };

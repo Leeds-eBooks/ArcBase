@@ -2,6 +2,8 @@ Parse.initialize(ArcBase.keys.Parse.a,ArcBase.keys.Parse.b);
 var table=document.querySelector('#main table'),
     Book=Parse.Object.extend("Book"),
     Author=Parse.Object.extend("Author"),
+    authorOverlay=document.querySelector('.author-overlay'),
+    authorModal=document.querySelector('.author-modal'),
     model;
 
 rivets.binders.readonly=function(el, value) {
@@ -17,8 +19,8 @@ function update(newBook) {
   query.include('authors').descending('pubdate').find().then(function(results) {
     results.forEach(v => {
       var existingBook=model.books.find(book => book.id===v.id);
+      v.get('authors').forEach(author => {model.authors.push(author);});
       if (existingBook) {
-        console.log(existingBook.title);
         existingBook.id=v.id;
         existingBook.title=v.get('title');
         existingBook.authors=v.get('authors') && v.get('authors').map(v => {return {value:v.get('name')};});
@@ -52,6 +54,7 @@ function update(newBook) {
       }
     });
     if (newBook) {
+      /* clear inputs */
       model.inputs={
         title: '',
         authors: [{value:''}],
@@ -118,6 +121,7 @@ function getParseAuthors(authorsArray) {
 }
 
 model={
+  authors: [],
   books: [],
   inputs: {
     title: '',
@@ -136,7 +140,24 @@ model={
   addAuthor() {
     model.inputs.authors.push({value:''});
   },
-  submit(event, modelArg, bookToEdit) { // TODO improve!
+  currentAuthor: {
+    name: '',
+    biog: ''
+  },
+  getCurrentAuthor(name) {
+    return this.authors.find(v => v.get('name')===name);
+  },
+  showAuthorModal(event, scope) {
+    var author=model.getCurrentAuthor(scope.author.value);
+    model.currentAuthor.name=author.get('name');
+    authorOverlay.classList.add('modal-in');
+  },
+  closeModal(event) {
+    if (this===event.target) {
+      authorOverlay.classList.remove('modal-in');
+    }
+  },
+  submit(event, modelArg, bookToEdit) {
     var data={},
         inputModel=bookToEdit||model.inputs,
         tempInput,tempKey,authors=[];
@@ -175,7 +196,7 @@ model={
     if (scope.book.button==='Edit') {
       scope.book.button='Submit';
     } else {
-      if (model.submit(null, null, scope.book)) { // TODO improve!
+      if (model.submit(null, null, scope.book)) {
         scope.book.button='<img class="loading" src="images/loading.gif">';
       }
     }

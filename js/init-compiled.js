@@ -4,6 +4,8 @@ Parse.initialize(ArcBase.keys.Parse.a, ArcBase.keys.Parse.b);
 var table = document.querySelector("#main table"),
     Book = Parse.Object.extend("Book"),
     Author = Parse.Object.extend("Author"),
+    authorOverlay = document.querySelector(".author-overlay"),
+    authorModal = document.querySelector(".author-modal"),
     model;
 
 rivets.binders.readonly = function (el, value) {
@@ -23,8 +25,10 @@ function update(newBook) {
       var existingBook = model.books.find(function (book) {
         return book.id === v.id;
       });
+      v.get("authors").forEach(function (author) {
+        model.authors.push(author);
+      });
       if (existingBook) {
-        console.log(existingBook.title);
         existingBook.id = v.id;
         existingBook.title = v.get("title");
         existingBook.authors = v.get("authors") && v.get("authors").map(function (v) {
@@ -60,6 +64,20 @@ function update(newBook) {
           } });
       }
     });
+    if (newBook) {
+      /* clear inputs */
+      model.inputs = {
+        title: "",
+        authors: [{ value: "" }],
+        pubdate: "",
+        shortdesc: "",
+        ISBNs: {
+          pbk: "",
+          hbk: "",
+          ebk: ""
+        }
+      };
+    }
   }).fail(function (err) {
     console.log(JSON.stringify(err));
   });
@@ -116,6 +134,7 @@ function getParseAuthors(authorsArray) {
 }
 
 model = {
+  authors: [],
   books: [],
   inputs: {
     title: "",
@@ -136,15 +155,41 @@ model = {
   addAuthor: function addAuthor() {
     model.inputs.authors.push({ value: "" });
   },
+  currentAuthor: {
+    name: "",
+    biog: ""
+  },
+  getCurrentAuthor: function getCurrentAuthor(name) {
+    return this.authors.find(function (v) {
+      return v.get("name") === name;
+    });
+  },
+  showAuthorModal: function showAuthorModal(event, scope) {
+    var author = model.getCurrentAuthor(scope.author.value);
+    model.currentAuthor.name = author.get("name");
+    authorOverlay.classList.add("modal-in");
+  },
+  closeModal: function closeModal(event) {
+    if (this === event.target) {
+      authorOverlay.classList.remove("modal-in");
+    }
+  },
   submit: function submit(event, modelArg, bookToEdit) {
-    // TODO improve!
     var data = {},
         inputModel = bookToEdit || model.inputs,
         tempInput,
         tempKey,
         authors = [];
 
-    if (inputModel.title.trim()) {
+    if (!inputModel.title.trim()) {
+      alert("Every book needs a title...");
+      return false;
+    } else if (inputModel.authors[inputModel.authors.length - 1].value.trim() && !inputModel.authors.every(function (v) {
+      return ~v.value.indexOf(",");
+    })) {
+      alert("Author names must be Lastname, Firstname");
+      return false;
+    } else {
       for (var key in inputModel) {
         tempInput = inputModel[key];
         tempKey = key;
@@ -167,18 +212,19 @@ model = {
         data.authors = returnedAuthors;
         saveToParse(data, returnedAuthors, bookToEdit);
       });
-    } else {
-      alert("Every book needs a title...");
+      return true;
     }
   },
   editOrSubmit: function editOrSubmit(event, scope) {
     if (scope.book.button === "Edit") {
       scope.book.button = "Submit";
     } else {
-      model.submit(null, null, scope.book); // TODO improve!
-      scope.book.button = "<img class=\"loading\" src=\"images/loading.gif\">";
+      if (model.submit(null, null, scope.book)) {
+        scope.book.button = "<img class=\"loading\" src=\"images/loading.gif\">";
+      }
     }
   } };
 
 rivets.bind(document.body, model);
 update();
+//# sourceMappingURL=init-compiled.js.map

@@ -54,7 +54,7 @@
       <tr rv-each-book="books">
         <td><input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></td>
         <td class="authors">
-          <input type="text" rv-each-author="book.authors" rv-value="author.value" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          <input class="author-button" type="text" rv-each-author="book.authors" rv-value="author.value" rv-on-click="showAuthorModal" rv-readonly="book.isEditing < button | opposite">
           <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another author</button>
         </td>
         <td>
@@ -67,6 +67,14 @@
         <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
       </tr>
     </table>
+  </div>
+
+  <div class="author-overlay" rv-on-click="closeModal">
+    <div class="author-modal">
+      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor.name" readonly>
+      <textarea cols="30" rows="10" rv-value="currentAuthor.biog" readonly></textarea>
+      <button rv-on-click="closeModal">&#215;</button>
+    </div>
   </div>
 
   <script src="js/init-compiled.js"></script>
