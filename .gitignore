@@ -2,4 +2,7 @@ keys.js
 .ftppass
 .sass-cache
 node_modules
-dist
+/dist
+js/init-compiled.*
+css/styles.css
+css/styles.css.map

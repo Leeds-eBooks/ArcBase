@@ -1,0 +1,6 @@
+@mixin basic-trans($properties...) {
+  -webkit-transition: all 0.2s ease-out;
+          transition: all 0.2s ease-out;
+  -webkit-transition-property: $properties;
+          transition-property: $properties;
+}

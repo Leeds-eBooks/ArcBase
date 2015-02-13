@@ -6,6 +6,17 @@ var table=document.querySelector('#main table'),
     authorModal=document.querySelector('.author-modal'),
     model;
 
+rivets.adapters['#']={};
+for (var key in rivets.adapters['.']) {
+  rivets.adapters['#'][key]=rivets.adapters['.'][key];
+}
+rivets.adapters['#'].get=function(obj,keypath) {
+  return obj && obj.get(keypath);
+};
+rivets.adapters['#'].set=function(obj, keypath, value) {
+  return obj && obj.set(keypath, value);
+};
+
 rivets.binders.readonly=function(el, value) {
   el.readOnly=!!value;
 };
@@ -140,23 +151,6 @@ model={
   addAuthor() {
     model.inputs.authors.push({value:''});
   },
-  currentAuthor: {
-    name: '',
-    biog: ''
-  },
-  getCurrentAuthor(name) {
-    return this.authors.find(v => v.get('name')===name);
-  },
-  showAuthorModal(event, scope) {
-    var author=model.getCurrentAuthor(scope.author.value);
-    model.currentAuthor.name=author.get('name');
-    authorOverlay.classList.add('modal-in');
-  },
-  closeModal(event) {
-    if (this===event.target) {
-      authorOverlay.classList.remove('modal-in');
-    }
-  },
   submit(event, modelArg, bookToEdit) {
     var data={},
         inputModel=bookToEdit||model.inputs,
@@ -201,6 +195,33 @@ model={
       }
     }
   },
+  currentAuthor: undefined,
+  getCurrentAuthor(name) {
+    return this.authors.find(v => v.get('name')===name);
+  },
+  showAuthorModal(event, scope) {
+    model.currentAuthor=model.getCurrentAuthor(scope.author.value);
+    authorOverlay.classList.add('modal-in');
+  },
+  closeModal(event) {
+    if (this===event.target) {
+      model.isEditingAuthor=false;
+      model.authorButton='Edit';
+      authorOverlay.classList.remove('modal-in');
+    }
+  },
+  isEditingAuthor: false,
+  authorButton: 'Edit',
+  editAuthor(event) {
+    var isEditing=model.authorButton==='Submit';
+    model.authorButton=isEditing?'<img class="loading" src="images/loading.gif">':'Submit';
+    model.isEditingAuthor=!isEditing;
+    if (isEditing) {
+      model.currentAuthor.save().then(res => {
+        model.authorButton='Edit';
+      }).fail(console.log);
+    }
+  }
 };
 
 rivets.bind(document.body, model);

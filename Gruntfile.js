@@ -14,10 +14,8 @@ module.exports = function(grunt) {
             'js/**',
             '!js/init.js',
             '!js/init-compiled.js',
-            'bower_components/rivets/dist/rivets.js',
-            'bower_components/rivets/LICENSE',
-            'bower_components/sightglass/index.js',
-            'bower_components/sightglass/LICENSE',
+            'bower_components/**/*.js',
+            'bower_components/**/LICENSE',
             'css/reset.css',
             'images/**'
           ], dest: 'dist'}
