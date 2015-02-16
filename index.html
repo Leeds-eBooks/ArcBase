@@ -15,6 +15,14 @@
   <script type="text/javascript" src="bower_components/sightglass/index.js"></script>
   <script type="text/javascript" src="bower_components/rivets/dist/rivets.js"></script>
   <script type="text/javascript" src="js/browser-polyfill.js"></script>
+
+  <!-- <script type="text/javascript" src="scripts/main.min.js"></script> -->
+  <!-- <script type="text/javascript" src="scripts/angular-expressions.js"></script> -->
+  <!-- <script type="text/javascript" src="scripts/FileSaver.min.js"></script> -->
+  <!-- <script type="text/javascript" src="scripts/jszip-utils.js"></script> -->
+  <!-- Include this only if you want to use downloadify (last example) -->
+  <!-- <script type="text/javascript" src="scripts/downloadify.min.js"></script> -->
+  <!-- <script type="text/javascript" src="scripts/swfobject.js"></script> -->
 </head>
 
 <body>
@@ -28,6 +36,7 @@
         <th>Pub Date</th>
         <th>Short description</th>
         <th></th>
+        <th></th>
       </thead>
       <tr id="search">
         <td><input type="search"></td>
@@ -35,7 +44,8 @@
         <td><input type="search"></td>
         <td><input type="search"></td>
         <td><input type="search"></td>
-        <td><input type="search"></td>
+        <td></td>
+        <td></td>
       </tr>
       <tr id="instructions">
         <td></td>
@@ -44,12 +54,18 @@
         <td></td>
         <td>Max. 350 characters (for Nielsen)</td>
         <td></td>
+        <td></td>
       </tr>
       <tr id="inputs">
         <td><input rv-value="inputs.title" type="text" id="title" placeholder="new title"></td>
         <td class="authors">
-          <input rv-each-authorinput="inputs.authors" rv-value="authorinput.value" type="text" placeholder="authors">
-          <!-- <input rv-value="authorinput" type="text" placeholder="authors"> -->
+          <div rv-each-authorinput="inputs.authors">
+            <input rv-value="authorinput.name" type="text" placeholder="new author">
+            <label>Author <input type="checkbox" value="author" rv-checked="authorinput.roles.author"></label>
+            <label>Translator <input type="checkbox" value="translator" rv-checked="authorinput.roles.translator"></label>
+            <label>Editor <input type="checkbox" value="editor" rv-checked="authorinput.roles.editor"></label>
+            <label>Introducer <input type="checkbox" value="introducer" rv-checked="authorinput.roles.introducer"></label>
+          </div>
           <button class="add-input" rv-on-click="addAuthor">Add another author</button>
         </td>
         <td>
@@ -59,22 +75,44 @@
         </td>
         <td><input type="date" rv-value="inputs.pubdate"></td>
         <td><textarea maxlength="350" cols="30" rows="3" rv-value="inputs.shortdesc"></textarea></td>
-        <td><button rv-on-click="submit">Submit</button></td>
+        <td><button rv-on-click="submit">Save</button></td>
+        <td></td>
       </tr>
       <tr rv-each-book="books">
         <td><input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></td>
         <td class="authors">
-          <input class="author-button" type="text" rv-each-author="book.authors" rv-value="author.value" rv-on-click="showAuthorModal" rv-readonly="book.isEditing < button | opposite">
+          <div rv-each-author="book.authors">
+            <input class="author-button" rv-value="author.name" type="text" rv-on-click="showAuthorModal" placeholder="new author" rv-readonly="book.isEditing < button | opposite">
+            <label>
+              Author <input type="checkbox" value="author" rv-checked="author.roles.author" rv-enabled="book.isEditing < button">
+            </label>
+            <label>
+              Translator <input type="checkbox" value="translator" rv-checked="author.roles.translator" rv-enabled="book.isEditing < button">
+            </label>
+            <label>
+              Editor <input type="checkbox" value="editor" rv-checked="author.roles.editor" rv-enabled="book.isEditing < button">
+            </label>
+            <label>
+              Introducer <input type="checkbox" value="introducer" rv-checked="author.roles.introducer" rv-enabled="book.isEditing < button">
+            </label>
+          </div>
           <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another author</button>
         </td>
         <td>
-          <label id="pbk">pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label><br>
-          <label id="hbk">hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label><br>
-          <label id="ebk">ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></label>
+          <label id="pbk">
+            pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          </label><br>
+          <label id="hbk">
+            hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          </label><br>
+          <label id="ebk">
+            ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          </label>
         </td>
         <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
         <td><textarea maxlength="350" cols="30" rows="3" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
         <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
+        <td><button rv-on-click="menu">&#9776;</button></td>
       </tr>
     </table>
   </div>

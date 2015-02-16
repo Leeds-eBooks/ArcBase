@@ -8,12 +8,34 @@ var table = document.querySelector("#main table"),
     authorModal = document.querySelector(".author-modal"),
     model;
 
+rivets.adapters["#"] = {};
+for (var key in rivets.adapters["."]) {
+  rivets.adapters["#"][key] = rivets.adapters["."][key];
+}
+rivets.adapters["#"].get = function (obj, keypath) {
+  return obj && obj.get(keypath);
+};
+rivets.adapters["#"].set = function (obj, keypath, value) {
+  return obj && obj.set(keypath, value);
+};
+
 rivets.binders.readonly = function (el, value) {
   el.readOnly = !!value;
 };
+
 rivets.formatters.opposite = function (value) {
   return !value;
 };
+
+function authorMapper(author) {
+  var obj = this;
+  return {
+    name: author.get("name"),
+    roles: obj.get("roleMap") && obj.get("roleMap").find(function (v) {
+      return v.id === author.id;
+    }).roles || {}
+  };
+}
 
 function update(newBook) {
   var query = new Parse.Query(Book);
@@ -25,15 +47,15 @@ function update(newBook) {
       var existingBook = model.books.find(function (book) {
         return book.id === v.id;
       });
-      v.get("authors").forEach(function (author) {
-        model.authors.push(author);
-      });
+      if (v.has("authors")) {
+        v.get("authors").forEach(function (author) {
+          model.authors.push(author);
+        });
+      }
       if (existingBook) {
         existingBook.id = v.id;
         existingBook.title = v.get("title");
-        existingBook.authors = v.get("authors") && v.get("authors").map(function (v) {
-          return { value: v.get("name") };
-        });
+        existingBook.authors = v.get("authors") && v.get("authors").map(authorMapper, v) || [];
         existingBook.pubdate = v.get("pubdate");
         existingBook.shortdesc = v.get("shortdesc");
         existingBook.ISBNs = v.get("ISBNs") && v.get("ISBNs").reduce(function (obj, current) {
@@ -45,9 +67,7 @@ function update(newBook) {
         model.books.push({
           id: v.id,
           title: v.get("title"),
-          authors: v.get("authors") && v.get("authors").map(function (v) {
-            return { value: v.get("name") };
-          }),
+          authors: v.get("authors") && v.get("authors").map(authorMapper, v) || [],
           pubdate: v.get("pubdate"),
           shortdesc: v.get("shortdesc"),
           ISBNs: v.get("ISBNs") && v.get("ISBNs").reduce(function (obj, current) {
@@ -60,7 +80,7 @@ function update(newBook) {
             scope.book.authors.push({ value: "" });
           },
           isEditing: function isEditing() {
-            return this.button === "Submit";
+            return this.button === "Save";
           } });
       }
     });
@@ -68,7 +88,15 @@ function update(newBook) {
       /* clear inputs */
       model.inputs = {
         title: "",
-        authors: [{ value: "" }],
+        authors: [{
+          name: "",
+          roles: {
+            author: false,
+            translator: false,
+            editor: false,
+            introducer: false
+          }
+        }],
         pubdate: "",
         shortdesc: "",
         ISBNs: {
@@ -83,7 +111,7 @@ function update(newBook) {
   });
 }
 
-function saveToParse(data, authorRelations, bookToEdit) {
+function saveToParse(data, bookToEdit) {
   var query = new Parse.Query(Book),
       book = bookToEdit ? query.get(bookToEdit.id) : new Book();
 
@@ -138,7 +166,15 @@ model = {
   books: [],
   inputs: {
     title: "",
-    authors: [{ value: "" }],
+    authors: [{
+      name: "",
+      roles: {
+        author: false,
+        translator: false,
+        editor: false,
+        introducer: false
+      }
+    }],
     pubdate: "",
     shortdesc: "",
     ISBNs: {
@@ -155,25 +191,7 @@ model = {
   addAuthor: function addAuthor() {
     model.inputs.authors.push({ value: "" });
   },
-  currentAuthor: {
-    name: "",
-    biog: ""
-  },
-  getCurrentAuthor: function getCurrentAuthor(name) {
-    return this.authors.find(function (v) {
-      return v.get("name") === name;
-    });
-  },
-  showAuthorModal: function showAuthorModal(event, scope) {
-    var author = model.getCurrentAuthor(scope.author.value);
-    model.currentAuthor.name = author.get("name");
-    authorOverlay.classList.add("modal-in");
-  },
-  closeModal: function closeModal(event) {
-    if (this === event.target) {
-      authorOverlay.classList.remove("modal-in");
-    }
-  },
+
   submit: function submit(event, modelArg, bookToEdit) {
     var data = {},
         inputModel = bookToEdit || model.inputs,
@@ -184,8 +202,8 @@ model = {
     if (!inputModel.title.trim()) {
       alert("Every book needs a title...");
       return false;
-    } else if (inputModel.authors[inputModel.authors.length - 1].value.trim() && !inputModel.authors.every(function (v) {
-      return ~v.value.indexOf(",");
+    } else if (inputModel.authors[inputModel.authors.length - 1].name.trim() && !inputModel.authors.every(function (v) {
+      return ~v.name.indexOf(",");
     })) {
       alert("Author names must be Lastname, Firstname");
       return false;
@@ -196,7 +214,7 @@ model = {
 
         if (tempKey === "authors") {
           tempInput.forEach(function (v) {
-            v.value.trim() && authors.push(v.value.trim().replace(/\s{1,}/g, " "));
+            v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g, " "));
           });
         } else if (tempKey === "ISBNs") {
           data.ISBNs = Object.keys(tempInput).map(function (v) {
@@ -210,21 +228,83 @@ model = {
       }
       getParseAuthors(authors).then(function (returnedAuthors) {
         data.authors = returnedAuthors;
-        saveToParse(data, returnedAuthors, bookToEdit);
+        data.roleMap = [];
+        returnedAuthors.forEach(function (author) {
+          console.log(inputModel.authors.find(function (v) {
+            return v.name === author.get("name");
+          }).roles);
+          data.roleMap.push({
+            id: author.id,
+            roles: inputModel.authors.find(function (v) {
+              return v.name === author.get("name");
+            }).roles
+          });
+        });
+        saveToParse(data, bookToEdit);
       });
       return true;
     }
   },
+
   editOrSubmit: function editOrSubmit(event, scope) {
     if (scope.book.button === "Edit") {
-      scope.book.button = "Submit";
+      scope.book.button = "Save";
     } else {
       if (model.submit(null, null, scope.book)) {
         scope.book.button = "<img class=\"loading\" src=\"images/loading.gif\">";
       }
     }
-  } };
+  },
+  currentAuthor: undefined,
+  getCurrentAuthor: function getCurrentAuthor(name) {
+    return this.authors.find(function (v) {
+      return v.get("name") === name;
+    });
+  },
+  showAuthorModal: function showAuthorModal(event, scope) {
+    if (!scope.book.isEditing()) {
+      model.currentAuthor = model.getCurrentAuthor(scope.author.name);
+      authorOverlay.classList.add("modal-in");
+    }
+  },
+  closeModal: function closeModal(event) {
+    if (this === event.target) {
+      model.isEditingAuthor = false;
+      model.authorButton = "Edit";
+      authorOverlay.classList.remove("modal-in");
+    }
+  },
+  isEditingAuthor: false,
+  authorButton: "Edit",
+  editAuthor: function editAuthor(event) {
+    var isEditing = model.authorButton === "Save";
+    model.authorButton = isEditing ? "<img class=\"loading\" src=\"images/loading.gif\">" : "Save";
+    model.isEditingAuthor = !isEditing;
+    if (isEditing) {
+      model.currentAuthor.save().then(function (res) {
+        model.authorButton = "Edit";
+      }).fail(console.log);
+    }
+  },
+  menu: function menu() {}
+};
 
 rivets.bind(document.body, model);
 update();
+// var loadFile=function(url,callback){
+//     JSZipUtils.getBinaryContent(url,callback);
+// };
+// loadFile("examples/tagExample.docx", function(err,content) {
+//     if (err) {throw err;}
+//     doc=new Docxgen(content);
+//     doc.setData({
+//       "first_name":"Hipp",
+//       "last_name":"Edgar",
+//       "phone":"0652455478",
+//       "description":"New Website"
+//     }); //set the templateVariables
+//     doc.render(); //apply them (replace all occurences of {first_name} by Hipp, ...)
+//     out=doc.getZip().generate({type:"blob"}); //Output the document using Data-URI
+//     saveAs(out,"output.docx");
+// });
 //# sourceMappingURL=init-compiled.js.map
