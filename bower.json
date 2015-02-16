@@ -1,0 +1,25 @@
+{
+  "name": "arcbase",
+  "version": "0.0.2",
+  "authors": [
+    "Ben Styles <ben@arcpublications.co.uk>"
+  ],
+  "description": "Fledgling Parse database front-end for (poetry) publishers",
+  "main": "index.html",
+  "moduleType": [
+    "es6"
+  ],
+  "license": "GPLv2",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "rivets": "~0.8.0",
+    "parse-js-sdk": "~1.3.1"
+  }
+}

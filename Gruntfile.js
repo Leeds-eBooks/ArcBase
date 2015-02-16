@@ -12,6 +12,8 @@ module.exports = function(grunt) {
             'keys.js',
             'LICENSE',
             'js/**',
+            'scripts/**',
+            'templates/**',
             '!js/init.js',
             '!js/init-compiled.js',
             'bower_components/**/*.js',
