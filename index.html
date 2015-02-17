@@ -153,7 +153,7 @@
   <div class="author-overlay" rv-on-click="closeModal">
     <div class="author-modal">
       <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite">
-      <textarea rows="20" rv-value="currentAuthor#biog" rv-readonly="isEditingAuthor | opposite"></textarea>
+      <textarea rows="20" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite"></textarea>
       <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
       <button rv-on-click="closeModal">&#215;</button>
     </div>

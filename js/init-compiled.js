@@ -83,7 +83,15 @@ function update(newBook) {
           /* Methods */
           button: "Edit",
           addAuthor: function addAuthor(event, scope) {
-            scope.book.authors.push({ value: "" });
+            scope.book.authors.push({
+              name: "",
+              roles: {
+                author: false,
+                translator: false,
+                editor: false,
+                introducer: false
+              }
+            });
           },
           isEditing: function isEditing() {
             return this.button === "Save";
@@ -195,7 +203,15 @@ model = {
     }
   },
   addAuthor: function addAuthor() {
-    model.inputs.authors.push({ value: "" });
+    model.inputs.authors.push({
+      name: "",
+      roles: {
+        author: false,
+        translator: false,
+        editor: false,
+        introducer: false
+      }
+    });
   },
 
   submit: function submit(event, modelArg, bookToEdit) {
