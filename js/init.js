@@ -24,6 +24,12 @@ rivets.binders.readonly=function(el, value) {
 rivets.formatters.opposite=function(value) {
   return !value;
 };
+rivets.formatters.prepend=function(value, string) {
+  return string ? string+""+value : value;
+};
+rivets.formatters.alphaNumeric=function(v) {
+  return v.replace(/\W+/g,'-');
+};
 
 function authorMapper(author) {
   var obj=this;
@@ -211,7 +217,6 @@ model={
         data.authors=returnedAuthors;
         data.roleMap=[];
         returnedAuthors.forEach(author => {
-          console.log(inputModel.authors.find(v => v.name===author.get('name')).roles);
           data.roleMap.push({
             id: author.id,
             roles: inputModel.authors.find(v => v.name===author.get('name')).roles
@@ -261,6 +266,9 @@ model={
       }).fail(console.log);
     }
   },
+  // alertMe() {
+  //   console.log(arguments);
+  // },
   menu() {
     // var loadFile=function(url,callback){
     //     JSZipUtils.getBinaryContent(url,callback);

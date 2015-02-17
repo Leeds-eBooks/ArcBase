@@ -1,5 +1,5 @@
 * {
-  font-family: 'Alegreya Sans', sans-serif !important;
+  font-family: 'Lato', sans-serif !important;
 }
 
 html {
@@ -42,6 +42,29 @@ input[readonly], textarea[readonly] {
   cursor: pointer;
 }
 
+label {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input[type=checkbox] {
+  width: 0;
+  height: 0;
+}
+input[type=checkbox]:checked + label {
+  background-color: cornflowerblue;
+  color: white;
+}
+
+.warning {
+  background-color: firebrick !important;
+  color: white !important;
+}
+
 .authors > div + div {
   margin-top: 0.25em;
 }
@@ -58,6 +81,14 @@ input[readonly], textarea[readonly] {
 }
 .authors .author-button:active {
   background-color: cornflowerblue;
+}
+.authors label {
+  display: inline-block;
+  width: 1.2em;
+  text-align: center;
+  line-height: 1.1;
+  height: 1.2em;
+  border-radius: 50%;
 }
 
 td button {

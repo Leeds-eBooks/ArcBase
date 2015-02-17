@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/styles.css">
 
-  <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 
   <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="bower_components/parse-js-sdk/lib/parse.min.js"></script>
@@ -39,11 +40,11 @@
         <th></th>
       </thead>
       <tr id="search">
-        <td><input type="search"></td>
-        <td><input type="search"></td>
-        <td><input type="search"></td>
-        <td><input type="search"></td>
-        <td><input type="search"></td>
+        <td><input type="search" placeholder="search"></td>
+        <td><input type="search" placeholder="search"></td>
+        <td><input type="search" placeholder="search"></td>
+        <td><input type="search" placeholder="search"></td>
+        <td><input type="search" placeholder="search"></td>
         <td></td>
         <td></td>
       </tr>
@@ -61,10 +62,30 @@
         <td class="authors">
           <div rv-each-authorinput="inputs.authors">
             <input rv-value="authorinput.name" type="text" placeholder="new author">
-            <label>Author <input type="checkbox" value="author" rv-checked="authorinput.roles.author"></label>
+            <!-- <label>Author <input type="checkbox" value="author" rv-checked="authorinput.roles.author"></label>
             <label>Translator <input type="checkbox" value="translator" rv-checked="authorinput.roles.translator"></label>
             <label>Editor <input type="checkbox" value="editor" rv-checked="authorinput.roles.editor"></label>
-            <label>Introducer <input type="checkbox" value="introducer" rv-checked="authorinput.roles.introducer"></label>
+            <label>Introducer <input type="checkbox" value="introducer" rv-checked="authorinput.roles.introducer"></label> -->
+            <input rv-id="index | prepend 'roles-input-author-' | alphaNumeric"
+                    type="checkbox"
+                   value="author"
+              rv-checked="authorinput.roles.author">
+            <label rv-for="index | prepend 'roles-input-author-' | alphaNumeric">A</label>
+            <input rv-id="index | prepend 'roles-input-translator-' | alphaNumeric"
+                    type="checkbox"
+                   value="translator"
+              rv-checked="authorinput.roles.translator">
+            <label rv-for="index | prepend 'roles-input-translator-' | alphaNumeric">T</label>
+            <input rv-id="index | prepend 'roles-input-editor-' | alphaNumeric"
+                    type="checkbox"
+                   value="editor"
+              rv-checked="authorinput.roles.editor">
+            <label rv-for="index | prepend 'roles-input-editor-' | alphaNumeric">E</label>
+            <input rv-id="index | prepend 'roles-input-introducer-' | alphaNumeric"
+                    type="checkbox"
+                   value="introducer"
+              rv-checked="authorinput.roles.introducer">
+            <label rv-for="index | prepend 'roles-input-introducer-' | alphaNumeric">I</label>
           </div>
           <button class="add-input" rv-on-click="addAuthor">Add another author</button>
         </td>
@@ -74,7 +95,7 @@
           <label id="ebk">ebk: <input rv-value="inputs.ISBNs.ebk" type="text" class="ISBNs"></label>
         </td>
         <td><input type="date" rv-value="inputs.pubdate"></td>
-        <td><textarea maxlength="350" cols="30" rows="3" rv-value="inputs.shortdesc"></textarea></td>
+        <td><textarea maxlength="350" cols="30" rows="10" rv-value="inputs.shortdesc"></textarea></td>
         <td><button rv-on-click="submit">Save</button></td>
         <td></td>
       </tr>
@@ -83,18 +104,30 @@
         <td class="authors">
           <div rv-each-author="book.authors">
             <input class="author-button" rv-value="author.name" type="text" rv-on-click="showAuthorModal" placeholder="new author" rv-readonly="book.isEditing < button | opposite">
-            <label>
-              Author <input type="checkbox" value="author" rv-checked="author.roles.author" rv-enabled="book.isEditing < button">
-            </label>
-            <label>
-              Translator <input type="checkbox" value="translator" rv-checked="author.roles.translator" rv-enabled="book.isEditing < button">
-            </label>
-            <label>
-              Editor <input type="checkbox" value="editor" rv-checked="author.roles.editor" rv-enabled="book.isEditing < button">
-            </label>
-            <label>
-              Introducer <input type="checkbox" value="introducer" rv-checked="author.roles.introducer" rv-enabled="book.isEditing < button">
-            </label>
+            <input rv-id="index | prepend author.name | prepend 'roles-author-' | alphaNumeric"
+                    type="checkbox"
+                   value="author"
+              rv-checked="author.roles.author"
+              rv-enabled="book.isEditing < button">
+            <label rv-for="index | prepend author.name | prepend 'roles-author-' | alphaNumeric">A</label>
+            <input rv-id="index | prepend author.name | prepend 'roles-translator-' | alphaNumeric"
+                    type="checkbox"
+                   value="translator"
+              rv-checked="author.roles.translator"
+              rv-enabled="book.isEditing < button">
+            <label rv-for="index | prepend author.name | prepend 'roles-translator-' | alphaNumeric">T</label>
+            <input rv-id="index | prepend author.name | prepend 'roles-editor-' | alphaNumeric"
+                    type="checkbox"
+                   value="editor"
+              rv-checked="author.roles.editor"
+              rv-enabled="book.isEditing < button">
+            <label rv-for="index | prepend author.name | prepend 'roles-editor-' | alphaNumeric">E</label>
+            <input rv-id="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric"
+                    type="checkbox"
+                   value="introducer"
+              rv-checked="author.roles.introducer"
+              rv-enabled="book.isEditing < button">
+            <label rv-for="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric">I</label>
           </div>
           <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another author</button>
         </td>
@@ -110,8 +143,8 @@
           </label>
         </td>
         <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
-        <td><textarea maxlength="350" cols="30" rows="3" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
-        <td><button rv-on-click="editOrSubmit" rv-html="book.button"></button></td>
+        <td><textarea maxlength="350" cols="30" rows="10" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
+        <td><button rv-on-click="editOrSubmit" rv-html="book.button" rv-class-warning="book.isEditing < button"></button></td>
         <td><button rv-on-click="menu">&#9776;</button></td>
       </tr>
     </table>
@@ -121,7 +154,7 @@
     <div class="author-modal">
       <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite">
       <textarea rows="20" rv-value="currentAuthor#biog" rv-readonly="isEditingAuthor | opposite"></textarea>
-      <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton"></button>
+      <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
       <button rv-on-click="closeModal">&#215;</button>
     </div>
   </div>

@@ -26,6 +26,12 @@ rivets.binders.readonly = function (el, value) {
 rivets.formatters.opposite = function (value) {
   return !value;
 };
+rivets.formatters.prepend = function (value, string) {
+  return string ? string + "" + value : value;
+};
+rivets.formatters.alphaNumeric = function (v) {
+  return v.replace(/\W+/g, "-");
+};
 
 function authorMapper(author) {
   var obj = this;
@@ -230,9 +236,6 @@ model = {
         data.authors = returnedAuthors;
         data.roleMap = [];
         returnedAuthors.forEach(function (author) {
-          console.log(inputModel.authors.find(function (v) {
-            return v.name === author.get("name");
-          }).roles);
           data.roleMap.push({
             id: author.id,
             roles: inputModel.authors.find(function (v) {
@@ -286,6 +289,9 @@ model = {
       }).fail(console.log);
     }
   },
+  // alertMe() {
+  //   console.log(arguments);
+  // },
   menu: function menu() {}
 };
 
