@@ -39,15 +39,6 @@
         <th></th>
         <th></th>
       </thead>
-      <tr id="search">
-        <td><input type="search" placeholder="search"></td>
-        <td><input type="search" placeholder="search"></td>
-        <td><input type="search" placeholder="search"></td>
-        <td><input type="search" placeholder="search"></td>
-        <td><input type="search" placeholder="search"></td>
-        <td></td>
-        <td></td>
-      </tr>
       <tr id="instructions">
         <td></td>
         <td>Lastname, Firstname(s)</td>
@@ -99,7 +90,16 @@
         <td><button rv-on-click="submit">Save</button></td>
         <td></td>
       </tr>
-      <tr rv-each-book="books">
+      <tr id="search">
+        <td><input type="search" placeholder="search" data-search-column="title" rv-on-input="smartSearch" rv-on-keyup="smartSearch"></td>
+        <td><input type="search" placeholder="search" data-search-column="authors" rv-on-input="smartSearch" rv-on-keyup="smartSearch"></td>
+        <td><input type="search" placeholder="search" data-search-column="ISBNs" rv-on-input="smartSearch" rv-on-keyup="smartSearch"></td>
+        <td><input type="search" placeholder="YYYY-MM-DD" data-search-column="pubdate" rv-on-input="smartSearch" rv-on-keyup="smartSearch"></td>
+        <td><input type="search" placeholder="search" data-search-column="shortdesc" rv-on-input="smartSearch" rv-on-keyup="smartSearch"></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr rv-each-book="books" rv-hide="book.filterOut">
         <td><input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></td>
         <td class="authors">
           <div rv-each-author="book.authors">

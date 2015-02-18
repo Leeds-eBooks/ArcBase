@@ -243,7 +243,7 @@ model = {
             return { type: v, value: tempInput[v].replace(/\D+/g, "") };
           });
         } else {
-          if ("function" !== typeof tempInput && tempKey !== "button") {
+          if ("function" !== typeof tempInput && tempKey !== "button" && tempKey !== "filterOut") {
             data[tempKey] = tempInput && tempInput.trim().replace(/\s{1,}/g, " ");
           }
         }
@@ -303,6 +303,34 @@ model = {
       model.currentAuthor.save().then(function (res) {
         model.authorButton = "Edit";
       }).fail(console.log);
+    }
+  },
+  smartSearch: function smartSearch(event, scope) {
+    var _this = this;
+    var column = this.getAttribute("data-search-column");
+    for (var i = 0; i < model.books.length; i++) {
+      (function () {
+        var book = model.books[i],
+            item = book[column];
+        if ("string" === typeof item) {
+          book.filterOut = ! ~item.toLowerCase().indexOf(_this.value.toLowerCase());
+        } else if (column === "authors") {
+          book.filterOut = item.every(function (v) {
+            return ! ~v.name.toLowerCase().indexOf(_this.value.toLowerCase());
+          });
+        } else if (column === "ISBNs") {
+          book.filterOut = Object.keys(item).every(function (k) {
+            return ! ~item[k].indexOf(_this.value);
+          });
+        } else if (!item) {
+          book.filterOut = true;
+        }
+      })();
+    }
+    if (this.value) {
+      this.classList.add("warning");
+    } else {
+      this.classList.remove("warning");
     }
   },
   // alertMe() {

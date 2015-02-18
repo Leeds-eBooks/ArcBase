@@ -24,11 +24,17 @@ body {
   border-width: 0 1px 1px 1px;
 }
 
-tr:nth-child(odd) {
+tr:nth-child(even) {
   background-color: #E0F2F7;
 }
-tr:nth-child(1) {
-  background-color: transparent;
+tr:nth-child(2) {
+  border-bottom: 2px solid cornflowerblue;
+}
+#search {
+  height: 4em;
+  td {
+    vertical-align: middle;
+  }
 }
 #inputs {
   background-color: linen;
@@ -53,6 +59,11 @@ label {
             user-select: none;
 }
 
+input[type=search] {
+  border: none;
+  background-color: lighten(cornflowerblue,25%);
+  color: white;
+}
 input[type=checkbox] {
   width: 0;
   height: 0;
@@ -60,6 +71,10 @@ input[type=checkbox] {
     background-color: cornflowerblue;
     color: white;
   }
+}
+
+.ISBNs {
+  max-width: 8em;
 }
 
 .warning {

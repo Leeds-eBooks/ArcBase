@@ -224,7 +224,7 @@ model={
             return {type:v,value:tempInput[v].replace(/\D+/g,'')};
           });
         } else {
-          if ('function'!==typeof tempInput && tempKey!=='button') {
+          if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
             data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
           }
         }
@@ -281,6 +281,24 @@ model={
         model.authorButton='Edit';
       }).fail(console.log);
     }
+  },
+  smartSearch(event, scope) {
+    var column=this.getAttribute('data-search-column');
+    for (var i=0;i<model.books.length;i++) {
+      let book=model.books[i],
+          item=book[column];
+      if ('string'===typeof item) {
+        book.filterOut=!~item.toLowerCase().indexOf(this.value.toLowerCase());
+      } else if (column==='authors') {
+        book.filterOut=item.every(v => !~v.name.toLowerCase().indexOf(this.value.toLowerCase()));
+      } else if (column==='ISBNs') {
+        book.filterOut=Object.keys(item).every(k => !~item[k].indexOf(this.value));
+      } else if (!item) {
+        book.filterOut=true;
+      }
+    }
+    if (this.value) {this.classList.add('warning');}
+    else {this.classList.remove('warning');}
   },
   // alertMe() {
   //   console.log(arguments);
