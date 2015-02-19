@@ -23,12 +23,36 @@ body {
   border-width: 0 1px 1px 1px;
 }
 
-tr:nth-child(even) {
-  background-color: #E0F2F7;
+button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none !important;
+  position: relative;
+  background-color: slategrey;
+  color: white;
+  border: none;
+  padding: 0.5em;
+  border-radius: 0.3em;
+  box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.3);
+}
+button:active {
+  top: 0.2em;
+  box-shadow: 0 0 0.3em rgba(0, 0, 0, 0.3);
+}
+
+tr {
+  background-image: linear-gradient(to bottom, #e7edf3, white);
+}
+
+tr:nth-child(1) {
+  background-image: none;
 }
 
 tr:nth-child(2) {
-  border-bottom: 2px solid cornflowerblue;
+  background-image: none;
+}
+
+tr:nth-child(3) {
+  background-image: none;
 }
 
 #search {
@@ -37,8 +61,12 @@ tr:nth-child(2) {
 #search td {
   vertical-align: middle;
 }
+#search input {
+  width: 90%;
+}
 
 #inputs {
+  border-bottom: 2px solid cornflowerblue;
   background-color: linen;
 }
 
@@ -86,6 +114,9 @@ input[type=checkbox]:checked + label {
   color: white !important;
 }
 
+.authors > div {
+  min-width: 18em;
+}
 .authors > div + div {
   margin-top: 0.25em;
 }
@@ -113,10 +144,15 @@ input[type=checkbox]:checked + label {
 }
 
 td button {
-  height: 100%;
+  min-height: 50%;
+  min-width: 3em;
+  margin-top: 0.2em;
 }
 td button.add-input {
   height: auto;
+}
+td button.add-input::before {
+  content: '+ ';
 }
 
 .loading {
@@ -163,10 +199,17 @@ td button.add-input {
   top: 1em;
   left: auto;
   right: 1em;
+  font-size: 1.5em;
+}
+.author-modal button:active {
+  top: 1.2em;
 }
 .author-modal button.author-edit {
   top: auto;
   bottom: 1em;
+}
+.author-modal button.author-edit:active {
+  bottom: 0.8em;
 }
 
 .modal-in {

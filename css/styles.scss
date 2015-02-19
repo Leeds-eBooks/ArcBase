@@ -24,19 +24,41 @@ body {
   border-width: 0 1px 1px 1px;
 }
 
-tr:nth-child(even) {
-  background-color: #E0F2F7;
+button {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  outline: none !important;
+  position: relative;
+  background-color: slategrey;
+  color: white;
+  border: none;
+  padding: 0.5em;
+  border-radius: 0.3em;
+  box-shadow: 0 0.3em 1em rgba(0,0,0,0.3);
+  &:active {
+    top: 0.2em;
+    box-shadow: 0 0 0.3em rgba(0,0,0,0.3);
+  }
 }
-tr:nth-child(2) {
-  border-bottom: 2px solid cornflowerblue;
+
+tr {
+  background-image: linear-gradient(to bottom, #e7edf3,white);
+}
+@for $i from 1 through 3 {
+  tr:nth-child(#{$i}) {
+    background-image: none;
+  }
 }
 #search {
   height: 4em;
   td {
     vertical-align: middle;
   }
+  input {
+    width: 90%;
+  }
 }
 #inputs {
+  border-bottom: 2px solid cornflowerblue;
   background-color: linen;
 }
 #instructions {
@@ -83,8 +105,11 @@ input[type=checkbox] {
 }
 
 .authors {
-  > div + div {
-    margin-top: 0.25em;
+  > div {
+    min-width: 18em;
+    & + div {
+      margin-top: 0.25em;
+    }
   }
   > * {
     display: block;
@@ -112,9 +137,14 @@ input[type=checkbox] {
 
 td {
   button {
-    height: 100%;
+    min-height: 50%;
+    min-width: 3em;
+    margin-top: 0.2em;
     &.add-input {
       height: auto;
+      &::before {
+        content: '+ ';
+      }
     }
   }
 }
@@ -161,9 +191,12 @@ td {
     top: 1em;
     left: auto;
     right: 1em;
+    font-size: 1.5em;
+    &:active {top:1.2em;}
     &.author-edit {
       top: auto;
       bottom: 1em;
+      &:active {bottom:0.8em;}
     }
   }
 }
