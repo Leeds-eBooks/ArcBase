@@ -106,7 +106,8 @@ function update(newBook) {
           pbk: '',
           hbk: '',
           ebk: ''
-        }
+        },
+        button: 'Save'
       };
     }
   }).fail(function(err) {
@@ -182,7 +183,8 @@ model={
       pbk: '',
       hbk: '',
       ebk: ''
-    }
+    },
+    button: 'Save'
   },
   selectAll() {
     if (this.readOnly) {this.select();}
@@ -211,6 +213,7 @@ model={
       alert('Author names must be Lastname, Firstname');
       return false;
     } else {
+      if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
       for (var key in inputModel) {
         tempInput=inputModel[key];
         tempKey=key;
