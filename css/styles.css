@@ -39,6 +39,10 @@ button:active {
   box-shadow: 0 0 0.3em rgba(0, 0, 0, 0.3);
 }
 
+#col-price {
+  max-width: 8em;
+}
+
 tr {
   background-image: linear-gradient(to bottom, #e7edf3, white);
 }

@@ -68,6 +68,10 @@ function update(newBook) {
           obj[current.type] = current.value;
           return obj;
         }, {});
+        existingBook.price = v.get("price") && v.get("price").reduce(function (obj, current) {
+          obj[current.type] = current.value;
+          return obj;
+        }, {}) || { pbk: "", hbk: "", ebk: "" };
         existingBook.button = "Edit";
       } else {
         model.books.push({
@@ -80,6 +84,10 @@ function update(newBook) {
             obj[current.type] = current.value;
             return obj;
           }, {}),
+          price: v.get("price") && v.get("price").reduce(function (obj, current) {
+            obj[current.type] = current.value;
+            return obj;
+          }, {}) || { pbk: "", hbk: "", ebk: "" },
           /* Methods */
           button: "Edit",
           addAuthor: function addAuthor(event, scope) {
@@ -114,6 +122,11 @@ function update(newBook) {
         pubdate: "",
         shortdesc: "",
         ISBNs: {
+          pbk: "",
+          hbk: "",
+          ebk: ""
+        },
+        price: {
           pbk: "",
           hbk: "",
           ebk: ""
@@ -197,6 +210,11 @@ model = {
       hbk: "",
       ebk: ""
     },
+    price: {
+      pbk: "",
+      hbk: "",
+      ebk: ""
+    },
     button: "Save"
   },
   selectAll: function selectAll() {
@@ -226,8 +244,8 @@ model = {
     if (!inputModel.title.trim()) {
       alert("Every book needs a title...");
       return false;
-    } else if (inputModel.authors[inputModel.authors.length - 1].name.trim() && !inputModel.authors.every(function (v) {
-      return ~v.name.indexOf(",");
+    } else if (inputModel.authors.some(function (v) {
+      return v.name.trim() && ! ~v.name.indexOf(",");
     })) {
       alert("Author names must be Lastname, Firstname");
       return false;
@@ -246,6 +264,10 @@ model = {
         } else if (tempKey === "ISBNs") {
           data.ISBNs = Object.keys(tempInput).map(function (v) {
             return { type: v, value: tempInput[v].replace(/\D+/g, "") };
+          });
+        } else if (tempKey === "price") {
+          data.price = Object.keys(tempInput).map(function (v) {
+            return { type: v, value: tempInput[v] };
           });
         } else {
           if ("function" !== typeof tempInput && tempKey !== "button" && tempKey !== "filterOut") {
@@ -323,7 +345,7 @@ model = {
           book.filterOut = item.every(function (v) {
             return ! ~v.name.toLowerCase().indexOf(_this.value.toLowerCase());
           });
-        } else if (column === "ISBNs") {
+        } else if (column === "ISBNs" || column === "price") {
           book.filterOut = Object.keys(item).every(function (k) {
             return ! ~item[k].indexOf(_this.value);
           });
