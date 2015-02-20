@@ -109,6 +109,10 @@ input[type=checkbox]:checked + label {
   color: white;
 }
 
+input[type=date] {
+  max-width: 9.5em;
+}
+
 .ISBNs {
   max-width: 8em;
 }
