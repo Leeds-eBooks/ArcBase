@@ -41,7 +41,7 @@ button {
 }
 
 #col-price {
-  max-width: 8em;
+  width: 8em;
 }
 
 tr {
@@ -159,7 +159,7 @@ td {
   height: 1em;
 }
 
-.author-overlay {
+.author-overlay, .notes-overlay {
   @include basic-trans(-webkit-transform,-ms-transform,transform,opacity);
   position: fixed;
   top: 0;
@@ -172,7 +172,7 @@ td {
           transform: translate3d(0,100vh,0);
 }
 
-.author-modal {
+.author-modal, .notes-modal {
   position: absolute;
   top: 10%;
   height: 80%;
@@ -181,15 +181,23 @@ td {
   background-color: snow;
   box-shadow: 1em 1em 8em rgba(0,0,0,0.2);
 
-  .author-header {
+  .author-header, .notes-header {
     font-size: 2em;
     margin: 1em 0;
     width: 98%;
     text-align: center;
   }
+  .author-input {
+    display: block;
+    margin: auto;
+    margin-top: 1em;
+    width: 80%;
+    text-align: center;
+  }
 
   textarea {
-    width: 80%;
+    width: 44%;
+    margin: 0 1%;
     border: 2px solid rgba(0,0,0,0.1);
   }
 
@@ -200,7 +208,7 @@ td {
     right: 1em;
     font-size: 1.5em;
     &:active {top:1.2em;}
-    &.author-edit {
+    &.author-edit, &.notes-edit {
       top: auto;
       bottom: 1em;
       &:active {bottom:0.8em;}

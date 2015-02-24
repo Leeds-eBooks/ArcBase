@@ -2,9 +2,25 @@ Parse.initialize(ArcBase.keys.Parse.a,ArcBase.keys.Parse.b);
 var table=document.querySelector('#main table'),
     Book=Parse.Object.extend("Book"),
     Author=Parse.Object.extend("Author"),
+    notesOverlay=document.querySelector('.notes-overlay'),
     authorOverlay=document.querySelector('.author-overlay'),
     authorModal=document.querySelector('.author-modal'),
     model;
+
+if (!Array.prototype.pushUnique) {
+  Object.defineProperty(
+    Array.prototype, 'pushUnique', {
+      enumerable: false,
+      value: function(item) {
+        if (!~this.indexOf(item)) {
+          return this.push(item);
+        } else {
+          return false;
+        }
+      }
+    }
+  );
+}
 
 rivets.adapters['#']={};
 for (var key in rivets.adapters['.']) {
@@ -33,10 +49,17 @@ rivets.formatters.alphaNumeric=function(v) {
 
 function authorMapper(author) {
   var obj=this;
-  return {
-    name: author.get('name'),
-    roles: (obj.get('roleMap') && obj.get('roleMap').find(v => v.id===author.id).roles) || {}
-  };
+  if (author && author.get) {
+    return {
+      name: author.get('name'),
+      roles: (obj.get('roleMap') && obj.get('roleMap').find(v => v.id===author.id).roles) || {}
+    };
+  } else {
+    return {
+      name: "",
+      roles: {}
+    };
+  }
 }
 
 function update(newBook) {
@@ -45,7 +68,10 @@ function update(newBook) {
   query.include('authors').descending('pubdate').find().then(function(results) {
     results.forEach(v => {
       var existingBook=model.books.find(book => book.id===v.id);
-      if (v.has('authors')) {v.get('authors').forEach(author => {model.authors.push(author);});}
+      model.parseBooks.pushUnique(v);
+      if (v.has('authors')) {v.get('authors').forEach(author => {
+        model.authors.pushUnique(author);
+      });}
       if (existingBook) {
         existingBook.id=v.id;
         existingBook.title=v.get('title');
@@ -178,6 +204,7 @@ function getParseAuthors(authorsArray) {
 
 model={
   authors: [],
+  parseBooks: [],
   books: [],
   inputs: {
     title: '',
@@ -288,7 +315,7 @@ model={
       authorOverlay.classList.add('modal-in');
     }
   },
-  closeModal(event) {
+  closeAuthorModal(event) {
     if (this===event.target) {
       model.isEditingAuthor=false;
       model.authorButton='Edit';
@@ -304,6 +331,33 @@ model={
     if (isEditing) {
       model.currentAuthor.save().then(res => {
         model.authorButton='Edit';
+      }).fail(console.log);
+    }
+  },
+  currentBook: undefined,
+  getCurrentBook(title) {
+    return this.parseBooks.find(v => v.get('title')===title);
+  },
+  showNotesModal(event, scope) {
+    model.currentBook=model.getCurrentBook(scope.book.title);
+    notesOverlay.classList.add('modal-in');
+  },
+  closeNotesModal(event) {
+    if (this===event.target) {
+      model.isEditingNotes=false;
+      model.notesButton='Edit';
+      notesOverlay.classList.remove('modal-in');
+    }
+  },
+  isEditingNotes: false,
+  notesButton: 'Edit',
+  editNotes(event) {
+    var isEditing=model.notesButton==='Save';
+    model.notesButton=isEditing?'<img class="loading" src="images/loading.gif">':'Save';
+    model.isEditingNotes=!isEditing;
+    if (isEditing) {
+      model.currentBook.save().then(res => {
+        model.notesButton='Edit';
       }).fail(console.log);
     }
   },

@@ -86,7 +86,7 @@
               rv-checked="authorinput.roles.introducer">
             <label rv-for="index | prepend 'roles-input-introducer-' | alphaNumeric">I</label>
           </div>
-          <button class="add-input" rv-on-click="addAuthor">Add another author</button>
+          <button class="add-input" rv-on-click="addAuthor">Add another person</button>
         </td>
         <td>
           <label id="pbk">pbk: <input rv-value="inputs.ISBNs.pbk" type="text" class="ISBNs"></label><br>
@@ -143,7 +143,7 @@
               rv-enabled="book.isEditing < button">
             <label rv-for="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric">I</label>
           </div>
-          <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another author</button>
+          <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another person</button>
         </td>
         <td>
           <label>
@@ -170,17 +170,30 @@
         <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
         <td><textarea maxlength="350" cols="30" rows="10" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
         <td><button rv-on-click="editOrSubmit" rv-html="book.button" rv-class-warning="book.isEditing < button"></button></td>
-        <td><button rv-on-click="menu">&#9776;</button></td>
+        <td><button rv-on-click="showNotesModal">&#9776;</button></td>
       </tr>
     </table>
   </div>
 
-  <div class="author-overlay" rv-on-click="closeModal">
+  <div class="author-overlay" rv-on-click="closeAuthorModal">
     <div class="author-modal">
-      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite">
-      <textarea rows="20" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite"></textarea>
+      <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name"> -->
+      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly>
+      <textarea rows="20" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
+      <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
       <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
-      <button rv-on-click="closeModal">&#215;</button>
+      <button rv-on-click="closeAuthorModal">&#215;</button>
+    </div>
+  </div>
+
+  <div class="notes-overlay" rv-on-click="closeNotesModal">
+    <div class="notes-modal">
+      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditingNotes | opposite" placeholder="Book title"> -->
+      <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" placeholder="Book title" readonly>
+      <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite" placeholder="Review copies"></textarea>
+      <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite" placeholder="Author copies"></textarea>
+      <button class="notes-edit" rv-on-click="editNotes" rv-html="notesButton" rv-class-warning="isEditingNotes"></button>
+      <button rv-on-click="closeNotesModal">&#215;</button>
     </div>
   </div>
 
