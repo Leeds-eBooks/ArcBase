@@ -88,7 +88,8 @@ function update(newBook) {
         }, {})) || {pbk:'',hbk:'',ebk:''};
         existingBook.button='Edit';
       } else {
-        model.books.push({
+        let method=results.length>1 ? 'push' : 'unshift';
+        model.books[method]({
           id: v.id,
           title: v.get('title'),
           authors: (v.get('authors') && v.get('authors').map(authorMapper,v)) || [],
@@ -305,6 +306,36 @@ model={
       }
     }
   },
+
+  calculatePrice(event, scope) {
+    var mod=scope.book||scope.inputs;
+    mod.price.hbk=(parseFloat(this.value)+3)+"";
+    mod.price.ebk=((Math.ceil(parseFloat(this.value))/2)-0.01)+"";
+  },
+
+  validateISBN() {
+    if (this.value.length===13) {
+      let ISBNArr=this.value.split('').map(d => {return parseInt(d, 10);}),
+          even=0,odd=0,
+          checkdigit;
+      for (let i=0;i<6;i++) {
+        even+=ISBNArr[2*i];
+        odd+=ISBNArr[2*i+1]*3;
+      }
+      checkdigit=(10-(even+odd)%10)%10;
+      if (ISBNArr[12]!=checkdigit) {
+        this.classList.add('invalid');
+      }
+      else {
+        this.classList.remove('invalid');
+      }
+    } else if (this.value.length>13) {
+      this.classList.add('invalid');
+    } else if (this.value.length<13) {
+      this.classList.remove('invalid');
+    }
+  },
+
   currentAuthor: undefined,
   getCurrentAuthor(name) {
     return this.authors.find(v => v.get('name')===name);

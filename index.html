@@ -89,12 +89,12 @@
           <button class="add-input" rv-on-click="addAuthor">Add another person</button>
         </td>
         <td>
-          <label id="pbk">pbk: <input rv-value="inputs.ISBNs.pbk" type="text" class="ISBNs"></label><br>
+          <label id="pbk">pbk: <input rv-value="inputs.ISBNs.pbk" rv-on-input="validateISBN" type="text" class="ISBNs"></label><br>
           <label id="hbk">hbk: <input rv-value="inputs.ISBNs.hbk" type="text" class="ISBNs"></label><br>
           <label id="ebk">ebk: <input rv-value="inputs.ISBNs.ebk" type="text" class="ISBNs"></label>
         </td>
         <td>
-          <label id="pbk">pbk: <input rv-value="inputs.price.pbk" type="number" step="0.01" min="0" max="999" class="ISBNs"></label><br>
+          <label id="pbk">pbk: <input rv-value="inputs.price.pbk" rv-on-input="calculatePrice" type="number" step="0.01" min="0" max="999" class="ISBNs"></label><br>
           <label id="hbk">hbk: <input rv-value="inputs.price.hbk" type="number" step="0.01" min="0" max="999" class="ISBNs"></label><br>
           <label id="ebk">ebk: <input rv-value="inputs.price.ebk" type="number" step="0.01" min="0" max="999" class="ISBNs"></label>
         </td>
@@ -147,24 +147,56 @@
         </td>
         <td>
           <label>
-            pbk: <input rv-value="book.ISBNs.pbk" type="text" class="ISBNs" rv-on-click="selectAll" placeholder="ISBN" rv-readonly="book.isEditing < button | opposite">
+            pbk: <input rv-value="book.ISBNs.pbk"
+                        rv-on-click="selectAll"
+                        rv-on-input="validateISBN"
+                        type="text"
+                        class="ISBNs"
+                        placeholder="ISBN"
+                        rv-readonly="book.isEditing < button | opposite">
           </label><br>
           <label>
-            hbk: <input rv-value="book.ISBNs.hbk" type="text" class="ISBNs" rv-on-click="selectAll" placeholder="ISBN" rv-readonly="book.isEditing < button | opposite">
+            hbk: <input rv-value="book.ISBNs.hbk"
+                        rv-on-click="selectAll"
+                        type="text"
+                        class="ISBNs"
+                        placeholder="ISBN"
+                        rv-readonly="book.isEditing < button | opposite">
           </label><br>
           <label>
-            ebk: <input rv-value="book.ISBNs.ebk" type="text" class="ISBNs" rv-on-click="selectAll" placeholder="ISBN" rv-readonly="book.isEditing < button | opposite">
+            ebk: <input rv-value="book.ISBNs.ebk"
+                        rv-on-click="selectAll"
+                        type="text"
+                        class="ISBNs"
+                        placeholder="ISBN"
+                        rv-readonly="book.isEditing < button | opposite">
           </label>
         </td>
         <td>
           <label>
-            pbk: <input rv-value="book.price.pbk" type="number" step="0.01" min="0" max="999" placeholder="price" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+            pbk: <input rv-value="book.price.pbk"
+                        rv-on-click="selectAll"
+                        rv-on-input="calculatePrice"
+                        type="number" step="0.01" min="0" max="999"
+                        placeholder="price"
+                        class="ISBNs"
+                        rv-readonly="book.isEditing < button | opposite">
           </label><br>
           <label>
-            hbk: <input rv-value="book.price.hbk" type="number" step="0.01" min="0" max="999" placeholder="price" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+            hbk: <input rv-value="book.price.hbk"
+                        rv-on-click="selectAll"
+                        type="number" step="0.01" min="0" max="999"
+                        placeholder="price"
+                        class="ISBNs"
+                        rv-readonly="book.isEditing < button | opposite">
           </label><br>
           <label>
-            ebk: <input rv-value="book.price.ebk" type="number" step="0.01" min="0" max="999" placeholder="price" class="ISBNs" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+            ebk: <input rv-value="book.price.ebk"
+                        rv-on-click="selectAll"
+                        type="number" step="0.01" min="0" max="999"
+                        placeholder="price"
+                        class="ISBNs"
+                        rv-readonly="book.isEditing < button | opposite">
           </label>
         </td>
         <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
@@ -190,8 +222,12 @@
     <div class="notes-modal">
       <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditingNotes | opposite" placeholder="Book title"> -->
       <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" placeholder="Book title" readonly>
-      <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite" placeholder="Review copies"></textarea>
-      <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite" placeholder="Author copies"></textarea>
+      <label>Review copies
+        <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+      </label>
+      <label>Author copies
+        <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+      </label>
       <button class="notes-edit" rv-on-click="editNotes" rv-html="notesButton" rv-class-warning="isEditingNotes"></button>
       <button rv-on-click="closeNotesModal">&#215;</button>
     </div>

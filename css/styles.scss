@@ -195,9 +195,21 @@ td {
     text-align: center;
   }
 
-  textarea {
+  label {
+    display: inline-block;
     width: 44%;
     margin: 0 1%;
+    textarea {
+      display: block;
+      width: 100%;
+      border: 2px solid rgba(0,0,0,0.1);
+    }
+  }
+
+  textarea {
+    display: block;
+    width: 80%;
+    margin: auto;
     border: 2px solid rgba(0,0,0,0.1);
   }
 
@@ -220,4 +232,8 @@ td {
   -webkit-transform: translate3d(0,0vh,0);
       -ms-transform: translate3d(0,0vh,0);
           transform: translate3d(0,0vh,0);
+}
+
+.invalid {
+  background-color: red !important;
 }
