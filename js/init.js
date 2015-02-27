@@ -309,15 +309,13 @@ model={
     return Parse.Cloud.run('checkAuthors',{authors: inputModel.authors}).then(res => {
       var cancelFlag=false;
       var replaced=res.filter(r => {
-        var str;
         console.log(r);
         if (r.length===1) {
-          str="Did you mean "+r[0].author.get("name");
+          return confirm("Did you mean "+r[0].author.get("name")+"?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
         } else {
-          cancelFlag=true;
-          str="There is an author with a similar name on the database already. Have you got the spelling exactly right";
+          cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
+          return cancelFlag;
         }
-        return confirm(str+"?\n\nOk for YES, Cancel for NO");
       });
       if (replaced.length) {
         if (!cancelFlag) continueSubmit(replaced);
