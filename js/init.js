@@ -65,7 +65,7 @@ function authorMapper(author) {
 function update(newBook) {
   var query=new Parse.Query(Book);
   if (newBook) {query.equalTo('objectId',newBook.id);}
-  query.include('authors').descending('pubdate').find().then(function(results) {
+  query.limit(1000).include('authors').descending('pubdate').find().then(function(results) {
     results.forEach(v => {
       var existingBook=model.books.find(book => book.id===v.id);
       model.parseBooks.pushUnique(v);
@@ -250,51 +250,79 @@ model={
   submit(event, modelArg, bookToEdit) {
     var data={},
         inputModel=bookToEdit||model.inputs,
-        tempInput,tempKey,authors=[];
+        tempInput,tempKey,authors=[],replacedAuthorMap={};
+    function continueSubmit(replacedAuthors) {
+      if (!inputModel.title.trim()) {
+        alert('Every book needs a title...');
+        return false;
+      } else if (inputModel.authors.some(v => v.name.trim() && !~v.name.indexOf(','))) {
+        alert('Author names must be Lastname, Firstname');
+        return false;
+      } else {
+        if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
+        for (var key in inputModel) {
+          tempInput=inputModel[key];
+          tempKey=key;
 
-    if (!inputModel.title.trim()) {
-      alert('Every book needs a title...');
-      return false;
-    } else if (inputModel.authors.some(v => v.name.trim() && !~v.name.indexOf(','))) {
-      alert('Author names must be Lastname, Firstname');
-      return false;
-    } else {
-      if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
-      for (var key in inputModel) {
-        tempInput=inputModel[key];
-        tempKey=key;
-
-        if (tempKey==='authors') {
-          tempInput.forEach(v => {
-            v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g,' '));
-          });
-        } else if (tempKey==='ISBNs') {
-          data.ISBNs=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v].replace(/\D+/g,'')};
-          });
-        } else if (tempKey==='price') {
-          data.price=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v]};
-          });
-        } else {
-          if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
-            data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
+          if (tempKey==='authors') {
+            tempInput.forEach(v => {
+              var replacement=replacedAuthors && replacedAuthors.find(r => r[0].submitted.name===v.name);
+              if (replacement) {
+                let newName=replacement[0].author.get("name");
+                replacedAuthorMap[newName]=v;
+                authors.push(newName);
+              } else {
+                v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g,' '));
+              }
+            });
+          } else if (tempKey==='ISBNs') {
+            data.ISBNs=Object.keys(tempInput).map(v => {
+              return {type:v,value:tempInput[v].replace(/\D+/g,'')};
+            });
+          } else if (tempKey==='price') {
+            data.price=Object.keys(tempInput).map(v => {
+              return {type:v,value:tempInput[v]};
+            });
+          } else {
+            if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
+              data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
+            }
           }
         }
-      }
-      getParseAuthors(authors).then(function(returnedAuthors) {
-        data.authors=returnedAuthors;
-        data.roleMap=[];
-        returnedAuthors.forEach(author => {
-          data.roleMap.push({
-            id: author.id,
-            roles: inputModel.authors.find(v => v.name===author.get('name')).roles
+        getParseAuthors(authors).then(function(returnedAuthors) {
+          data.authors=returnedAuthors;
+          data.roleMap=[];
+          returnedAuthors.forEach(author => {
+            var roleModel=inputModel.authors.find(a => a.name===author.get('name')),
+                roles=roleModel ? roleModel.roles : replacedAuthorMap[author.get('name')].roles;
+            data.roleMap.push({
+              id: author.id,
+              roles
+            });
           });
+          saveToParse(data, bookToEdit);
         });
-        saveToParse(data, bookToEdit);
-      });
-      return true;
+        return true;
+      }
     }
+
+    return Parse.Cloud.run('checkAuthors',{authors: inputModel.authors}).then(res => {
+      var cancelFlag=false;
+      var replaced=res.filter(r => {
+        var str;
+        console.log(r);
+        if (r.length===1) {
+          str="Did you mean "+r[0].author.get("name");
+        } else {
+          cancelFlag=true;
+          str="There is an author with a similar name on the database already. Have you got the spelling exactly right";
+        }
+        return confirm(str+"?\n\nOk for YES, Cancel for NO");
+      });
+      if (replaced.length) {
+        if (!cancelFlag) continueSubmit(replaced);
+      } else continueSubmit();
+    }).fail(function() {continueSubmit();});
   },
 
   editOrSubmit(event, scope) {
