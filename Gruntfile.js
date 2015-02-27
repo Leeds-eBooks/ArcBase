@@ -58,7 +58,7 @@ module.exports = function(grunt) {
       }
     },
     'ftp-deploy': {
-      build: {
+      arctour: {
         auth: {
           host: 'ftp.arctour.co.uk',
           port: 21,
@@ -66,6 +66,15 @@ module.exports = function(grunt) {
         },
         src: 'dist',
         dest: '/public_html/arcbase'
+      },
+      arcpublications: {
+        auth: {
+          host: 'arcpublications.co.uk',
+          port: 21,
+          authKey: 'ben-arcpublications'
+        },
+        src: 'dist',
+        dest: '/arcbase'
       }
     }
   });
