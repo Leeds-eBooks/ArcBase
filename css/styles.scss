@@ -38,10 +38,24 @@ button {
     top: 0.2em;
     box-shadow: 0 0 0.3em rgba(0,0,0,0.3);
   }
+  &.delete {
+    background-color: transparent;
+    color: red;
+    padding: 0;
+    height: auto;
+    min-width: 0;
+    box-shadow: none;
+    &:hover {
+      text-shadow: 0 0 0.3em rgba(255,0,0,0.5);
+    }
+  }
 }
 
 #col-price {
   width: 8em;
+}
+#col-pages {
+  width: 5em;
 }
 
 tr {

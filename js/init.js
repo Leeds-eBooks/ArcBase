@@ -5,6 +5,7 @@ var table=document.querySelector('#main table'),
     notesOverlay=document.querySelector('.notes-overlay'),
     authorOverlay=document.querySelector('.author-overlay'),
     authorModal=document.querySelector('.author-modal'),
+    // bookRows=document.getElementsByClassName('book-rows'),
     model;
 
 if (!Array.prototype.pushUnique) {
@@ -47,6 +48,50 @@ rivets.formatters.alphaNumeric=function(v) {
   return v.replace(/\W+/g,'-');
 };
 
+if (!String.prototype.insert) {
+  Object.defineProperty(
+    String.prototype, 'insert', {
+      enumerable: false,
+      value: function(index, substr) {
+        return this.substring(0, index) + substr + this.substr(index);
+      }
+    }
+  );
+}
+
+function formatISBN(str) {
+  return str.insert(3,'-').insert(11,'-').insert(14,'-');
+}
+
+function clearInputs() {
+  model.inputs={
+    title: '',
+    authors: [{
+      name:'',
+      roles: {
+        author: false,
+        translator: false,
+        editor: false,
+        introducer: false
+      }
+    }],
+    pubdate: '',
+    pages: '',
+    shortdesc: '',
+    ISBNs: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    price: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    button: 'Save'
+  };
+}
+
 function authorMapper(author) {
   var obj=this;
   if (author && author.get) {
@@ -62,10 +107,13 @@ function authorMapper(author) {
   }
 }
 
-function update(newBook) {
-  var query=new Parse.Query(Book);
+function update(newBook, load150more) {
+  var query=new Parse.Query(Book),
+      amountToSkip=load150more ?
+        model.books.length :
+        0;
   if (newBook) {query.equalTo('objectId',newBook.id);}
-  query.limit(1000).include('authors').descending('pubdate').find().then(function(results) {
+  function onceLoaded(results) {
     results.forEach(v => {
       var existingBook=model.books.find(book => book.id===v.id);
       model.parseBooks.pushUnique(v);
@@ -77,6 +125,7 @@ function update(newBook) {
         existingBook.title=v.get('title');
         existingBook.authors=(v.get('authors') && v.get('authors').map(authorMapper,v)) || [];
         existingBook.pubdate=v.get('pubdate');
+        existingBook.pages=v.get('pages');
         existingBook.shortdesc=v.get('shortdesc');
         existingBook.ISBNs=v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
           obj[current.type]=current.value;
@@ -94,6 +143,7 @@ function update(newBook) {
           title: v.get('title'),
           authors: (v.get('authors') && v.get('authors').map(authorMapper,v)) || [],
           pubdate: v.get('pubdate'),
+          pages: v.get('pages'),
           shortdesc: v.get('shortdesc'),
           ISBNs: v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
             obj[current.type]=current.value;
@@ -123,34 +173,10 @@ function update(newBook) {
       }
     });
     if (newBook) {
-      /* clear inputs */
-      model.inputs={
-        title: '',
-        authors: [{
-          name:'',
-          roles: {
-            author: false,
-            translator: false,
-            editor: false,
-            introducer: false
-          }
-        }],
-        pubdate: '',
-        shortdesc: '',
-        ISBNs: {
-          pbk: '',
-          hbk: '',
-          ebk: ''
-        },
-        price: {
-          pbk: '',
-          hbk: '',
-          ebk: ''
-        },
-        button: 'Save'
-      };
+      clearInputs();
     }
-  }).fail(function(err) {
+  }
+  query.descending('pubdate').skip(amountToSkip).limit(150).include('authors').find().then(onceLoaded).fail(function(err) {
     console.log(JSON.stringify(err));
   });
 }
@@ -163,7 +189,7 @@ function saveToParse(data, bookToEdit) {
 
   function save(book) {
     book.save(data, {
-      success: update,
+      success: update, // update(newBook)
       error: function(book, error) {
         console.error(JSON.stringify(error));
       }
@@ -219,6 +245,7 @@ model={
       }
     }],
     pubdate: '',
+    pages: '',
     shortdesc: '',
     ISBNs: {
       pbk: '',
@@ -246,6 +273,9 @@ model={
       }
     });
   },
+  load150more() {
+    update(false, true);
+  },
 
   submit(event, modelArg, bookToEdit) {
     var data={},
@@ -255,7 +285,7 @@ model={
       if (!inputModel.title.trim()) {
         alert('Every book needs a title...');
         return false;
-      } else if (inputModel.authors.some(v => v.name.trim() && !~v.name.indexOf(','))) {
+      } else if (inputModel.authors.some(v => v.name.trim() && !v.name.includes(','))) {
         alert('Author names must be Lastname, Firstname');
         return false;
       } else {
@@ -320,7 +350,10 @@ model={
       if (replaced.length) {
         if (!cancelFlag) continueSubmit(replaced);
       } else continueSubmit();
-    }).fail(function() {continueSubmit();});
+    }).fail(function(error) {
+      console.log(error);
+      continueSubmit();
+    });
   },
 
   editOrSubmit(event, scope) {
@@ -337,6 +370,28 @@ model={
     var mod=scope.book||scope.inputs;
     mod.price.hbk=(parseFloat(this.value)+3)+"";
     mod.price.ebk=((Math.ceil(parseFloat(this.value))/2)-0.01)+"";
+  },
+
+  calculatePriceFromPages(event, scope) {
+    var mod=scope.book||scope.inputs,
+        pageRange={
+          "000-089": "8.99",
+          "090-128": "9.99",
+          "129-160": "10.99",
+          "161-192": "11.99",
+          "193-999": "12.99",
+        },
+        getRange=function(pages) {
+          var pp=parseInt(pages,10);
+          return Object.keys(pageRange).find(range =>
+            pp >= parseInt(range.substr(0,3),10) &&
+            pp <= parseInt(range.substr(4,3),10));
+        };
+    if (!mod.price.pbk || parseFloat(mod.price.pbk) < 13) {
+      mod.price.pbk=mod.pages ? pageRange[getRange(mod.pages)] : "";
+      mod.price.hbk=(parseFloat(mod.price.pbk)+3)+"";
+      mod.price.ebk=((Math.ceil(parseFloat(mod.price.pbk))/2)-0.01)+"";
+    }
   },
 
   validateISBN() {
@@ -391,6 +446,11 @@ model={
       }).fail(console.log);
     }
   },
+  removeAuthor(event, scope) {
+    var x=scope.book.authors.splice(scope.index, 1);
+    console.log(x.name);
+    // TODO roles
+  },
   currentBook: undefined,
   getCurrentBook(title) {
     return this.parseBooks.find(v => v.get('title')===title);
@@ -418,17 +478,76 @@ model={
       }).fail(console.log);
     }
   },
+  downloadAI(event, scope) {
+    var book=scope.book,
+        swapNames=function(authorObj) {
+          var name=authorObj.name,
+              sep=name.indexOf(','),
+              ln=name.substring(0, sep),
+              fn=name.substring(sep+1).trim();
+          return `${fn} ${ln}`;
+        },
+        stringify=function(array) {
+          return {
+            '0': 'Unknown',
+            '1': array[0],
+            '2': array.join(' and '),
+            '3+': array.slice(0,-1).join(', ')+' and '+array.slice(-1)
+          }[array.length < 3 ? array.length +'' : '3+'];
+        },
+        authors=book.authors.filter(author => author.roles.author).map(swapNames),
+        authorString=`by ${stringify(authors)}`,
+        translators=book.authors.filter(author => author.roles.translator).map(swapNames),
+        translatorString=translators.length ?
+          `, translated by ${stringify(translators)}` :
+          '',
+        editors=book.authors.filter(author => author.roles.editor).map(swapNames),
+        editorString=editors.length ?
+          `, edited by ${stringify(editors)}` :
+          '',
+        introducers=book.authors.filter(author => author.roles.introducer).map(swapNames),
+        introducerString=introducers.length ?
+          `, introduced by ${stringify(introducers)}` :
+          '',
+        bios=book.authors.map(author => model.getCurrentAuthor(author.name))
+          .filter(parseAuthor => parseAuthor.has('biog'))
+          .map(parseAuthor => parseAuthor.get('biog')).join('\r\n\r\n'),
+        AI=
+`${book.title}\r\n
+${authorString}${translatorString}${editorString}${introducerString}\r\n
+\r\n
+\r\n
+About the Book\r\n
+\r\n
+${book.shortdesc}\r\n
+\r\n
+\r\n
+About the Author(s)\r\n
+\r\n
+${bios}\r\n
+\r\n
+\r\n
+Bibliographic Details\r\n
+\r\n
+${book.ISBNs.pbk ? `${formatISBN(book.ISBNs.pbk)} pbk £${book.price.pbk || '?'}\r\n` : ''}
+${book.ISBNs.hbk ? `${formatISBN(book.ISBNs.hbk)} hbk £${book.price.hbk || '?'}\r\n` : ''}
+${book.ISBNs.ebk ? `${formatISBN(book.ISBNs.ebk)} ebk £${book.price.ebk || '?'}\r\n` : ''}
+${book.pages ? `${book.pages}pp\r\n` : ''}
+Publication Date: ${(new Date(book.pubdate)).toDateString()}`,
+        blob=new Blob([AI], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, `${book.title} AI.txt`);
+  },
   smartSearch(event, scope) {
     var column=this.getAttribute('data-search-column');
     for (var i=0;i<model.books.length;i++) {
       let book=model.books[i],
           item=book[column];
       if ('string'===typeof item) {
-        book.filterOut=!~item.toLowerCase().indexOf(this.value.toLowerCase());
+        book.filterOut=!item.toLowerCase().includes(this.value.toLowerCase());
       } else if (column==='authors') {
-        book.filterOut=item.every(v => !~v.name.toLowerCase().indexOf(this.value.toLowerCase()));
+        book.filterOut=item.every(v => !v.name.toLowerCase().includes(this.value.toLowerCase()));
       } else if (column==='ISBNs' || column==='price') {
-        book.filterOut=Object.keys(item).every(k => !~item[k].indexOf(this.value));
+        book.filterOut=Object.keys(item).every(k => !item[k].includes(this.value));
       } else if (!item) {
         book.filterOut=true;
       }
