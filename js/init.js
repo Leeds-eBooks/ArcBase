@@ -436,6 +436,12 @@ model={
     if (this.value) {this.classList.add('warning');}
     else {this.classList.remove('warning');}
   },
+  // initRow() {
+  //   var i=this.index;
+  //   setTimeout(function() {
+  //     var dz=new Dropzone(bookRows[i]);
+  //   }, 200);
+  // },
   // alertMe() {
   //   console.log(arguments);
   // },
