@@ -68,11 +68,34 @@ tr {
 }
 #search {
   height: 4em;
+  // background-color: steelblue;
+
   td {
     vertical-align: middle;
   }
   input {
     width: 90%;
+    padding-left: 0.3em;
+    border-radius: 0.5em;
+    background-color: steelblue;
+    box-shadow: 0 0 0.7em rgba(200,34,34,0.8);
+
+    &::-webkit-input-placeholder {
+      // color: firebrick;
+      color: white;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+      // color: firebrick;
+      color: white;
+    }
+    &::-moz-placeholder {  /* Firefox 19+ */
+      // color: firebrick;
+      color: white;
+    }
+    &:-ms-input-placeholder {
+      // color: firebrick;
+      color: white;
+    }
   }
 }
 #inputs {
