@@ -129,8 +129,9 @@
       </tr>
       <tr class="book-rows" rv-each-book="books" rv-hide="book.filterOut" rv-constructer="initRow">
         <td>
-          <!-- <input type="file"> -->
           <input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
+          <input type="file" rv-id="book.title | prepend 'cover-' | alphaNumeric" accept="image/*" style="display:none" rv-on-change="coverSelected">
+          <button rv-on-click="openFilesCover" class="cover-upload">&#8679; cover</button>
         </td>
         <td class="authors">
           <div rv-each-author="book.authors">

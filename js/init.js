@@ -23,6 +23,10 @@ if (!Array.prototype.pushUnique) {
   );
 }
 
+function alphaNumeric(str) {
+  return str.replace(/\W+/g,'-');
+}
+
 rivets.adapters['#']={};
 for (var key in rivets.adapters['.']) {
   rivets.adapters['#'][key]=rivets.adapters['.'][key];
@@ -45,7 +49,7 @@ rivets.formatters.prepend=function(value, string) {
   return string ? string+""+value : value;
 };
 rivets.formatters.alphaNumeric=function(v) {
-  return v.replace(/\W+/g,'-');
+  return alphaNumeric(v);
 };
 
 if (!String.prototype.insert) {
@@ -280,7 +284,7 @@ model={
   submit(event, modelArg, bookToEdit) {
     var data={},
         inputModel=bookToEdit||model.inputs,
-        tempInput,tempKey,authors=[],replacedAuthorMap={};
+        tempInput,tempKey,authors=[],replacedAuthorMap={}, coverFile;
     function continueSubmit(replacedAuthors) {
       if (!inputModel.title.trim()) {
         alert('Every book needs a title...');
@@ -313,15 +317,21 @@ model={
             data.price=Object.keys(tempInput).map(v => {
               return {type:v,value:tempInput[v]};
             });
+          } else if (tempKey==='cover_orig') {
+            coverFile = new Parse.File(alphaNumeric(inputModel.title) + "-cover.jpg", tempInput);
           } else {
             if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
               data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
             }
           }
         }
-        getParseAuthors(authors).then(function(returnedAuthors) {
-          data.authors=returnedAuthors;
-          data.roleMap=[];
+        Promise.all([
+          getParseAuthors(authors),
+          coverFile.save()
+        ]).then(function(resArr) {
+          var returnedAuthors = resArr[0];
+          data.authors = returnedAuthors;
+          data.roleMap = [];
           returnedAuthors.forEach(author => {
             var roleModel=inputModel.authors.find(a => a.name===author.get('name')),
                 roles=roleModel ? roleModel.roles : replacedAuthorMap[author.get('name')].roles;
@@ -330,8 +340,9 @@ model={
               roles
             });
           });
+          data.cover_orig = coverFile;
           saveToParse(data, bookToEdit);
-        });
+        }).catch(function(err) {console.error(err.message || err);});
         return true;
       }
     }
@@ -554,6 +565,12 @@ Publication Date: ${(new Date(book.pubdate)).toDateString()}`,
     }
     if (this.value) {this.classList.add('warning');}
     else {this.classList.remove('warning');}
+  },
+  openFilesCover(event, scope) {
+    this.parentNode.querySelector('input[type=file]').click();
+  },
+  coverSelected(event, scope) {
+    scope.book.cover_orig = this.files[0];
   },
   // initRow() {
   //   var i=this.index;
