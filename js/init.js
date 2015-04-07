@@ -23,8 +23,8 @@ if (!Array.prototype.pushUnique) {
   );
 }
 
-function alphaNumeric(str) {
-  return str.replace(/\W+/g,'-');
+function alphaNumeric(str, replacement='-') {
+  return str.replace(/\W+/g, replacement);
 }
 
 rivets.adapters['#']={};
@@ -318,7 +318,7 @@ model={
               return {type:v,value:tempInput[v]};
             });
           } else if (tempKey==='cover_orig') {
-            coverFile = new Parse.File(alphaNumeric(inputModel.title) + "-cover.jpg", tempInput);
+            coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
           } else {
             if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
               data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
@@ -327,7 +327,7 @@ model={
         }
         Promise.all([
           getParseAuthors(authors),
-          coverFile.save()
+          coverFile ? coverFile.save() : Promise.resolve()
         ]).then(function(resArr) {
           var returnedAuthors = resArr[0];
           data.authors = returnedAuthors;
