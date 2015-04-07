@@ -6,3 +6,4 @@ node_modules
 js/init-compiled.*
 css/styles.css
 *.map
+.DS_Store
