@@ -129,6 +129,7 @@
       </tr>
       <tr class="book-rows" rv-each-book="books" rv-hide="book.filterOut" rv-constructer="initRow">
         <td>
+          <img class="coverimg" rv-src="book.coverimg"><!-- rv-show="book.isEditing < button"> -->
           <input type="text" rv-value="book.title" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite">
           <input type="file" rv-id="book.title | prepend 'cover-' | alphaNumeric" accept="image/*" style="display:none" rv-on-change="coverSelected">
           <button rv-on-click="openFilesCover" class="cover-upload" rv-show="book.isEditing < button">&#8679; cover</button>

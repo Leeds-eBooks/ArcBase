@@ -127,6 +127,7 @@ function update(newBook, load150more) {
       if (existingBook) {
         existingBook.id=v.id;
         existingBook.title=v.get('title');
+        existingBook.coverimg=v.has('cover_200') ? v.get('cover_200').url() : '';
         existingBook.authors=(v.get('authors') && v.get('authors').map(authorMapper,v)) || [];
         existingBook.pubdate=v.get('pubdate');
         existingBook.pages=v.get('pages');
@@ -145,6 +146,7 @@ function update(newBook, load150more) {
         model.books[method]({
           id: v.id,
           title: v.get('title'),
+          coverimg: v.has('cover_200') ? v.get('cover_200').url() : '',
           authors: (v.get('authors') && v.get('authors').map(authorMapper,v)) || [],
           pubdate: v.get('pubdate'),
           pages: v.get('pages'),
@@ -320,7 +322,10 @@ model={
           } else if (tempKey==='cover_orig') {
             coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
           } else {
-            if ('function'!==typeof tempInput && tempKey!=='button' && tempKey!=='filterOut') {
+            if ('function'!==typeof tempInput &&
+                tempKey!=='button' &&
+                tempKey!=='filterOut' &&
+                tempKey!=='coverimg') {
               data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
             }
           }
