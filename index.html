@@ -240,10 +240,11 @@
     <div class="author-modal">
       <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name"> -->
       <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly>
-      <textarea rows="20" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
+      <textarea rows="10" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
       <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
+      <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>
       <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
       <button rv-on-click="closeAuthorModal">&#215;</button>
     </div>
@@ -256,7 +257,7 @@
       <label>Review copies
         <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
       </label>
-      <label>Author copies
+      <label>Royalties
         <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
       </label>
       <button class="notes-edit" rv-on-click="editNotes" rv-html="notesButton" rv-class-warning="isEditingNotes"></button>
