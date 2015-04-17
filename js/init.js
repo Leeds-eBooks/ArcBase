@@ -67,6 +67,13 @@ function formatISBN(str) {
   return str.insert(3,'-').insert(11,'-').insert(14,'-');
 }
 
+function preventAuthorEditing(i) {
+  var bookRows = Array.from(document.querySelectorAll('tr.book-rows')),
+      authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'));
+  console.log(authors.length);
+  authors.forEach(a => {a.readOnly = true;});
+}
+
 function clearInputs() {
   model.inputs={
     title: '',
@@ -117,46 +124,55 @@ function update(newBook, load150more) {
       amountToSkip=load150more ?
         model.books.length :
         0;
-  if (newBook) {query.equalTo('objectId',newBook.id);}
-  function onceLoaded(results) {
-    results.forEach(v => {
-      var existingBook=model.books.find(book => book.id===v.id);
-      model.parseBooks.pushUnique(v);
-      if (v.has('authors')) {v.get('authors').forEach(author => {
-        model.authors.pushUnique(author);
-      });}
+
+  if (newBook) query.equalTo('objectId', newBook.id);
+
+  function whenLoaded(results) {
+    results.forEach(pb => { // pb = parseBook
+      var existingBook=model.books.find(book => book.id===pb.id);
+
+      model.parseBooks.pushUnique(pb);
+
+      if (pb.has('authors')) {
+        pb.get('authors').forEach(author => {
+          if (!model.authors.some(a => a.get('name') === author.get('name'))) {
+            model.authors.push(author);
+          }
+        });
+      }
+
       if (existingBook) {
-        existingBook.id=v.id;
-        existingBook.title=v.get('title');
-        existingBook.coverimg=v.has('cover_200') ? v.get('cover_200').url() : '';
-        existingBook.authors=(v.get('authors') && v.get('authors').map(authorMapper,v)) || [];
-        existingBook.pubdate=v.get('pubdate');
-        existingBook.pages=v.get('pages');
-        existingBook.shortdesc=v.get('shortdesc');
-        existingBook.ISBNs=v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
+        existingBook.id=pb.id;
+        existingBook.title=pb.get('title');
+        existingBook.coverimg=pb.has('cover_200') ? pb.get('cover_200').url() : '';
+        existingBook.authors=(pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [];
+        existingBook.pubdate=pb.get('pubdate');
+        existingBook.pages=pb.get('pages');
+        existingBook.shortdesc=pb.get('shortdesc');
+        existingBook.ISBNs=pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
           obj[current.type]=current.value;
           return obj;
         }, {});
-        existingBook.price=(v.get('price') && v.get('price').reduce((obj, current) => {
+        existingBook.price=(pb.get('price') && pb.get('price').reduce((obj, current) => {
           obj[current.type]=current.value;
           return obj;
-        }, {})) || {pbk:'',hbk:'',ebk:''};
+        }, {})) || {pbk:'', hbk:'', ebk:''};
         existingBook.button='Edit';
       } else {
         let method=results.length>1 ? 'push' : 'unshift';
         model.books[method]({
-          id: v.id,
-          title: v.get('title'),
-          coverimg: v.has('cover_200') ? v.get('cover_200').url() : '',
-          authors: (v.get('authors') && v.get('authors').map(authorMapper,v)) || [],
-          pubdate: v.get('pubdate'),
-          pages: v.get('pages'),
-          shortdesc: v.get('shortdesc'),
-          ISBNs: v.get('ISBNs') && v.get('ISBNs').reduce((obj, current) => {
+          id: pb.id,
+          title: pb.get('title'),
+          coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
+          authors: (pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [],
+          pubdate: pb.get('pubdate'),
+          pages: pb.get('pages'),
+          shortdesc: pb.get('shortdesc'),
+          ISBNs: pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
             obj[current.type]=current.value;
             return obj;
           }, {}),
-          price: (v.get('price') && v.get('price').reduce((obj, current) => {
+          price: (pb.get('price') && pb.get('price').reduce((obj, current) => {
             obj[current.type]=current.value;
             return obj;
           }, {})) || {pbk:'',hbk:'',ebk:''},
@@ -180,13 +196,14 @@ function update(newBook, load150more) {
         });
       }
     });
-    if (newBook) {
-      clearInputs();
-    }
+
+    if (newBook) clearInputs();
   }
-  query.descending('pubdate').skip(amountToSkip).limit(150).include('authors').find().then(onceLoaded).fail(function(err) {
-    console.log(JSON.stringify(err));
-  });
+
+  query.descending('pubdate').skip(amountToSkip).limit(150).include('authors').find()
+    .then(whenLoaded).fail(function(err) {
+      console.log(JSON.stringify(err));
+    });
 }
 
 function saveToParse(data, bookToEdit) {
@@ -291,6 +308,7 @@ model={
     var data={},
         inputModel=bookToEdit||model.inputs,
         tempInput,tempKey,authors=[],replacedAuthorMap={}, coverFile;
+
     function continueSubmit(replacedAuthors) {
       if (!inputModel.title.trim()) {
         alert('Every book needs a title...');
@@ -334,6 +352,7 @@ model={
             }
           }
         }
+
         Promise.all([
           getParseAuthors(authors),
           coverFile ? coverFile.save() : Promise.resolve()
@@ -372,7 +391,9 @@ model={
 
       if (replaced.length) {
         if (!cancelFlag) continueSubmit(replaced);
-      } else continueSubmit();
+      } else {
+        continueSubmit();
+      }
 
     }).fail(function(error) {
       console.log(error);
@@ -383,6 +404,7 @@ model={
   editOrSubmit(event, scope) {
     if (scope.book.button==='Edit') {
       scope.book.button='Save';
+      preventAuthorEditing(scope.index);
     } else {
       if (model.submit(null, null, scope.book)) {
         scope.book.button='<img class="loading" src="images/loading.gif">';
@@ -403,7 +425,7 @@ model={
           "090-128": "9.99",
           "129-160": "10.99",
           "161-192": "11.99",
-          "193-999": "12.99",
+          "193-999": "12.99"
         },
         getRange=function(pages) {
           var pp=parseInt(pages,10);
@@ -442,12 +464,14 @@ model={
   },
 
   currentAuthor: undefined,
+  currentAuthorOldName: undefined,
   getCurrentAuthor(name) {
     return this.authors.find(v => v.get('name')===name);
   },
   showAuthorModal(event, scope) {
     if (!scope.book.isEditing()) {
-      model.currentAuthor=model.getCurrentAuthor(scope.author.name);
+      model.currentAuthor = model.getCurrentAuthor(scope.author.name);
+      model.currentAuthorOldName = model.currentAuthor.get('name');
       authorOverlay.classList.add('modal-in');
     }
   },
@@ -466,7 +490,15 @@ model={
     model.isEditingAuthor=!isEditing;
     if (isEditing) {
       model.currentAuthor.save().then(res => {
+        var parseAuthorNewName = res.get('name');
+        console.log(model.currentAuthorOldName, '>', parseAuthorNewName);
         model.authorButton='Edit';
+        model.books.forEach(book => {
+          book.authors.filter(a => a.name === model.currentAuthorOldName).forEach(author => {
+            author.name = parseAuthorNewName;
+            console.log(author.name);
+          });
+        });
       }).fail(console.log);
     }
   },

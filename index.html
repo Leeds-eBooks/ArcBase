@@ -142,7 +142,7 @@
         <td class="authors">
           <div rv-each-author="book.authors">
             <button class="delete" rv-show="book.isEditing < button" rv-on-click="removeAuthor">&#10005;</button>
-            <input class="author-button" rv-value="author.name" type="text" rv-on-click="showAuthorModal" placeholder="new author" rv-readonly="book.isEditing < button | opposite">
+            <input class="author-button" rv-value="author.name" type="text" rv-on-click="showAuthorModal" placeholder="new author" rv-readonly="book.isEditing < button | opposite"><!-- TODO prevent editing -->
             <input rv-id="index | prepend author.name | prepend 'roles-author-' | alphaNumeric"
                     type="checkbox"
                    value="author"
@@ -249,8 +249,8 @@
 
   <div class="author-overlay" rv-on-click="closeAuthorModal">
     <div class="author-modal">
-      <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name"> -->
-      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly>
+      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name">
+      <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly> -->
       <textarea rows="10" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
       <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
