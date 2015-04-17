@@ -93,6 +93,11 @@
                    value="introducer"
               rv-checked="authorinput.roles.introducer">
             <label rv-for="index | prepend 'roles-input-introducer-' | alphaNumeric">I</label>
+            <input rv-id="index | prepend 'roles-input-critic-' | alphaNumeric"
+                    type="checkbox"
+                   value="critic"
+              rv-checked="authorinput.roles.critic">
+            <label rv-for="index | prepend 'roles-input-critic-' | alphaNumeric">C</label>
           </div>
           <button class="add-input" rv-on-click="addAuthor">Add another person</button>
         </td>
@@ -162,6 +167,12 @@
               rv-checked="author.roles.introducer"
               rv-enabled="book.isEditing < button">
             <label rv-for="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric">I</label>
+            <input rv-id="index | prepend author.name | prepend 'roles-critic-' | alphaNumeric"
+                    type="checkbox"
+                   value="critic"
+              rv-checked="author.roles.critic"
+              rv-enabled="book.isEditing < button">
+            <label rv-for="index | prepend author.name | prepend 'roles-critic-' | alphaNumeric">C</label>
           </div>
           <button rv-show="book.isEditing < button" class="add-input" rv-on-click="book.addAuthor">Add another person</button>
         </td>

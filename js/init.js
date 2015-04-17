@@ -76,7 +76,8 @@ function clearInputs() {
         author: false,
         translator: false,
         editor: false,
-        introducer: false
+        introducer: false,
+        critic: false
       }
     }],
     pubdate: '',
@@ -168,7 +169,8 @@ function update(newBook, load150more) {
                 author: false,
                 translator: false,
                 editor: false,
-                introducer: false
+                introducer: false,
+                critic: false
               }
             });
           },
@@ -247,7 +249,8 @@ model={
         author: false,
         translator: false,
         editor: false,
-        introducer: false
+        introducer: false,
+        critic: false
       }
     }],
     pubdate: '',
@@ -275,7 +278,8 @@ model={
         author: false,
         translator: false,
         editor: false,
-        introducer: false
+        introducer: false,
+        critic: false
       }
     });
   },
@@ -352,20 +356,24 @@ model={
       }
     }
 
-    return Parse.Cloud.run('checkAuthors',{authors: inputModel.authors}).then(res => {
-      var cancelFlag=false;
-      var replaced=res.filter(r => {
-        console.log(r);
-        if (r.length===1) {
-          return confirm("Did you mean "+r[0].author.get("name")+"?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
-        } else {
-          cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
-          return cancelFlag;
-        }
-      });
+    return Parse.Cloud.run('checkAuthors', {authors: inputModel.authors}).then(res => {
+      var cancelFlag=false,
+          replaced=res.filter(r => {
+            console.log(r);
+            if (r.length===1) {
+              let name = r[0].author.get("name");
+              return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
+                '"\nCancel for NO, I AM CORRECT');
+            } else {
+              cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
+              return cancelFlag;
+            }
+          });
+
       if (replaced.length) {
         if (!cancelFlag) continueSubmit(replaced);
       } else continueSubmit();
+
     }).fail(function(error) {
       console.log(error);
       continueSubmit();
