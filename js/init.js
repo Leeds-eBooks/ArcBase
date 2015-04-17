@@ -469,7 +469,8 @@ model={
     return this.authors.find(v => v.get('name')===name);
   },
   showAuthorModal(event, scope) {
-    if (!scope.book.isEditing()) {
+    // if (!scope.book.isEditing()) {
+    if (this.readOnly) {
       model.currentAuthor = model.getCurrentAuthor(scope.author.name);
       model.currentAuthorOldName = model.currentAuthor.get('name');
       authorOverlay.classList.add('modal-in');
