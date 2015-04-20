@@ -76,6 +76,13 @@ module.exports = function(grunt) {
         src: 'dist',
         dest: '/arcbase'
       }
+    },
+    'watch': {
+      files: ['css/*.scss','index.html','js/init.js'],
+      tasks: ['dev'],
+      options: {
+        livereload: true
+      }
     }
   });
 
