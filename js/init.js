@@ -51,6 +51,21 @@ rivets.formatters.prepend=function(value, string) {
 rivets.formatters.alphaNumeric=function(v) {
   return alphaNumeric(v);
 };
+rivets.formatters.parseDate={
+  read: function(v) { // from server
+    var d=new Date(v);
+    if (!v) return null;
+    return [
+      d.getFullYear(),
+      ("0" + (d.getMonth() + 1)).slice(-2),
+      ("0" + d.getDate()).slice(-2)
+    ].join('-');
+  },
+  publish: function(v) { // to server
+    if (!v) return null;
+    return new Date(v);
+  }
+};
 
 if (!String.prototype.insert) {
   Object.defineProperty(
@@ -70,7 +85,7 @@ function formatISBN(str) {
 function preventAuthorEditing(i) {
   var bookRows = Array.from(document.querySelectorAll('tr.book-rows')),
       authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'));
-  console.log(authors.length);
+  // console.log(authors.length);
   authors.forEach(a => {a.readOnly = true;});
 }
 
@@ -492,12 +507,12 @@ model={
     if (isEditing) {
       model.currentAuthor.save().then(res => {
         var parseAuthorNewName = res.get('name');
-        console.log(model.currentAuthorOldName, '>', parseAuthorNewName);
+        // console.log(model.currentAuthorOldName, '>', parseAuthorNewName);
         model.authorButton='Edit';
         model.books.forEach(book => {
           book.authors.filter(a => a.name === model.currentAuthorOldName).forEach(author => {
             author.name = parseAuthorNewName;
-            console.log(author.name);
+            // console.log(author.name);
           });
         });
       }).fail(console.log);
@@ -505,7 +520,7 @@ model={
   },
   removeAuthor(event, scope) {
     var x=scope.book.authors.splice(scope.index, 1);
-    console.log(x.name);
+    // console.log(x.name);
     // TODO roles
   },
   currentBook: undefined,
