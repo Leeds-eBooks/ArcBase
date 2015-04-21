@@ -14,15 +14,22 @@
 }
 
 .author-modal, .notes-modal {
+  $input-width: 40%;
+  $date-label-width: 6em;
+
   position: absolute;
   top: 10%;
   height: 80%;
   left: 10%;
   width: 80%;
   background-color: snow;
-  box-shadow: 1em 1em 8em rgba(0,0,0,0.2);
-  // overflow-y: scroll;
-  // -webkit-overflow-scrolling: touch;
+  box-shadow: 1em 1em 8em rgba(0,0,0,0.3);
+
+  #age {
+    position: absolute;
+    top: 3em;
+    left: 10%;
+  }
 
   .author-header, .notes-header {
     font-size: 2em;
@@ -31,17 +38,14 @@
     text-align: center;
   }
   .author-input {
-    // display: block;
-    // margin: auto;
     margin-top: 1em;
-    width: 40%;
-    text-align: center;
+    width: $input-width;
     & + textarea {
       margin-top: 1em;
     }
 
     &[type=date] {
-      width: 20%;
+      width: calc(#{$input-width} - #{$date-label-width});
       text-align: left;
     }
   }
@@ -57,7 +61,7 @@
     }
 
     &[for=dob] {
-      width: 20%;
+      width: $date-label-width;
       text-align: right;
       margin: 0;
     }
