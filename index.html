@@ -255,7 +255,7 @@
       <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
       <label class="info" for="dob">Date of birth:</label>
       <input id="dob" class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditingAuthor | opposite">
-      <div rv-show="currentAuthor#dob" rv-text="getCurrentAuthorAge < currentAuthor#dob"></div>
+      <div rv-show="currentAuthor#dob" rv-text="calculateCurrentAuthorAge < currentAuthor#dob"></div>
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
       <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>

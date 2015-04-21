@@ -5,7 +5,6 @@ var table=document.querySelector('#main table'),
     notesOverlay=document.querySelector('.notes-overlay'),
     authorOverlay=document.querySelector('.author-overlay'),
     authorModal=document.querySelector('.author-modal'),
-    // bookRows=document.getElementsByClassName('book-rows'),
     model;
 
 if (!Array.prototype.pushUnique) {
@@ -27,15 +26,19 @@ function alphaNumeric(str, replacement='-') {
   return str.replace(/\W+/g, replacement);
 }
 
-rivets.adapters['#']={};
-for (var key in rivets.adapters['.']) {
-  rivets.adapters['#'][key]=rivets.adapters['.'][key];
-}
-rivets.adapters['#'].get=function(obj,keypath) {
-  return obj && obj.get(keypath);
-};
-rivets.adapters['#'].set=function(obj, keypath, value) {
-  return obj && obj.set(keypath, value);
+rivets.adapters['#'] = {
+  observe(obj, keypath, cb) {
+    obj.on('update:' + keypath, cb);
+  },
+  unobserve(obj, keypath, cb) {
+    obj.off('update:' + keypath, cb);
+  },
+  get(obj,keypath) {
+    return obj && obj.get(keypath);
+  },
+  set(obj, keypath, value) {
+    return obj && obj.set(keypath, value);
+  }
 };
 
 rivets.binders.readonly=function(el, value) {
@@ -52,7 +55,7 @@ rivets.formatters.alphaNumeric=function(v) {
   return alphaNumeric(v);
 };
 rivets.formatters.parseDate={
-  read: function(v) { // from server
+  read(v) { // from server
     var d=new Date(v);
     if (!v) return null;
     return [
@@ -61,7 +64,7 @@ rivets.formatters.parseDate={
       ("0" + d.getDate()).slice(-2)
     ].join('-');
   },
-  publish: function(v) { // to server
+  publish(v) { // to server
     if (!v) return null;
     return new Date(v);
   }
@@ -85,7 +88,6 @@ function formatISBN(str) {
 function preventAuthorEditing(i) {
   var bookRows = Array.from(document.querySelectorAll('tr.book-rows')),
       authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'));
-  // console.log(authors.length);
   authors.forEach(a => {a.readOnly = true;});
 }
 
@@ -230,7 +232,7 @@ function saveToParse(data, bookToEdit) {
   function save(book) {
     book.save(data, {
       success: update, // update(newBook)
-      error: function(book, error) {
+      error(book, error) {
         console.error(JSON.stringify(error));
       }
     });
@@ -248,7 +250,7 @@ function getParseAuthors(authorsArray) {
     var query=new Parse.Query(Author);
     query.containedIn('name',authorsArray);
     query.find({
-      success: function(res) {
+      success(res) {
         var savedAuthorNames=res.map(v => v.get('name')),
             promisedAuthors;
         if (savedAuthorNames.length!==authorsArray.length) {
@@ -497,7 +499,7 @@ model={
       authorOverlay.classList.remove('modal-in');
     }
   },
-  getCurrentAuthorAge() {
+  calculateCurrentAuthorAge() {
     if (model.currentAuthor && model.currentAuthor.has('dob')) {
       let dob = model.currentAuthor.get('dob'),
           now = new Date();
@@ -513,12 +515,11 @@ model={
     if (isEditing) {
       model.currentAuthor.save().then(res => {
         var parseAuthorNewName = res.get('name');
-        // console.log(model.currentAuthorOldName, '>', parseAuthorNewName);
         model.authorButton='Edit';
+        model.currentAuthor.trigger('update:dob');
         model.books.forEach(book => {
           book.authors.filter(a => a.name === model.currentAuthorOldName).forEach(author => {
             author.name = parseAuthorNewName;
-            // console.log(author.name);
           });
         });
       }).fail(console.log);
@@ -526,7 +527,6 @@ model={
   },
   removeAuthor(event, scope) {
     var x=scope.book.authors.splice(scope.index, 1);
-    // console.log(x.name);
     // TODO roles
   },
 
@@ -639,33 +639,6 @@ Publication Date: ${(new Date(book.pubdate)).toDateString()}`,
   },
   coverSelected(event, scope) {
     scope.book.cover_orig = this.files[0];
-  },
-  // initRow() {
-  //   var i=this.index;
-  //   setTimeout(function() {
-  //     var dz=new Dropzone(bookRows[i]);
-  //   }, 200);
-  // },
-  // alertMe() {
-  //   console.log(arguments);
-  // },
-  menu() {
-    // var loadFile=function(url,callback){
-    //     JSZipUtils.getBinaryContent(url,callback);
-    // };
-    // loadFile("examples/tagExample.docx", function(err,content) {
-    //     if (err) {throw err;}
-    //     doc=new Docxgen(content);
-    //     doc.setData({
-    //       "first_name":"Hipp",
-    //       "last_name":"Edgar",
-    //       "phone":"0652455478",
-    //       "description":"New Website"
-    //     }); //set the templateVariables
-    //     doc.render(); //apply them (replace all occurences of {first_name} by Hipp, ...)
-    //     out=doc.getZip().generate({type:"blob"}); //Output the document using Data-URI
-    //     saveAs(out,"output.docx");
-    // });
   }
 };
 
