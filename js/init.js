@@ -484,7 +484,6 @@ model={
     return this.authors.find(v => v.get('name')===name);
   },
   showAuthorModal(event, scope) {
-    // if (!scope.book.isEditing()) {
     if (this.readOnly) {
       model.currentAuthor = model.getCurrentAuthor(scope.author.name);
       model.currentAuthorOldName = model.currentAuthor.get('name');
@@ -496,6 +495,13 @@ model={
       model.isEditingAuthor=false;
       model.authorButton='Edit';
       authorOverlay.classList.remove('modal-in');
+    }
+  },
+  getCurrentAuthorAge() {
+    if (model.currentAuthor && model.currentAuthor.has('dob')) {
+      let dob = model.currentAuthor.get('dob'),
+          now = new Date();
+      return '(Age: ' + Math.floor((now - dob) / 3.15569e10) + ')';
     }
   },
   isEditingAuthor: false,
@@ -523,6 +529,7 @@ model={
     // console.log(x.name);
     // TODO roles
   },
+
   currentBook: undefined,
   getCurrentBook(title) {
     return this.parseBooks.find(v => v.get('title')===title);
