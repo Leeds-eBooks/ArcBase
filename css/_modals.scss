@@ -39,6 +39,11 @@
     & + textarea {
       margin-top: 1em;
     }
+
+    &[type=date] {
+      width: 20%;
+      text-align: left;
+    }
   }
 
   label {
@@ -49,6 +54,12 @@
       display: block;
       width: 100%;
       border: 2px solid rgba(0,0,0,0.1);
+    }
+
+    &[for=dob] {
+      width: 20%;
+      text-align: right;
+      margin: 0;
     }
   }
 

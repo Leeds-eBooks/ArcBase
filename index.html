@@ -253,7 +253,8 @@
       <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly> -->
       <textarea rows="10" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
       <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
-      <input class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditingAuthor | opposite" placeholder="Date of birth">
+      <label for="dob">Date of birth:</label>
+      <input id="dob" class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditingAuthor | opposite">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
       <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>
