@@ -232,7 +232,7 @@ function saveToParse(data, bookToEdit) {
   function save(book) {
     book.save(data, {
       success: update, // update(newBook)
-      error(book, error) {
+      error: function(book, error) {
         console.error(JSON.stringify(error));
       }
     });
