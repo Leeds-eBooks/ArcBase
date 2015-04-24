@@ -253,12 +253,17 @@
 
       <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name">
       <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly> -->
-      <textarea rows="10" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
+      <textarea rows="6" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
       <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
       <label class="info" for="dob">Date of birth:</label>
       <input id="dob" class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditingAuthor | opposite">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
+      <div class="can-travel">
+        <input type="radio" name="can-travel" value="Will not travel" rv-checked="currentAuthor#travel_avail_bool"><label>Will not travel</label>
+        <input type="radio" name="can-travel" value="Can travel" rv-checked="currentAuthor#travel_avail_bool"><label>Can travel</label>
+        <input type="button" name="name" rv-value="currentAuthor#travel_avail_dates">
+      </div>
       <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>
       <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
       <button rv-on-click="closeAuthorModal">&#215;</button>
