@@ -3,7 +3,7 @@ input[type=search] {
   background-color: lighten(cornflowerblue,25%);
   color: white;
 }
-input[type=checkbox] {
+input[type=checkbox], input[type=radio] {
   width: 0;
   height: 0;
   display: none;

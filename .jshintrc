@@ -1,3 +1,14 @@
 {
-  "esnext": true
+  "esnext": true,
+  "sub": true,
+  "undef": true,
+  "browser": true,
+  "devel": true,
+  "nonstandard": true,
+  "globals": {
+    "_": false,
+    "rivets": false,
+    "saveAs": false,
+    "Promise": false
+  }
 }
