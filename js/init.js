@@ -33,7 +33,7 @@ rivets.adapters['#'] = {
   unobserve(obj, keypath, cb) {
     obj.off('update:' + keypath, cb);
   },
-  get(obj,keypath) {
+  get(obj, keypath) {
     return obj && obj.get(keypath);
   },
   set(obj, keypath, value) {

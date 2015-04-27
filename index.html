@@ -261,9 +261,22 @@
       <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
 
       <div class="can-travel">
-        <input id="will-not-travel" type="radio" name="travel-avail" value="Will not travel" rv-unchecked="currentAuthor#travel_avail_bool"><label for="will-not-travel">Will not travel</label>
-        <input id="will-travel" type="radio" name="travel-avail" value="Can travel" rv-checked="currentAuthor#travel_avail_bool"><label for="will-travel">Can travel</label>
-        <input type="text" rv-value="currentAuthor#travel_avail_dates" placeholder="Available dates">
+
+        <div>
+          <div>
+            <input id="will-not-travel" type="radio" name="travel-avail" rv-value="false" rv-checked="currentAuthor#travel_avail_bool" rv-enabled="isEditingAuthor">
+            <label for="will-not-travel">Will not travel</label>
+          </div>
+          <div>
+            <input id="will-travel" type="radio" name="travel-avail" rv-value="true" rv-checked="currentAuthor#travel_avail_bool" rv-enabled="isEditingAuthor">
+            <label for="will-travel">Can travel</label>
+          </div>
+        </div>
+
+        <textarea rows="3"
+                  rv-value="currentAuthor#travel_avail_dates"
+                  rv-readonly="isEditingAuthor | opposite"
+                  placeholder="Available dates"></textarea>
       </div>
 
       <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>

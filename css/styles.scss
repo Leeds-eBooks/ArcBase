@@ -70,6 +70,15 @@ label {
 
 @import 'input-types';
 
+%button {
+  border: 1px solid cornflowerblue;
+  padding: 0.2em;
+  border-radius: 0.25em;
+  &:active {
+    background-color: cornflowerblue;
+  }
+}
+
 .coverimg {
   max-height: 5em;
 }
@@ -97,12 +106,7 @@ label {
     margin-top: 0.25em;
   }
   .author-button {
-    border: 1px solid cornflowerblue;
-    padding: 0.2em;
-    border-radius: 0.25em;
-    &:active {
-      background-color: cornflowerblue;
-    }
+    @extend %button;
   }
   label {
     display: inline-block;
@@ -131,7 +135,7 @@ td {
   height: 1em;
 }
 
-@import 'modals';
+@import 'modals', 'travel';
 
 .invalid {
   background-color: red !important;
