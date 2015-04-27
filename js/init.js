@@ -538,6 +538,9 @@ model={
     model.currentBook=model.getCurrentBook(scope.book.title);
     notesOverlay.classList.add('modal-in');
   },
+  showLongModal() {
+    // TODO
+  },
   closeNotesModal(event) {
     if (this===event.target) {
       model.isEditingNotes=false;

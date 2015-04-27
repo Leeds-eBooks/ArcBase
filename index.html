@@ -240,7 +240,10 @@
         <td><input type="date" rv-value="book.pubdate" rv-readonly="book.isEditing < button | opposite"></td>
         <td><textarea maxlength="350" cols="30" rows="10" rv-value="book.shortdesc" rv-on-click="selectAll" rv-readonly="book.isEditing < button | opposite"></textarea></td>
         <td><button rv-on-click="editOrSubmit" rv-html="book.button" rv-class-warning="book.isEditing < button"></button></td>
-        <td><button rv-on-click="showNotesModal">&#9776;</button></td>
+        <td>
+          <button rv-on-click="showNotesModal">&#9776;</button>
+          <button rv-on-click="showLongModal">&#9998;</button>
+        </td>
         <td><button rv-on-click="downloadAI">&#8681; AI</button></td>
       </tr>
     </table>

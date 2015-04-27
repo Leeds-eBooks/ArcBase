@@ -6,6 +6,9 @@
 #col-pages {
   width: 5em;
 }
+#col-menu {
+  width: 3em;
+}
 
 @for $i from 1 through 3 {
   tr:nth-child(#{$i}) {
