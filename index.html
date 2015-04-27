@@ -264,11 +264,11 @@
 
         <div>
           <div>
-            <input id="will-not-travel" type="radio" name="travel-avail" rv-value="false" rv-checked="currentAuthor#travel_avail_bool" rv-enabled="isEditingAuthor">
+            <input id="will-not-travel" type="radio" name="travel-avail" value="false" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditingAuthor">
             <label for="will-not-travel">Will not travel</label>
           </div>
           <div>
-            <input id="will-travel" type="radio" name="travel-avail" rv-value="true" rv-checked="currentAuthor#travel_avail_bool" rv-enabled="isEditingAuthor">
+            <input id="will-travel" type="radio" name="travel-avail" value="true" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditingAuthor">
             <label for="will-travel">Can travel</label>
           </div>
         </div>

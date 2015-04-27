@@ -54,9 +54,9 @@ rivets.formatters.prepend=function(value, string) {
 rivets.formatters.alphaNumeric=function(v) {
   return alphaNumeric(v);
 };
-rivets.formatters.parseDate={
+rivets.formatters.parseDate = {
   read(v) { // from server
-    var d=new Date(v);
+    var d = new Date(v);
     if (!v) return null;
     return [
       d.getFullYear(),
@@ -67,6 +67,12 @@ rivets.formatters.parseDate={
   publish(v) { // to server
     if (!v) return null;
     return new Date(v);
+  }
+};
+rivets.formatters.toBool = {
+  read(v) {return v;},
+  publish(v) { // to server
+    return {'true': true, 'false': false}[v];
   }
 };
 
