@@ -333,95 +333,98 @@ model={
         tempInput,tempKey,authors=[],replacedAuthorMap={}, coverFile;
 
     function continueSubmit(replacedAuthors) {
-      if (!inputModel.title.trim()) {
-        alert('Every book needs a title...');
-        return false;
-      } else if (inputModel.authors.some(v => v.name.trim() && !v.name.includes(','))) {
-        alert('Author names must be Lastname, Firstname');
-        return false;
-      } else {
-        if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
-        for (var key in inputModel) {
-          tempInput=inputModel[key];
-          tempKey=key;
+      if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
+      for (var key in inputModel) {
+        tempInput=inputModel[key];
+        tempKey=key;
 
-          if (tempKey==='authors') {
-            tempInput.forEach(v => {
-              var replacement=replacedAuthors && replacedAuthors.find(r => r[0].submitted.name===v.name);
-              if (replacement) {
-                let newName=replacement[0].author.get("name");
-                replacedAuthorMap[newName]=v;
-                authors.push(newName);
-              } else {
-                v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g,' '));
-              }
-            });
-          } else if (tempKey==='ISBNs') {
-            data.ISBNs=Object.keys(tempInput).map(v => {
-              return {type:v,value:tempInput[v].replace(/\D+/g,'')};
-            });
-          } else if (tempKey==='price') {
-            data.price=Object.keys(tempInput).map(v => {
-              return {type:v,value:tempInput[v]};
-            });
-          } else if (tempKey==='cover_orig') {
-            coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
-          } else {
-            if ('function'!==typeof tempInput &&
-                tempKey!=='button' &&
-                tempKey!=='filterOut' &&
-                tempKey!=='coverimg') {
-              data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
+        if (tempKey==='authors') {
+          tempInput.forEach(v => {
+            var replacement=replacedAuthors && replacedAuthors.find(r => r[0].submitted.name===v.name);
+            if (replacement) {
+              let newName=replacement[0].author.get("name");
+              replacedAuthorMap[newName]=v;
+              authors.push(newName);
+            } else {
+              v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g,' '));
             }
+          });
+        } else if (tempKey==='ISBNs') {
+          data.ISBNs=Object.keys(tempInput).map(v => {
+            return {type:v,value:tempInput[v].replace(/\D+/g,'')};
+          });
+        } else if (tempKey==='price') {
+          data.price=Object.keys(tempInput).map(v => {
+            return {type:v,value:tempInput[v]};
+          });
+        } else if (tempKey==='cover_orig') {
+          coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
+        } else {
+          if ('function'!==typeof tempInput &&
+              tempKey!=='button' &&
+              tempKey!=='filterOut' &&
+              tempKey!=='coverimg') {
+            data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
           }
         }
-
-        Promise.all([
-          getParseAuthors(authors),
-          coverFile ? coverFile.save() : Promise.resolve()
-        ]).then(function(resArr) {
-          var returnedAuthors = resArr[0];
-          data.authors = returnedAuthors;
-          data.roleMap = [];
-          returnedAuthors.forEach(author => {
-            var roleModel=inputModel.authors.find(a => a.name===author.get('name')),
-                roles=roleModel ? roleModel.roles : replacedAuthorMap[author.get('name')].roles;
-            data.roleMap.push({
-              id: author.id,
-              roles
-            });
-          });
-          data.cover_orig = coverFile;
-          saveToParse(data, bookToEdit);
-        }).catch(function(err) {console.error(err.message || err);});
-        return true;
       }
+
+      Promise.all([
+        getParseAuthors(authors),
+        coverFile ? coverFile.save() : Promise.resolve()
+      ]).then(function(resArr) {
+        var returnedAuthors = resArr[0];
+        data.authors = returnedAuthors;
+        data.roleMap = [];
+        returnedAuthors.forEach(author => {
+          var roleModel=inputModel.authors.find(a => a.name===author.get('name')),
+              roles=roleModel ? roleModel.roles : replacedAuthorMap[author.get('name')].roles;
+          data.roleMap.push({
+            id: author.id,
+            roles
+          });
+        });
+        data.cover_orig = coverFile;
+        saveToParse(data, bookToEdit);
+      }).catch(function(err) {console.error(err.message || err);});
+      return true;
     }
 
-    return Parse.Cloud.run('checkAuthors', {authors: inputModel.authors}).then(res => {
-      var cancelFlag=false,
-          replaced=res.filter(r => {
-            console.log(r);
-            if (r.length===1) {
-              let name = r[0].author.get("name");
-              return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
-                '"\nCancel for NO, I AM CORRECT');
-            } else {
-              cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
-              return cancelFlag;
-            }
-          });
+    // submit() -->
+    if (!inputModel.title.trim()) {
+      alert('Every book needs a title...');
+      return false;
+    } else if (inputModel.authors.some(v => v.name.trim() && !v.name.includes(','))) {
+      alert('Author names must be Lastname, Firstname');
+      return false;
+    } else {
 
-      if (replaced.length) {
-        if (!cancelFlag) continueSubmit(replaced);
-      } else {
+      return Parse.Cloud.run('checkAuthors', {authors: inputModel.authors})
+      .then(res => {
+        var cancelFlag=false,
+            replaced=res.filter(r => {
+              console.log(r);
+              if (r.length===1) {
+                let name = r[0].author.get("name");
+                return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
+                  '"\nCancel for NO, I AM CORRECT');
+              } else {
+                cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
+                return cancelFlag;
+              }
+            });
+
+        if (replaced.length) {
+          if (!cancelFlag) continueSubmit(replaced);
+        } else {
+          continueSubmit();
+        }
+
+      }).fail(function(error) {
+        console.log(error);
         continueSubmit();
-      }
-
-    }).fail(function(error) {
-      console.log(error);
-      continueSubmit();
-    });
+      });
+    }
   },
 
   editOrSubmit(event, scope) {

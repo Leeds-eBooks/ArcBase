@@ -9,6 +9,7 @@
     "_": false,
     "rivets": false,
     "saveAs": false,
-    "Promise": false
+    "Promise": false,
+    "Parse": false
   }
 }
