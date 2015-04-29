@@ -304,6 +304,21 @@
     </div>
   </div>
 
+  <div class="long-overlay" rv-on-click="closeLongModal">
+    <div class="long-modal">
+      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditingNotes | opposite" placeholder="Book title"> -->
+      <input class="long-header" rv-on-click="selectAll" rv-value="currentBook#title" placeholder="Book title" readonly>
+      <label>Long description
+        <textarea rows="20" rv-value="currentBook#longdesc" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+      </label>
+      <label>Back cover blurb
+        <textarea rows="20" rv-value="currentBook#backcover" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+      </label>
+      <button class="long-edit" rv-on-click="editLong" rv-html="longButton" rv-class-warning="isEditingLong"></button>
+      <button rv-on-click="closeLongModal">&#215;</button>
+    </div>
+  </div>
+
   <script src="js/init-compiled.js"></script>
 </body>
 
