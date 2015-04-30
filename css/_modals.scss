@@ -1,6 +1,6 @@
 /* MODALS */
 
-.author-overlay, .notes-overlay {
+.author-overlay, .notes-overlay, .long-overlay {
   @include basic-trans(-webkit-transform,-ms-transform,transform,opacity);
   position: fixed;
   top: 0;
@@ -13,7 +13,7 @@
           transform: translate3d(0,100vh,0);
 }
 
-.author-modal, .notes-modal {
+.author-modal, .notes-modal, .long-modal {
   $input-width: 40%;
   $date-label-width: 6em;
 
@@ -32,7 +32,7 @@
     color: cornflowerblue;
   }
 
-  .author-header, .notes-header {
+  .author-header, .notes-header, .long-header {
     font-size: 2em;
     margin: 1em 0;
     width: 98%;
@@ -82,7 +82,7 @@
     right: 1em;
     font-size: 1.5em;
     &:active {top:1.2em;}
-    &.author-edit, &.notes-edit {
+    &.author-edit, &.notes-edit, &.long-edit {
       top: auto;
       bottom: 1em;
       &:active {bottom:0.8em;}

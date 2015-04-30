@@ -18,7 +18,7 @@
     "Author": true,
     "notesOverlay": true,
     "authorOverlay": true,
-    "authorModal": true,
+    "longOverlay": true,
     "model": true,
     "alphaNumeric": true,
     "model": true,

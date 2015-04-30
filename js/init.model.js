@@ -268,8 +268,9 @@ model={
     model.currentBook=model.getCurrentBook(scope.book.title);
     notesOverlay.classList.add('modal-in');
   },
-  showLongModal() {
-    // TODO
+  showLongModal(event, scope) {
+    model.currentBook=model.getCurrentBook(scope.book.title);
+    longOverlay.classList.add('modal-in');
   },
   closeNotesModal(event) {
     if (this===event.target) {
@@ -278,18 +279,38 @@ model={
       notesOverlay.classList.remove('modal-in');
     }
   },
+  closeLongModal(event) {
+    if (this===event.target) {
+      model.isEditingLong=false;
+      model.longButton='Edit';
+      longOverlay.classList.remove('modal-in');
+    }
+  },
   isEditingNotes: false,
+  isEditingLong: false,
   notesButton: 'Edit',
+  longButton: 'Edit',
   editNotes(event) {
-    var isEditing=model.notesButton==='Save';
-    model.notesButton=isEditing?'<img class="loading" src="images/loading.gif">':'Save';
-    model.isEditingNotes=!isEditing;
+    var isEditing = model.notesButton === 'Save';
+    model.notesButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
+    model.isEditingNotes =! isEditing;
     if (isEditing) {
       model.currentBook.save().then(res => {
         model.notesButton='Edit';
       }).fail(console.log);
     }
   },
+  editLong(event) {
+    var isEditing = model.longButton === 'Save';
+    model.longButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
+    model.isEditingLong =! isEditing;
+    if (isEditing) {
+      model.currentBook.save().then(res => {
+        model.longButton='Edit';
+      }).fail(console.log);
+    }
+  },
+
   downloadAI(event, scope) {
     var book=scope.book,
         swapNames=function(authorObj) {
@@ -349,6 +370,7 @@ Publication Date: ${(new Date(book.pubdate)).toDateString()}`,
         blob=new Blob([AI], {type: "text/plain;charset=utf-8"});
     saveAs(blob, `${book.title} AI.txt`);
   },
+
   smartSearch(event, scope) {
     var column=this.getAttribute('data-search-column');
     for (var i=0;i<model.books.length;i++) {

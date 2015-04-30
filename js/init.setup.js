@@ -4,7 +4,7 @@ var table=document.querySelector('#main table'),
     Author=Parse.Object.extend("Author"),
     notesOverlay=document.querySelector('.notes-overlay'),
     authorOverlay=document.querySelector('.author-overlay'),
-    authorModal=document.querySelector('.author-modal'),
+    longOverlay=document.querySelector('.long-overlay'),
     model;
 
 if (!Array.prototype.pushUnique) {
