@@ -15,6 +15,7 @@ module.exports = function(grunt) {
             'scripts/**',
             'templates/**',
             '!js/init.js',
+            '!js/init.*.js',
             '!js/init-compiled.js',
             'bower_components/**/*.js',
             'bower_components/**/LICENSE',
@@ -22,6 +23,12 @@ module.exports = function(grunt) {
             'images/**'
           ], dest: 'dist'}
         ]
+      }
+    },
+    "concat": {
+      main: {
+        src: ['js/init.setup.js', 'js/init.functions.js', 'js/init.model.js'],
+        dest: 'js/init.js'
       }
     },
     "6to5": {
@@ -86,7 +93,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['clean','copy','sass','6to5','ftp-deploy']);
-  grunt.registerTask('dev', ['sass:dev','6to5:dev']);
+  grunt.registerTask('default', ['clean','copy','concat','sass','6to5','ftp-deploy']);
+  grunt.registerTask('dev', ['concat','sass:dev','6to5:dev']);
 
 };

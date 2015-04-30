@@ -10,6 +10,24 @@
     "rivets": false,
     "saveAs": false,
     "Promise": false,
-    "Parse": false
+    "Parse": false,
+
+    "ArcBase": true,
+    "table": true,
+    "Book": true,
+    "Author": true,
+    "notesOverlay": true,
+    "authorOverlay": true,
+    "authorModal": true,
+    "model": true,
+    "alphaNumeric": true,
+    "model": true,
+    "formatISBN": true,
+    "preventAuthorEditing": true,
+    "clearInputs": true,
+    "authorMapper": true,
+    "update": true,
+    "saveToParse": true,
+    "getParseAuthors": true
   }
 }
