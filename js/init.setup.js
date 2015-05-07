@@ -44,6 +44,9 @@ rivets.adapters['#'] = {
 rivets.binders.readonly=function(el, value) {
   el.readOnly=!!value;
 };
+rivets.binders['value-in-array'] = function(el, value) {
+  // TODO
+};
 
 rivets.formatters.opposite=function(value) {
   return !value;
@@ -53,6 +56,21 @@ rivets.formatters.prepend=function(value, string) {
 };
 rivets.formatters.alphaNumeric=function(v) {
   return alphaNumeric(v);
+};
+// rivets.formatters.ifUndef = function(v, def) {
+//   if (!v) return def;
+// };
+
+rivets.formatters.arrayAt = {
+  arr: [], // FIXME will this work when there are multiple array elements?
+  read(v, i) {
+    this.arr = v;
+    return v[i];
+  },
+  publish(v, i) { // to server
+    this.arr[i] = v;
+    return this.arr;
+  }
 };
 rivets.formatters.parseDate = {
   read(v) { // from server

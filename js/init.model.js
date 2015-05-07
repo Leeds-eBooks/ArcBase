@@ -236,6 +236,7 @@ model={
       return '(Age: ' + Math.floor((now - dob) / 3.15569e10) + ')';
     }
   },
+  // empty2DArrStr: [['','']],
   isEditingAuthor: false,
   authorButton: 'Edit',
   editAuthor(event) {
