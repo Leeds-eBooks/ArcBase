@@ -279,9 +279,13 @@
         <ul>
           <li rv-each-range="currentAuthor#travel_avail_dates">
             <input type="date" rv-value="range | arrayAt 0">
-            to
+            <strong>to</strong>
             <input type="date" rv-value="range | arrayAt 1">
+            <button class="delete"
+                    rv-show="isEditingAuthor < currentAuthor#travel_avail_dates"
+                    rv-on-click="delTravelAvailDateRange">&#10005;</button><!-- FIXME -->
           </li>
+          <button rv-show="isEditingAuthor" class="add-input" rv-on-click="addTravelAvailDateRange">Add a date range</button>
         </ul>
 
         <!-- <textarea rows="3"

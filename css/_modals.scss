@@ -1,7 +1,7 @@
 /* MODALS */
 
 .author-overlay, .notes-overlay, .long-overlay {
-  @include basic-trans(-webkit-transform,-ms-transform,transform,opacity);
+  @include basic-trans(-webkit-transform, -ms-transform, transform, opacity);
   position: fixed;
   top: 0;
   left: 0;

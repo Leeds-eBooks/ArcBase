@@ -236,9 +236,17 @@ model={
       return '(Age: ' + Math.floor((now - dob) / 3.15569e10) + ')';
     }
   },
-  // empty2DArrStr: [['','']],
   isEditingAuthor: false,
   authorButton: 'Edit',
+  addTravelAvailDateRange(event, scope) {
+    model.currentAuthor.addUnique('travel_avail_dates', ['','']);
+    model.currentAuthor.change();
+  },
+  delTravelAvailDateRange(event, scope) {
+    var range = model.currentAuthor.get('travel_avail_dates')[scope.index];
+    model.currentAuthor.remove('travel_avail_dates', range); // FIXME can't remove() after add() without saving in-between
+    model.currentAuthor.change();
+  },
   editAuthor(event) {
     var isEditing=model.authorButton==='Save';
     model.authorButton=isEditing?'<img class="loading" src="images/loading.gif">':'Save';
@@ -247,7 +255,6 @@ model={
       model.currentAuthor.save().then(res => {
         var parseAuthorNewName = res.get('name');
         model.authorButton='Edit';
-        model.currentAuthor.trigger('update:dob');
         model.books.forEach(book => {
           book.authors.filter(a => a.name === model.currentAuthorOldName).forEach(author => {
             author.name = parseAuthorNewName;

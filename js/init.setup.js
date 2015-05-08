@@ -28,10 +28,10 @@ function alphaNumeric(str, replacement='-') {
 
 rivets.adapters['#'] = {
   observe(obj, keypath, cb) {
-    obj.on('update:' + keypath, cb);
+    obj.on('change:' + keypath, cb);
   },
   unobserve(obj, keypath, cb) {
-    obj.off('update:' + keypath, cb);
+    obj.off('change:' + keypath, cb);
   },
   get(obj, keypath) {
     return obj && obj.get(keypath);
