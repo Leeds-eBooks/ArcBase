@@ -312,63 +312,19 @@ model={
   },
 
   downloadAI(event, scope) {
-    var book=scope.book,
-        swapNames=function(authorObj) {
-          var name=authorObj.name,
-              sep=name.indexOf(','),
-              ln=name.substring(0, sep),
-              fn=name.substring(sep+1).trim();
-          return `${fn} ${ln}`;
-        },
-        stringify=function(array) {
-          return {
-            '0': 'Unknown',
-            '1': array[0],
-            '2': array.join(' and '),
-            '3+': array.slice(0,-1).join(', ')+' and '+array.slice(-1)
-          }[array.length < 3 ? array.length +'' : '3+'];
-        },
-        authors=book.authors.filter(author => author.roles.author).map(swapNames),
-        authorString=`by ${stringify(authors)}`,
-        translators=book.authors.filter(author => author.roles.translator).map(swapNames),
-        translatorString=translators.length ?
-          `, translated by ${stringify(translators)}` :
-          '',
-        editors=book.authors.filter(author => author.roles.editor).map(swapNames),
-        editorString=editors.length ?
-          `, edited by ${stringify(editors)}` :
-          '',
-        introducers=book.authors.filter(author => author.roles.introducer).map(swapNames),
-        introducerString=introducers.length ?
-          `, introduced by ${stringify(introducers)}` :
-          '',
-        bios=book.authors.map(author => model.getCurrentAuthor(author.name))
-          .filter(parseAuthor => parseAuthor.has('biog'))
-          .map(parseAuthor => parseAuthor.get('biog')).join('\r\n\r\n'),
-        AI=
-`${book.title}\r\n
-${authorString}${translatorString}${editorString}${introducerString}\r\n
-\r\n
-\r\n
-About the Book\r\n
-\r\n
-${book.shortdesc}\r\n
-\r\n
-\r\n
-About the Author(s)\r\n
-\r\n
-${bios}\r\n
-\r\n
-\r\n
-Bibliographic Details\r\n
-\r\n
-${book.ISBNs.pbk ? `${formatISBN(book.ISBNs.pbk)} pbk £${book.price.pbk || '?'}\r\n` : ''}
-${book.ISBNs.hbk ? `${formatISBN(book.ISBNs.hbk)} hbk £${book.price.hbk || '?'}\r\n` : ''}
-${book.ISBNs.ebk ? `${formatISBN(book.ISBNs.ebk)} ebk £${book.price.ebk || '?'}\r\n` : ''}
-${book.pages ? `${book.pages}pp\r\n` : ''}
-Publication Date: ${(new Date(book.pubdate)).toDateString()}`,
-        blob=new Blob([AI], {type: "text/plain;charset=utf-8"});
+    var book = scope.book,
+        AI = docTemplates.AI(book),
+        blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
+
     saveAs(blob, `${book.title} AI.txt`);
+  },
+
+  downloadPR(event, scope) {
+    var book = scope.book,
+        PR = docTemplates.PR(book),
+        blob = new Blob([PR], {type: "text/plain;charset=utf-8"});
+
+    saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`);
   },
 
   smartSearch(event, scope) {

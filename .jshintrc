@@ -16,6 +16,7 @@
     "table": true,
     "Book": true,
     "Author": true,
+    "docTemplates": true,
     "notesOverlay": true,
     "authorOverlay": true,
     "longOverlay": true,
