@@ -27,7 +27,12 @@ module.exports = function(grunt) {
     },
     "concat": {
       main: {
-        src: ['js/init.setup.js', 'js/init.functions.js', 'js/init.model.js'],
+        src: [
+          'js/init.setup.js',
+          'js/init.templates.js',
+          'js/init.functions.js',
+          'js/init.model.js'
+        ],
         dest: 'js/init.js'
       }
     },
