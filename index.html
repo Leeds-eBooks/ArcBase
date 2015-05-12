@@ -8,24 +8,16 @@
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/styles.css">
 
-  <!-- <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
   <link href='http://fonts.googleapis.com/css?family=Lato:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 
   <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="bower_components/parse-js-sdk/lib/parse.min.js"></script>
   <script type="text/javascript" src="bower_components/sightglass/index.js"></script>
   <script type="text/javascript" src="bower_components/rivets/dist/rivets.js"></script>
+  <script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
   <script type="text/javascript" src="bower_components/FileSaver/FileSaver.min.js"></script>
   <!-- <script type="text/javascript" src="bower_components/dropzone/dist/dropzone.js"></script> -->
   <script type="text/javascript" src="js/browser-polyfill.js"></script>
-
-  <!-- <script type="text/javascript" src="scripts/main.min.js"></script> -->
-  <!-- <script type="text/javascript" src="scripts/angular-expressions.js"></script> -->
-  <!-- <script type="text/javascript" src="scripts/FileSaver.min.js"></script> -->
-  <!-- <script type="text/javascript" src="scripts/jszip-utils.js"></script> -->
-  <!-- Include this only if you want to use downloadify (last example) -->
-  <!-- <script type="text/javascript" src="scripts/downloadify.min.js"></script> -->
-  <!-- <script type="text/javascript" src="scripts/swfobject.js"></script> -->
 </head>
 
 <body>
@@ -244,7 +236,10 @@
           <button rv-on-click="showNotesModal">&#9776;</button>
           <button rv-on-click="showLongModal">&#9998;</button>
         </td>
-        <td><button rv-on-click="downloadAI">&#8681; AI</button></td>
+        <td>
+          <button rv-on-click="downloadAI">&#8681; AI</button>
+          <button rv-on-click="downloadPR">&#8681; PR</button>
+        </td>
       </tr>
     </table>
     <button rv-on-click="load150more">Load 150 more books</button>
