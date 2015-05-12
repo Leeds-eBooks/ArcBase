@@ -126,14 +126,16 @@ td {
     height: 5em;
     min-width: 3em;
     margin-top: 0.2em;
-    &.add-input {
-      height: auto;
-      &::before {
-        content: '+ ';
-      }
-    }
   }
 }
+
+button.add-input {
+  height: auto;
+  &::before {
+    content: '+ ';
+  }
+}
+
 .loading {
   height: 1em;
 }
