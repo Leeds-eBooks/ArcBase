@@ -248,9 +248,10 @@ model={
     model.currentAuthor.change();
   },
   editAuthor(event) {
-    var isEditing=model.authorButton==='Save';
-    model.authorButton=isEditing?'<img class="loading" src="images/loading.gif">':'Save';
-    model.isEditingAuthor=!isEditing;
+    var isEditing = model.authorButton === 'Save';
+    model.authorButton = isEditing ?
+      '<img class="loading" src="images/loading.gif">' : 'Save';
+    model.isEditingAuthor =! isEditing;
     if (isEditing) {
       model.currentAuthor.save().then(res => {
         var parseAuthorNewName = res.get('name');
@@ -361,5 +362,5 @@ model={
   }
 };
 
-rivets.bind(document.body, model);
+rivetsView = rivets.bind(document.body, model);
 update();

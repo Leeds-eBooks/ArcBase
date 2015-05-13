@@ -5,7 +5,7 @@ var table=document.querySelector('#main table'),
     notesOverlay=document.querySelector('.notes-overlay'),
     authorOverlay=document.querySelector('.author-overlay'),
     longOverlay=document.querySelector('.long-overlay'),
-    model;
+    model, rivetsView;
 
 if (!Array.prototype.pushUnique) {
   Object.defineProperty(

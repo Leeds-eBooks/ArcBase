@@ -21,6 +21,7 @@
     "authorOverlay": true,
     "longOverlay": true,
     "model": true,
+    "rivetsView": true,
     "alphaNumeric": true,
     "model": true,
     "formatISBN": true,
