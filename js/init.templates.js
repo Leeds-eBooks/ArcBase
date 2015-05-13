@@ -83,13 +83,15 @@ Publication Date: ${(new Date(book.pubdate)).toDateString()}`;
 docTemplates.PR = book => `<<< insert logo here >>>
 Nanholme Mill, Shaw Wood Road, Todmorden, LANCS OL14 6DA
 Tel 01706 812338, Fax 01706 818948
-info@arcpublications.co.uk
+ben@arcpublications.co.uk
 www.arcpublications.co.uk @Arc_Poetry
 
 For immediate use ${(new Date()).toDateString()}
 
 ANNOUNCING THE PUBLICATION OF
+
 ${book.title}
+
 ${
   _.compact([
     docTemplates.authorString(book),
@@ -97,4 +99,31 @@ ${
     docTemplates.editorString(book),
     docTemplates.introducerString(book)
   ]).join(docTemplates.para)
-}`;
+}
+
+${book.shortdesc}
+
+${docTemplates.bios(book)}
+
+ENDS
+
+Notes to the Editor:
+
+${book.title}
+${
+  docTemplates.joinMany(_.compact([
+    docTemplates.authorString(book),
+    docTemplates.translatorString(book),
+    docTemplates.editorString(book),
+    docTemplates.introducerString(book)
+  ]))
+}
+Publication date: ${(new Date(book.pubdate)).toDateString()}
+${book.pages ? `${book.pages} pages` : ''}
+${book.ISBNs.pbk ? `${formatISBN(book.ISBNs.pbk)} paperback £${book.price.pbk || '?'}` : ''}
+${book.ISBNs.hbk ? `${formatISBN(book.ISBNs.hbk)} hardback £${book.price.hbk || '?'}` : ''}
+${book.ISBNs.ebk ? `${formatISBN(book.ISBNs.ebk)} ebook £${book.price.ebk || '?'}` : ''}
+
+Further information can be found on our website www.arcpublications.co.uk
+Please contact Tony Ward, Angela Jarman or Ben Styles on 01706 812338
+or email ben@arcpublications.co.uk with any queries`;
