@@ -272,9 +272,10 @@
         </div>
 
         <ul>
+          <span class="info">Available on the following dates:</span>
           <li rv-each-range="currentAuthor#travel_avail_dates">
             <input type="date" rv-value="range | arrayAt 0" rv-readonly="isEditing.author | opposite">
-            <strong>to</strong>
+            <span class="info">to</span>
             <input type="date" rv-value="range | arrayAt 1" rv-readonly="isEditing.author | opposite">
             <button class="delete"
                     rv-show="isEditing.author"
