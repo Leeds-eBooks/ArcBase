@@ -249,75 +249,73 @@
     <div class="author-modal">
       <div id="age" rv-show="currentAuthor#dob" rv-text="calculateCurrentAuthorAge < currentAuthor#dob"></div>
 
-      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditingAuthor | opposite" placeholder="Name">
+      <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" rv-readonly="isEditing.author | opposite" placeholder="Name">
       <!-- <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly> -->
-      <textarea rows="6" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditingAuthor | opposite" placeholder="Biography"></textarea>
-      <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditingAuthor | opposite" placeholder="Email address">
+      <textarea rows="6" rv-value="currentAuthor#biog" rv-on-click="selectAll" rv-readonly="isEditing.author | opposite" placeholder="Biography"></textarea>
+      <input class="author-input" rv-on-click="selectAll" type="email" rv-value="currentAuthor#author_email" rv-readonly="isEditing.author | opposite" placeholder="Email address">
       <label class="info" for="dob">Date of birth:</label>
-      <input id="dob" class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditingAuthor | opposite">
-      <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditingAuthor | opposite" placeholder="Mobile phone number">
-      <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditingAuthor | opposite" placeholder="Home phone number">
+      <input id="dob" class="author-input" rv-on-click="selectAll" type="date" rv-value="currentAuthor#dob | parseDate" rv-readonly="isEditing.author | opposite">
+      <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_mobile" rv-readonly="isEditing.author | opposite" placeholder="Mobile phone number">
+      <input class="author-input" rv-on-click="selectAll" type="tel" rv-value="currentAuthor#author_tel" rv-readonly="isEditing.author | opposite" placeholder="Home phone number">
 
       <div class="can-travel">
 
         <div>
           <div>
-            <input id="will-not-travel" type="radio" name="travel-avail" value="false" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditingAuthor">
+            <input id="will-not-travel" type="radio" name="travel-avail" value="false" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditing.author">
             <label for="will-not-travel">Will not travel</label>
           </div>
           <div>
-            <input id="will-travel" type="radio" name="travel-avail" value="true" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditingAuthor">
+            <input id="will-travel" type="radio" name="travel-avail" value="true" rv-checked="currentAuthor#travel_avail_bool | toBool" rv-enabled="isEditing.author">
             <label for="will-travel">Can travel</label>
           </div>
         </div>
 
         <ul>
           <li rv-each-range="currentAuthor#travel_avail_dates">
-            <input type="date" rv-value="range | arrayAt 0">
+            <input type="date" rv-value="range | arrayAt 0" rv-readonly="isEditing.author | opposite">
             <strong>to</strong>
-            <input type="date" rv-value="range | arrayAt 1">
+            <input type="date" rv-value="range | arrayAt 1" rv-readonly="isEditing.author | opposite">
             <button class="delete"
+                    rv-show="isEditing.author"
                     rv-on-click="delTravelAvailDateRange">&#10005;</button><!-- FIXME -->
-            <!-- <button class="delete"
-                    rv-show="isEditingAuthor"
-                    rv-on-click="delTravelAvailDateRange">&#10005;</button> --><!-- FIXME -->
           </li>
-          <button rv-show="isEditingAuthor" class="add-input" rv-on-click="addTravelAvailDateRange">Add a date range</button>
+          <button rv-show="isEditing.author" class="add-input" rv-on-click="addTravelAvailDateRange">Add a date range</button>
         </ul>
       </div>
 
-      <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditingAuthor | opposite" placeholder="Postal address"></textarea>
-      <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditingAuthor"></button>
+      <textarea rows="5" rv-on-click="selectAll" rv-value="currentAuthor#author_address" rv-readonly="isEditing.author | opposite" placeholder="Postal address"></textarea>
+      <button class="author-edit" rv-on-click="editAuthor" rv-html="authorButton" rv-class-warning="isEditing.author"></button>
       <button rv-on-click="closeAuthorModal">&#215;</button>
     </div>
   </div>
 
   <div class="notes-overlay" rv-on-click="closeNotesModal">
     <div class="notes-modal">
-      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditingNotes | opposite" placeholder="Book title"> -->
+      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditing.notes | opposite" placeholder="Book title"> -->
       <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" placeholder="Book title" readonly>
       <label>Review copies
-        <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+        <textarea rows="20" rv-value="currentBook#review_copies" rv-on-click="selectAll" rv-readonly="isEditing.notes | opposite"></textarea>
       </label>
       <label>Royalties
-        <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditingNotes | opposite"></textarea>
+        <textarea rows="20" rv-value="currentBook#author_copies" rv-on-click="selectAll" rv-readonly="isEditing.notes | opposite"></textarea>
       </label>
-      <button class="notes-edit" rv-on-click="editNotes" rv-html="notesButton" rv-class-warning="isEditingNotes"></button>
+      <button class="notes-edit" rv-on-click="editNotes" rv-html="notesButton" rv-class-warning="isEditing.notes"></button>
       <button rv-on-click="closeNotesModal">&#215;</button>
     </div>
   </div>
 
   <div class="long-overlay" rv-on-click="closeLongModal">
     <div class="long-modal">
-      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditingNotes | opposite" placeholder="Book title"> -->
+      <!-- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditing.notes | opposite" placeholder="Book title"> -->
       <input class="long-header" rv-on-click="selectAll" rv-value="currentBook#title" placeholder="Book title" readonly>
       <label>Long description
-        <textarea rows="20" rv-value="currentBook#longdesc" rv-on-click="selectAll" rv-readonly="isEditingLong | opposite"></textarea>
+        <textarea rows="20" rv-value="currentBook#longdesc" rv-on-click="selectAll" rv-readonly="isEditing.long | opposite"></textarea>
       </label>
       <label>Back cover blurb
-        <textarea rows="20" rv-value="currentBook#backcover" rv-on-click="selectAll" rv-readonly="isEditingLong | opposite"></textarea>
+        <textarea rows="20" rv-value="currentBook#backcover" rv-on-click="selectAll" rv-readonly="isEditing.long | opposite"></textarea>
       </label>
-      <button class="long-edit" rv-on-click="editLong" rv-html="longButton" rv-class-warning="isEditingLong"></button>
+      <button class="long-edit" rv-on-click="editLong" rv-html="longButton" rv-class-warning="isEditing.long"></button>
       <button rv-on-click="closeLongModal">&#215;</button>
     </div>
   </div>

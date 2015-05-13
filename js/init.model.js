@@ -210,6 +210,12 @@ model={
     }
   },
 
+  isEditing: {
+    author: false,
+    notes: false,
+    long: false
+  },
+
   currentAuthor: undefined,
   currentAuthorOldName: undefined,
   getCurrentAuthor(name) {
@@ -224,7 +230,7 @@ model={
   },
   closeAuthorModal(event) {
     if (this===event.target) {
-      model.isEditingAuthor=false;
+      model.isEditing.author=false;
       model.authorButton='Edit';
       authorOverlay.classList.remove('modal-in');
     }
@@ -236,7 +242,7 @@ model={
       return '(Age: ' + Math.floor((now - dob) / 3.15569e10) + ')';
     }
   },
-  isEditingAuthor: false,
+
   authorButton: 'Edit',
   addTravelAvailDateRange(event, scope) {
     model.currentAuthor.addUnique('travel_avail_dates', ['','']);
@@ -251,7 +257,7 @@ model={
     var isEditing = model.authorButton === 'Save';
     model.authorButton = isEditing ?
       '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditingAuthor =! isEditing;
+    model.isEditing.author =! isEditing;
     if (isEditing) {
       model.currentAuthor.save().then(res => {
         var parseAuthorNewName = res.get('name');
@@ -283,26 +289,24 @@ model={
   },
   closeNotesModal(event) {
     if (this===event.target) {
-      model.isEditingNotes=false;
+      model.isEditing.notes=false;
       model.notesButton='Edit';
       notesOverlay.classList.remove('modal-in');
     }
   },
   closeLongModal(event) {
     if (this===event.target) {
-      model.isEditingLong=false;
+      model.isEditing.long=false;
       model.longButton='Edit';
       longOverlay.classList.remove('modal-in');
     }
   },
-  isEditingNotes: false,
-  isEditingLong: false,
   notesButton: 'Edit',
   longButton: 'Edit',
   editNotes(event) {
     var isEditing = model.notesButton === 'Save';
     model.notesButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditingNotes =! isEditing;
+    model.isEditing.notes =! isEditing;
     if (isEditing) {
       model.currentBook.save().then(res => {
         model.notesButton='Edit';
@@ -312,7 +316,7 @@ model={
   editLong(event) {
     var isEditing = model.longButton === 'Save';
     model.longButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditingLong =! isEditing;
+    model.isEditing.long =! isEditing;
     if (isEditing) {
       model.currentBook.save().then(res => {
         model.longButton='Edit';
