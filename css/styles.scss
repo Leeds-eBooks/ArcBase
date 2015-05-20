@@ -84,6 +84,7 @@ label {
 
 .coverimg {
   max-height: 5em;
+  cursor: pointer;
 }
 
 .ISBNs {
@@ -140,7 +141,7 @@ button.add-input {
   height: 1em;
 }
 
-@import 'modals', 'travel';
+@import 'modals', 'travel', 'dialogs';
 
 .invalid {
   background-color: red !important;

@@ -53,6 +53,47 @@ function authorMapper(author) {
   }
 }
 
+function choosy(message, options) {
+  return new Promise(function(resolve, reject) {
+    const frag = document.createDocumentFragment();
+    const overlay = document.createElement('div');
+    const dialog = document.createElement('div');
+    const p = document.createElement('p');
+    const inputs = options.map(option => {
+      const button = document.createElement('button');
+      button.textContent = option;
+      return button;
+    });
+
+    function dismiss() {
+      document.body.removeChild(overlay);
+    }
+
+    overlay.className = 'dialog-overlay';
+
+    p.textContent = message;
+    dialog.appendChild(p);
+    inputs.forEach(input => {dialog.appendChild(input);});
+
+    overlay.appendChild(dialog);
+    frag.appendChild(overlay);
+    document.body.appendChild(frag);
+
+    overlay.addEventListener('click', event => {
+      if (event.target === event.currentTarget) {
+        dismiss();
+        resolve(false);
+      }
+    });
+    inputs.forEach((input, i) => {
+      input.addEventListener('click', event => {
+        dismiss();
+        resolve(options[i]);
+      });
+    });
+  });
+}
+
 function update(newBook, load150more) {
   var query=new Parse.Query(Book),
       amountToSkip=load150more ?
@@ -127,6 +168,17 @@ function update(newBook, load150more) {
           isEditing() {
             return this.button==='Save';
           },
+          chooseCover() {
+            choosy(
+              'Choose cover size (width in pixels)',
+              ['200', '600', 'full size']
+            ).then(size => {
+              if (size) {
+                // TODO download relevant image
+                console.log('download');
+              }
+            }).catch(console.log);
+          }
         });
       }
     });
