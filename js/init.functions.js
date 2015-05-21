@@ -102,6 +102,22 @@ function choosy(message, options, urls) {
   });
 }
 
+function chooseCover(parseBook) {
+  return function(event, scope) {
+    const sizes = ['200', '600', 'full size'];
+    choosy(
+      'Choose cover size (width in pixels)<br><br>' +
+        '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',
+      sizes,
+      sizes.map(size => {
+        const key = (size === 'full size') ?
+          'cover_orig' : 'cover_' + size;
+        return parseBook.get(key).url();
+      })
+    ).catch(console.log);
+  };
+}
+
 function update(newBook, load150more) {
   var query=new Parse.Query(Book),
       amountToSkip=load150more ?
@@ -125,22 +141,25 @@ function update(newBook, load150more) {
       }
 
       if (existingBook) {
-        existingBook.id=pb.id;
-        existingBook.title=pb.get('title');
-        existingBook.coverimg=pb.has('cover_200') ? pb.get('cover_200').url() : '';
-        existingBook.authors=(pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [];
-        existingBook.pubdate=pb.get('pubdate');
-        existingBook.pages=pb.get('pages');
-        existingBook.shortdesc=pb.get('shortdesc');
-        existingBook.ISBNs=pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
-          obj[current.type]=current.value;
-          return obj;
-        }, {});
-        existingBook.price=(pb.get('price') && pb.get('price').reduce((obj, current) => {
-          obj[current.type]=current.value;
-          return obj;
-        }, {})) || {pbk:'', hbk:'', ebk:''};
-        existingBook.button='Edit';
+        pb.fetch().then(() => {
+          existingBook.id=pb.id;
+          existingBook.title=pb.get('title');
+          existingBook.coverimg=pb.has('cover_200') ? pb.get('cover_200').url() : '';
+          existingBook.authors=(pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [];
+          existingBook.pubdate=pb.get('pubdate');
+          existingBook.pages=pb.get('pages');
+          existingBook.shortdesc=pb.get('shortdesc');
+          existingBook.ISBNs=pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
+            obj[current.type]=current.value;
+            return obj;
+          }, {});
+          existingBook.price=(pb.get('price') && pb.get('price').reduce((obj, current) => {
+            obj[current.type]=current.value;
+            return obj;
+          }, {})) || {pbk:'', hbk:'', ebk:''};
+          existingBook.button = 'Edit';
+          existingBook.chooseCover = chooseCover(pb);
+        }).fail(console.log);
       } else {
         let method=results.length>1 ? 'push' : 'unshift';
         model.books[method]({
@@ -176,20 +195,7 @@ function update(newBook, load150more) {
           isEditing() {
             return this.button==='Save';
           },
-          chooseCover(event, scope) {
-            const sizes = ['200', '600', 'full size'];
-            choosy(
-              'Choose cover size (width in pixels)<br><br>' +
-                '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',
-              sizes,
-              sizes.map(size => {
-                const key = (size === 'full size') ?
-                  'cover_orig' : 'cover_' + size;
-                return _.findWhere(model.parseBooks, {id: scope.book.id})
-                  .get(key).url();
-              })
-            ).catch(console.log);
-          }
+          chooseCover: chooseCover(pb)
         });
       }
     });
