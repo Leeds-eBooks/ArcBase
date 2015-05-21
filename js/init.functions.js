@@ -53,15 +53,21 @@ function authorMapper(author) {
   }
 }
 
-function choosy(message, options) {
+function choosy(message, options, urls) {
   return new Promise(function(resolve, reject) {
+    const hasUrls = (urls && urls.length);
     const frag = document.createDocumentFragment();
     const overlay = document.createElement('div');
     const dialog = document.createElement('div');
     const p = document.createElement('p');
-    const inputs = options.map(option => {
-      const button = document.createElement('button');
+    const inputs = options.map((option, i) => {
+      const button = hasUrls ?
+        document.createElement('a') : document.createElement('button');
       button.textContent = option;
+      if (hasUrls) {
+        button.href = urls[i];
+        button.target = "_blank";
+      }
       return button;
     });
 
@@ -71,7 +77,7 @@ function choosy(message, options) {
 
     overlay.className = 'dialog-overlay';
 
-    p.textContent = message;
+    p.innerHTML = message;
     dialog.appendChild(p);
     inputs.forEach(input => {dialog.appendChild(input);});
 
@@ -85,12 +91,14 @@ function choosy(message, options) {
         resolve(false);
       }
     });
-    inputs.forEach((input, i) => {
-      input.addEventListener('click', event => {
-        dismiss();
-        resolve(options[i]);
+    if (!hasUrls) {
+      inputs.forEach((input, i) => {
+        input.addEventListener('click', event => {
+          dismiss();
+          resolve(options[i]);
+        });
       });
-    });
+    }
   });
 }
 
@@ -168,16 +176,19 @@ function update(newBook, load150more) {
           isEditing() {
             return this.button==='Save';
           },
-          chooseCover() {
+          chooseCover(event, scope) {
+            const sizes = ['200', '600', 'full size'];
             choosy(
-              'Choose cover size (width in pixels)',
-              ['200', '600', 'full size']
-            ).then(size => {
-              if (size) {
-                // TODO download relevant image
-                console.log('download');
-              }
-            }).catch(console.log);
+              'Choose cover size (width in pixels)<br><br>' +
+                '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',
+              sizes,
+              sizes.map(size => {
+                const key = (size === 'full size') ?
+                  'cover_orig' : 'cover_' + size;
+                return _.findWhere(model.parseBooks, {id: scope.book.id})
+                  .get(key).url();
+              })
+            ).catch(console.log);
           }
         });
       }

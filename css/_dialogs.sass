@@ -4,7 +4,7 @@
   left: 0
   width: 100%
   height: 100%
-  background-color: rgba(0,0,0,0.25)
+  background-color: rgba(0,0,0,0.4)
 
   div
     position: relative
@@ -15,5 +15,12 @@
     padding: 2em
     background-color: white
 
-  button + button
+  a
+    @extend button
+    text-decoration: none
+    &:hover
+      color: lighten(cornflowerblue, 20%)
+
+  button + button,
+  a + a
     margin-left: 1em
