@@ -155,6 +155,8 @@ model={
     } else {
       if (model.submit(null, null, scope.book)) {
         scope.book.button='<img class="loading" src="images/loading.gif">';
+        table.querySelectorAll('.book-rows')[scope.index]
+          .querySelector('button.cover-upload').textContent = '⇧ cover';
       }
     }
   },
@@ -362,7 +364,9 @@ model={
     this.parentNode.querySelector('input[type=file]').click();
   },
   coverSelected(event, scope) {
-    scope.book.cover_orig = this.files[0];
+    const file = this.files[0];
+    scope.book.cover_orig = file;
+    this.parentNode.querySelector('button').textContent = file.name;
   }
 };
 
