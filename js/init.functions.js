@@ -224,6 +224,10 @@ function saveToParse(data, bookToEdit) {
       success: update, // update(newBook)
       error: function(book, error) {
         console.error(JSON.stringify(error));
+        if (error.code == 141) {
+          humane.error('The upload failed! Please try again.');
+          update(book);
+        }
       }
     });
   }

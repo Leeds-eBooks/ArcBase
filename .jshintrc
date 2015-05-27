@@ -11,8 +11,8 @@
     "saveAs": false,
     "Promise": false,
     "Parse": false,
-    "humane": false,
 
+    "humane": true,
     "ArcBase": true,
     "table": true,
     "Book": true,

@@ -7,6 +7,14 @@ var table=document.querySelector('#main table'),
     longOverlay=document.querySelector('.long-overlay'),
     model, rivetsView;
 
+humane.error = humane.spawn({
+  addnCls: 'humane-flatty-error',
+  timeout: 0,
+  waitForMove: true,
+  clickToClose: true,
+  timeoutAfterMove: 5000
+});
+
 if (!Array.prototype.pushUnique) {
   Object.defineProperty(
     Array.prototype, 'pushUnique', {
