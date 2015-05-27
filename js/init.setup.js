@@ -9,10 +9,8 @@ var table=document.querySelector('#main table'),
 
 humane.error = humane.spawn({
   addnCls: 'humane-flatty-error',
-  timeout: 0,
-  waitForMove: true,
-  clickToClose: true,
-  timeoutAfterMove: 5000
+  timeout: 8000,
+  clickToClose: true
 });
 
 if (!Array.prototype.pushUnique) {
