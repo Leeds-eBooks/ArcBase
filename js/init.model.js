@@ -367,6 +367,10 @@ model={
     const file = this.files[0];
     scope.book.cover_orig = file;
     this.parentNode.querySelector('button').textContent = file.name;
+  },
+  calendar: {
+    getEvents: (startDate, endDate) => ajax.get('events', {startDate, endDate}),
+    addEvent: data => ajax.post('events', data)
   }
 };
 

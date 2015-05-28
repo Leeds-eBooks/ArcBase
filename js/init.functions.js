@@ -1,3 +1,63 @@
+ajax = {
+  _key: 'ks59b5a516bd5907b5',
+  _host: 'http://teamup.com',
+  _xhr(method, endpoint, query, json) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.addEventListener('load', function(event) {
+        let response/*, hasErrors, hasErrorStr, hasErrorsObj, message*/;
+
+        try {
+          response = JSON.parse(this.response);
+        } catch(e) {
+          if (this.response.includes('401')) return reject('Unauthorized');
+          else if (this.response.includes('404')) return reject("Endpoint doesn't exist");
+          else return reject(e);
+        }
+
+        // hasErrors = response.errors;
+        //
+        // if (hasErrors) {
+        //   hasErrorStr = _.isString(response.errors);
+        //   hasErrorsObj = !hasErrorStr &&
+        //     Object.keys(response.errors).length;
+        //   message = hasErrorStr ?
+        //     response.errors :
+        //     _.map(response.errors, function(v,k) {
+        //       return k + ": " + v;
+        //     }).join('\n');
+        //
+        //   reject(message);
+        // }
+
+        if (this.status > 299) reject(this);
+        else resolve(response);
+      });
+
+      xhr.addEventListener('error', (event) => {
+        reject('Unknown error.');
+      });
+
+      xhr.open(
+        method,
+        `${this._host}/${this._key}/${endpoint}?${_.toQuery(query)}`
+      );
+      xhr.timeout = 6000;
+      xhr.ontimeout = () => {
+        reject("The request timed out. Please try again later!");
+      };
+      xhr.send(/* TODO */);
+    });
+  },
+  get(endpoint, query) {
+    return this._xhr('GET', endpoint, query);
+  },
+  post(endpoint, json, query) {
+    return this._xhr('POST', endpoint, query, json);
+  }
+};
+
 function formatISBN(str) {
   return str.insert(3,'-').insert(11,'-').insert(14,'-');
 }

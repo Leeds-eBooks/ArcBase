@@ -25,6 +25,7 @@
     "rivetsView": true,
     "alphaNumeric": true,
     "model": true,
+    "ajax": true,
     "formatISBN": true,
     "preventAuthorEditing": true,
     "clearInputs": true,
