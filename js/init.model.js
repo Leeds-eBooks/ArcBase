@@ -1,6 +1,6 @@
 model={
   authors: [],
-  parseBooks: [],
+  // parseBooks: [],
   books: [],
   inputs: {
     title: '',
@@ -134,7 +134,6 @@ model={
       .then(res => {
         var cancelFlag=false,
             replaced=res.filter(r => {
-              console.log(r);
               if (r.length===1) {
                 let name = r[0].author.get("name");
                 return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
@@ -279,15 +278,15 @@ model={
   },
 
   currentBook: undefined,
-  getCurrentBook(title) {
-    return this.parseBooks.find(v => v.get('title')===title);
-  },
+  // getCurrentBook: title => this.parseBooks.find(v => v.get('title')===title),
   showNotesModal(event, scope) {
-    model.currentBook=model.getCurrentBook(scope.book.title);
+    model.currentBook = parseBookMap.get(scope.book);
+    // model.currentBook=model.getCurrentBook(scope.book.title);
     notesOverlay.classList.add('modal-in');
   },
   showLongModal(event, scope) {
-    model.currentBook=model.getCurrentBook(scope.book.title);
+    model.currentBook = parseBookMap.get(scope.book);
+    // model.currentBook=model.getCurrentBook(scope.book.title);
     longOverlay.classList.add('modal-in');
   },
   closeNotesModal(event) {
