@@ -49,25 +49,30 @@ model={
   },
 
   submit(event, modelArg, bookToEdit) {
-    var data={},
-        inputModel=bookToEdit||model.inputs,
-        tempInput,tempKey,authors=[],replacedAuthorMap={}, coverFile;
+    var data = {},
+        authors = [],
+        replacedAuthorMap = {},
+        inputModel = bookToEdit || model.inputs,
+        coverFile;
 
     function continueSubmit(replacedAuthors) {
-      if (!bookToEdit) {model.inputs.button='<img class="loading" src="images/loading.gif">';}
-      for (var key in inputModel) {
-        tempInput=inputModel[key];
-        tempKey=key;
+      if (!bookToEdit) model.inputs.button='<img class="loading" src="images/loading.gif">';
+
+      for (let key in inputModel) {
+        let tempInput = inputModel[key],
+            tempKey = key;
 
         if (tempKey==='authors') {
           tempInput.forEach(v => {
-            var replacement=replacedAuthors && replacedAuthors.find(r => r[0].submitted.name===v.name);
+            const replacement = replacedAuthors && replacedAuthors.find(
+              replacedAuthor => replacedAuthor[0].submitted.name === v.name
+            );
             if (replacement) {
-              let newName=replacement[0].author.get("name");
-              replacedAuthorMap[newName]=v;
+              let newName = replacement[0].author.get("name");
+              replacedAuthorMap[newName] = v;
               authors.push(newName);
             } else {
-              v.name.trim() && authors.push(v.name.trim().replace(/\s{1,}/g,' '));
+              if (v.name.trim()) authors.push(v.name.trim().replace(/\s{1,}/g,' '));
             }
           });
         } else if (tempKey==='ISBNs') {
@@ -81,11 +86,13 @@ model={
         } else if (tempKey==='cover_orig') {
           coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
         } else {
-          if ('function'!==typeof tempInput &&
-              tempKey!=='button' &&
-              tempKey!=='filterOut' &&
-              tempKey!=='coverimg') {
-            data[tempKey]=tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
+          if (
+            'function' !== typeof tempInput &&
+            tempKey !== 'button' &&
+            tempKey !== 'filterOut' &&
+            tempKey !== 'coverimg'
+          ) {
+            data[tempKey] = tempInput && tempInput.trim().replace(/\s{1,}/g,' ');
           }
         }
       }
@@ -93,13 +100,16 @@ model={
       Promise.all([
         getParseAuthors(authors),
         coverFile ? coverFile.save() : Promise.resolve()
-      ]).then(function(resArr) {
-        var returnedAuthors = resArr[0];
+      ]).then(([returnedAuthors]) => {
         data.authors = returnedAuthors;
         data.roleMap = [];
         returnedAuthors.forEach(author => {
-          var roleModel=inputModel.authors.find(a => a.name===author.get('name')),
-              roles=roleModel ? roleModel.roles : replacedAuthorMap[author.get('name')].roles;
+          const roleModel = inputModel.authors.find(a =>
+                  a.name === author.get('name')
+                ),
+                roles = roleModel ?
+                  roleModel.roles :
+                  replacedAuthorMap[author.get('name')].roles;
           data.roleMap.push({
             id: author.id,
             roles
@@ -130,18 +140,16 @@ model={
                 return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
                   '"\nCancel for NO, I AM CORRECT');
               } else {
-                cancelFlag=confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
+                cancelFlag = confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
                 return cancelFlag;
               }
             });
 
         if (replaced.length) {
           if (!cancelFlag) continueSubmit(replaced);
-        } else {
-          continueSubmit();
-        }
+        } else continueSubmit();
 
-      }).fail(function(error) {
+      }).fail(error => {
         console.log(error);
         continueSubmit();
       });
@@ -162,9 +170,9 @@ model={
   },
 
   calculatePrice(event, scope) {
-    var mod=scope.book||scope.inputs;
-    mod.price.hbk=(parseFloat(this.value)+3)+"";
-    mod.price.ebk=((Math.ceil(parseFloat(this.value))/2)-0.01)+"";
+    const mod = scope.book || scope.inputs;
+    mod.price.hbk = (parseFloat(this.value) + 3) + "";
+    mod.price.ebk = ((Math.ceil(parseFloat(this.value)) / 2) - 0.01) + "";
   },
 
   calculatePriceFromPages(event, scope) {
@@ -176,40 +184,33 @@ model={
           "161-192": "11.99",
           "193-999": "12.99"
         },
-        getRange=function(pages) {
-          var pp=parseInt(pages,10);
+        getRange = pages => {
+          var pp = parseInt(pages, 10);
           return Object.keys(pageRange).find(range =>
-            pp >= parseInt(range.substr(0,3),10) &&
-            pp <= parseInt(range.substr(4,3),10));
+            pp >= parseInt(range.substr(0, 3), 10) &&
+            pp <= parseInt(range.substr(4, 3), 10));
         };
     if (!mod.price.pbk || parseFloat(mod.price.pbk) < 13) {
-      mod.price.pbk=mod.pages ? pageRange[getRange(mod.pages)] : "";
-      mod.price.hbk=(parseFloat(mod.price.pbk)+3)+"";
-      mod.price.ebk=((Math.ceil(parseFloat(mod.price.pbk))/2)-0.01)+"";
+      mod.price.pbk = mod.pages ? pageRange[getRange(mod.pages)] : "";
+      mod.price.hbk = (parseFloat(mod.price.pbk) + 3) + "";
+      mod.price.ebk = ((Math.ceil(parseFloat(mod.price.pbk)) / 2) - 0.01) + "";
     }
   },
 
   validateISBN() {
-    if (this.value.length===13) {
-      let ISBNArr=this.value.split('').map(d => {return parseInt(d, 10);}),
-          even=0,odd=0,
+    if (this.value.length === 13) {
+      const ISBNArr = this.value.split('').map(d => parseInt(d, 10));
+      let even = 0, odd = 0,
           checkdigit;
-      for (let i=0;i<6;i++) {
-        even+=ISBNArr[2*i];
-        odd+=ISBNArr[2*i+1]*3;
+      for (let i = 0; i < 6; i++) {
+        even += ISBNArr[2 * i];
+        odd += ISBNArr[2 * i + 1] * 3;
       }
-      checkdigit=(10-(even+odd)%10)%10;
-      if (ISBNArr[12]!=checkdigit) {
-        this.classList.add('invalid');
-      }
-      else {
-        this.classList.remove('invalid');
-      }
-    } else if (this.value.length>13) {
-      this.classList.add('invalid');
-    } else if (this.value.length<13) {
-      this.classList.remove('invalid');
-    }
+      checkdigit = (10 - (even + odd) % 10) % 10;
+      if (ISBNArr[12] != checkdigit) this.classList.add('invalid');
+      else this.classList.remove('invalid');
+    } else if (this.value.length>13) this.classList.add('invalid');
+    else if (this.value.length<13) this.classList.remove('invalid');
   },
 
   isEditing: {
@@ -221,7 +222,7 @@ model={
   currentAuthor: undefined,
   currentAuthorOldName: undefined,
   getCurrentAuthor(name) {
-    return this.authors.find(v => v.get('name')===name);
+    return this.authors.find(v => v.get('name') === name);
   },
   showAuthorModal(event, scope) {
     if (this.readOnly) {
@@ -231,9 +232,9 @@ model={
     }
   },
   closeAuthorModal(event) {
-    if (this===event.target) {
-      model.isEditing.author=false;
-      model.authorButton='Edit';
+    if (this === event.target) {
+      model.isEditing.author = false;
+      model.authorButton = 'Edit';
       authorOverlay.classList.remove('modal-in');
     }
   },
@@ -344,9 +345,9 @@ model={
 
   smartSearch(event, scope) {
     var column=this.getAttribute('data-search-column');
-    for (var i=0;i<model.books.length;i++) {
-      let book=model.books[i],
-          item=book[column];
+    for (let i = 0, l = model.books.length; i < l; i++) {
+      let book = model.books[i],
+          item = book[column];
       if ('string'===typeof item) {
         book.filterOut=!item.toLowerCase().includes(this.value.toLowerCase());
       } else if (column==='authors') {
