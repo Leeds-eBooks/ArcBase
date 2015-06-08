@@ -119,10 +119,8 @@ function authorMapper(author) {
 }
 
 function update(newBook, load150more) {
-  var query=new Parse.Query(Book),
-      amountToSkip=load150more ?
-        model.books.length :
-        0;
+  var query = new Parse.Query(Book),
+      amountToSkip = load150more ? model.books.length : 0;
 
   function whenLoaded(results) {
     results.forEach(pb => { // pb = parseBook
@@ -148,8 +146,6 @@ function update(newBook, load150more) {
             };
       var modelBook;
 
-      // model.parseBooks.pushUnique(pb);
-
       if (pb.has('authors')) {
         pb.get('authors').forEach(parseAuthor => {
           if (!model.authors.some(a => a.get('name') === parseAuthor.get('name'))) {
@@ -158,9 +154,8 @@ function update(newBook, load150more) {
         });
       }
 
-      if (existingBook) {
-        modelBook = Object.assign(existingBook, bookObj);
-      } else {
+      if (existingBook) modelBook = Object.assign(existingBook, bookObj);
+      else {
         modelBook = Object.assign(bookObj, {
           addAuthor(event,scope) {
             scope.book.authors.push({
