@@ -156,12 +156,12 @@ model={
   },
 
   editOrSubmit(event, scope) {
-    if (scope.book.button==='Edit') {
-      scope.book.button='Save';
+    if (scope.book.button === 'Edit') {
+      scope.book.button = 'Save';
       preventAuthorEditing(scope.index);
     } else {
       if (model.submit(null, null, scope.book)) {
-        scope.book.button='<img class="loading" src="images/loading.gif">';
+        scope.book.button = '<img class="loading" src="images/loading.gif">';
         table.querySelectorAll('.book-rows')[scope.index]
           .querySelector('button.cover-upload').textContent = '⇧ cover';
       }
@@ -175,24 +175,25 @@ model={
   },
 
   calculatePriceFromPages(event, scope) {
-    var mod=scope.book||scope.inputs,
-        pageRange={
-          "000-089": "8.99",
-          "090-128": "9.99",
-          "129-160": "10.99",
-          "161-192": "11.99",
-          "193-999": "12.99"
-        },
-        getRange = pages => {
-          var pp = parseInt(pages, 10);
-          return Object.keys(pageRange).find(range =>
-            pp >= parseInt(range.substr(0, 3), 10) &&
-            pp <= parseInt(range.substr(4, 3), 10));
-        };
-    if (!mod.price.pbk || parseFloat(mod.price.pbk) < 13) {
-      mod.price.pbk = mod.pages ? pageRange[getRange(mod.pages)] : "";
-      mod.price.hbk = (parseFloat(mod.price.pbk) + 3) + "";
-      mod.price.ebk = ((Math.ceil(parseFloat(mod.price.pbk)) / 2) - 0.01) + "";
+    const book = scope.book || scope.inputs,
+          pageRange = {
+            "000-089": "8.99",
+            "090-128": "9.99",
+            "129-160": "10.99",
+            "161-192": "11.99",
+            "193-999": "12.99"
+          },
+          getRange = pages => {
+            const pp = parseInt(pages, 10);
+            return Object.keys(pageRange).find(range =>
+              pp >= parseInt(range.substr(0, 3), 10) &&
+              pp <= parseInt(range.substr(4, 3), 10)
+            );
+          };
+    if (!book.price.pbk || parseFloat(book.price.pbk) < 13) {
+      book.price.pbk = book.pages ? pageRange[getRange(book.pages)] : "";
+      book.price.hbk = (parseFloat(book.price.pbk) + 3) + "";
+      book.price.ebk = ((Math.ceil(parseFloat(book.price.pbk)) / 2) - 0.01) + "";
     }
   },
 
@@ -278,87 +279,83 @@ model={
   },
 
   currentBook: undefined,
-  // getCurrentBook: title => this.parseBooks.find(v => v.get('title')===title),
-  showNotesModal(event, scope) {
-    model.currentBook = parseBookMap.get(scope.book);
-    // model.currentBook=model.getCurrentBook(scope.book.title);
-    notesOverlay.classList.add('modal-in');
-  },
-  showLongModal(event, scope) {
-    model.currentBook = parseBookMap.get(scope.book);
-    // model.currentBook=model.getCurrentBook(scope.book.title);
-    longOverlay.classList.add('modal-in');
-  },
-  closeNotesModal(event) {
-    if (this===event.target) {
-      model.isEditing.notes=false;
-      model.notesButton='Edit';
-      notesOverlay.classList.remove('modal-in');
-    }
-  },
-  closeLongModal(event) {
-    if (this===event.target) {
-      model.isEditing.long=false;
-      model.longButton='Edit';
-      longOverlay.classList.remove('modal-in');
-    }
-  },
   notesButton: 'Edit',
   longButton: 'Edit',
-  editNotes(event) {
-    var isEditing = model.notesButton === 'Save';
-    model.notesButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditing.notes =! isEditing;
+  showModal(which, scope) {
+    model.currentBook = parseBookMap.get(scope.book);
+
+    const modalMap = {
+      notes: "notesOverlay",
+      long: "longOverlay"
+    };
+    modalMap[which].classList.add('modal-in');
+  },
+  showNotesModal: (event, scope) => model.showModal('notes', scope),
+  showLongModal: (event, scope) => model.showModal('long', scope),
+  closeModal(which) {
+    const button = `${which}Button`;
+    model.isEditing[which] = false;
+    model[button] = 'Edit';
+
+    const modalMap = {
+      notes: "notesOverlay",
+      long: "longOverlay"
+    };
+    modalMap[which].classList.remove('modal-in');
+  },
+  closeNotesModal(event) {
+    if (this === event.target) return model.closeModal('notes');
+  },
+  closeLongModal(event) {
+    if (this === event.target) return model.closeModal('long');
+  },
+  editModal(which) {
+    const button = `${which}Button`;
+    const isEditing = model[button] === 'Save';
+    model[button] = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
+    model.isEditing[which] = !isEditing;
     if (isEditing) {
       model.currentBook.save().then(res => {
-        model.notesButton='Edit';
+        model[button] = 'Edit';
       }).fail(console.log);
     }
   },
-  editLong(event) {
-    var isEditing = model.longButton === 'Save';
-    model.longButton = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditing.long =! isEditing;
-    if (isEditing) {
-      model.currentBook.save().then(res => {
-        model.longButton='Edit';
-      }).fail(console.log);
-    }
-  },
+  editNotes: event => model.editModal('notes'),
+  editLong: event => model.editModal('long'),
 
   downloadAI(event, scope) {
-    var book = scope.book,
-        AI = docTemplates.AI(book),
-        blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
+    const book = scope.book,
+          AI = docTemplates.AI(book),
+          blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
 
     saveAs(blob, `${book.title} AI.txt`);
   },
 
   downloadPR(event, scope) {
-    var book = scope.book,
-        PR = docTemplates.PR(book),
-        blob = new Blob([PR], {type: "text/plain;charset=utf-8"});
+    const book = scope.book,
+          PR = docTemplates.PR(book),
+          blob = new Blob([PR], {type: "text/plain;charset=utf-8"});
 
     saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`);
   },
 
   smartSearch(event, scope) {
-    var column=this.getAttribute('data-search-column');
+    var column = this.getAttribute('data-search-column');
     for (let i = 0, l = model.books.length; i < l; i++) {
       let book = model.books[i],
           item = book[column];
-      if ('string'===typeof item) {
-        book.filterOut=!item.toLowerCase().includes(this.value.toLowerCase());
-      } else if (column==='authors') {
-        book.filterOut=item.every(v => !v.name.toLowerCase().includes(this.value.toLowerCase()));
-      } else if (column==='ISBNs' || column==='price') {
-        book.filterOut=Object.keys(item).every(k => !item[k].includes(this.value));
+      if ('string' === typeof item) {
+        book.filterOut = !item.toLowerCase().includes(this.value.toLowerCase());
+      } else if (column === 'authors') {
+        book.filterOut = item.every(v => !v.name.toLowerCase().includes(this.value.toLowerCase()));
+      } else if (column === 'ISBNs' || column === 'price') {
+        book.filterOut = Object.keys(item).every(k => !item[k].includes(this.value));
       } else if (!item) {
-        book.filterOut=true;
+        book.filterOut = true;
       }
     }
-    if (this.value) {this.classList.add('warning');}
-    else {this.classList.remove('warning');}
+    if (this.value) this.classList.add('warning');
+    else this.classList.remove('warning');
   },
   openFilesCover(event, scope) {
     this.parentNode.querySelector('input[type=file]').click();
