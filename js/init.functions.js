@@ -242,25 +242,23 @@ function saveToParse(data, bookToEdit) {
 function getParseAuthors(authorsArray) {
   return new Promise(function(resolve, reject) {
     var query=new Parse.Query(Author);
-    query.containedIn('name',authorsArray);
+    query.containedIn('name', authorsArray);
     query.find({
-      success(res) {
-        var savedAuthorNames=res.map(v => v.get('name')),
-            promisedAuthors;
-        if (savedAuthorNames.length!==authorsArray.length) {
-          promisedAuthors=authorsArray.map(v => {
-            if (!~savedAuthorNames.indexOf(v)) {
-              let newAuthor=new Author();
-              return newAuthor.save({name: v});
-            } else {
-              return res.find(w => w.get('name')===v);
-            }
+      success(savedAuthors) {
+        const savedAuthorNames = savedAuthors.map(v => v.get('name'));
+
+        if (savedAuthorNames.length !== authorsArray.length) {
+          const promisedAuthors = authorsArray.map(name => {
+            if (!savedAuthorNames.includes(name)) {
+              const newAuthor = new Author();
+              return newAuthor.save({name});
+            } else return savedAuthors.find(savedAuthor =>
+              savedAuthor.get('name') === name);
           });
           Promise.all(promisedAuthors).then(resolve);
-        } else {
-          resolve(res);
-        }
-      }, error: reject
+        } else resolve(savedAuthors);
+      },
+      error: reject
     });
   });
 }
