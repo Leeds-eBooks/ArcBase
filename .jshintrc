@@ -17,6 +17,7 @@
     "table": true,
     "Book": true,
     "Author": true,
+    "parseBookMap": true,
     "docTemplates": true,
     "notesOverlay": true,
     "authorOverlay": true,

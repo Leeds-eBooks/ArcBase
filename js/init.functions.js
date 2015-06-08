@@ -124,60 +124,44 @@ function update(newBook, load150more) {
         model.books.length :
         0;
 
-  if (newBook) query.equalTo('objectId', newBook.id);
-
   function whenLoaded(results) {
     results.forEach(pb => { // pb = parseBook
-      var existingBook=model.books.find(book => book.id===pb.id);
+      const existingBook = model.books.find(book => book.id === pb.id),
+            bookObj = {
+              id: pb.id,
+              title: pb.get('title'),
+              coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
+              authors: (pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [],
+              pubdate: pb.get('pubdate'),
+              pages: pb.get('pages'),
+              shortdesc: pb.get('shortdesc'),
+              ISBNs: pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
+                obj[current.type]=current.value;
+                return obj;
+              }, {}),
+              price: (pb.get('price') && pb.get('price').reduce((obj, current) => {
+                obj[current.type] = current.value;
+                return obj;
+              }, {})) || {pbk:'', hbk:'', ebk:''},
+              button: 'Edit',
+              chooseCover: chooseCover(pb)
+            };
+      var modelBook;
 
-      model.parseBooks.pushUnique(pb);
+      // model.parseBooks.pushUnique(pb);
 
       if (pb.has('authors')) {
-        pb.get('authors').forEach(author => {
-          if (!model.authors.some(a => a.get('name') === author.get('name'))) {
-            model.authors.push(author);
+        pb.get('authors').forEach(parseAuthor => {
+          if (!model.authors.some(a => a.get('name') === parseAuthor.get('name'))) {
+            model.authors.push(parseAuthor);
           }
         });
       }
 
       if (existingBook) {
-        existingBook.id=pb.id;
-        existingBook.title=pb.get('title');
-        existingBook.coverimg=pb.has('cover_200') ? pb.get('cover_200').url() : '';
-        existingBook.authors=(pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [];
-        existingBook.pubdate=pb.get('pubdate');
-        existingBook.pages=pb.get('pages');
-        existingBook.shortdesc=pb.get('shortdesc');
-        existingBook.ISBNs=pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
-          obj[current.type]=current.value;
-          return obj;
-        }, {});
-        existingBook.price=(pb.get('price') && pb.get('price').reduce((obj, current) => {
-          obj[current.type]=current.value;
-          return obj;
-        }, {})) || {pbk:'', hbk:'', ebk:''};
-        existingBook.button = 'Edit';
-        existingBook.chooseCover = chooseCover(pb);
+        modelBook = Object.assign(existingBook, bookObj);
       } else {
-        let method=results.length > 1 ? 'push' : 'unshift';
-        model.books[method]({
-          id: pb.id,
-          title: pb.get('title'),
-          coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
-          authors: (pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [],
-          pubdate: pb.get('pubdate'),
-          pages: pb.get('pages'),
-          shortdesc: pb.get('shortdesc'),
-          ISBNs: pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
-            obj[current.type]=current.value;
-            return obj;
-          }, {}),
-          price: (pb.get('price') && pb.get('price').reduce((obj, current) => {
-            obj[current.type]=current.value;
-            return obj;
-          }, {})) || {pbk:'',hbk:'',ebk:''},
-          /* Methods */
-          button: 'Edit',
+        modelBook = Object.assign(bookObj, {
           addAuthor(event,scope) {
             scope.book.authors.push({
               name:'',
@@ -192,25 +176,29 @@ function update(newBook, load150more) {
           },
           isEditing() {
             return this.button==='Save';
-          },
-          chooseCover: chooseCover(pb)
+          }
         });
+        model.books[results.length > 1 ? 'push' : 'unshift'](modelBook);
       }
+
+      parseBookMap.set(modelBook, pb);
     });
 
     if (newBook) clearInputs();
   }
 
+  if (newBook) query.equalTo('objectId', newBook.id);
+
   query
-    .descending('pubdate')
-    .skip(amountToSkip)
-    .limit(150)
-    .include('authors')
-    .find()
-    .then(whenLoaded)
-    .fail(function(err) {
-      console.log(JSON.stringify(err));
-    });
+  .descending('pubdate')
+  .skip(amountToSkip)
+  .limit(150)
+  .include('authors')
+  .find()
+  .then(whenLoaded)
+  .fail(err => {
+    console.log(JSON.stringify(err));
+  });
 }
 
 function saveToParse(data, bookToEdit) {
