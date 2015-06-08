@@ -134,7 +134,6 @@ model={
       .then(res => {
         var cancelFlag=false,
             replaced=res.filter(r => {
-              console.log(r);
               if (r.length===1) {
                 let name = r[0].author.get("name");
                 return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
