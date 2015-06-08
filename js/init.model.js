@@ -285,8 +285,8 @@ model={
     model.currentBook = parseBookMap.get(scope.book);
 
     const modalMap = {
-      notes: "notesOverlay",
-      long: "longOverlay"
+      notes: notesOverlay,
+      long: longOverlay
     };
     modalMap[which].classList.add('modal-in');
   },
@@ -298,8 +298,8 @@ model={
     model[button] = 'Edit';
 
     const modalMap = {
-      notes: "notesOverlay",
-      long: "longOverlay"
+      notes: notesOverlay,
+      long: longOverlay
     };
     modalMap[which].classList.remove('modal-in');
   },
