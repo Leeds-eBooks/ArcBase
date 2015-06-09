@@ -1,8 +1,6 @@
 /* MODALS */
 
-.author-overlay,
-.notes-overlay,
-.long-overlay {
+%basic-overlay {
   @include basic-trans(-webkit-transform, -ms-transform, transform, opacity);
   position: fixed;
   top: 0;
@@ -13,6 +11,12 @@
   -webkit-transform: translate3d(0, 100vh, 0);
       -ms-transform: translate3d(0, 100vh, 0);
           transform: translate3d(0, 100vh, 0);
+}
+
+.author-overlay,
+.notes-overlay,
+.long-overlay {
+  @extend %basic-overlay;
 }
 
 .author-modal,
