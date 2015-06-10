@@ -1,8 +1,21 @@
 .contacts-overlay
   @extend %basic-overlay
+  +basic-trans(opacity)
 
   input
     color: black
+
+.open-contacts
+  position: fixed
+  top: auto
+  bottom: 1em
+  left: 1em
+  font-size: 2em
+  background-color: firebrick
+
+  &:active
+    top: auto
+    bottom: 0.8em
 
 .dialog-overlay,
 .contacts-overlay

@@ -364,6 +364,17 @@ model={
     const file = this.files[0];
     scope.book.cover_orig = file;
     this.parentNode.querySelector('button').textContent = file.name;
+  },
+
+  openContacts(event, scope) {
+    const el = document.querySelector('.contacts-overlay');
+    el.classList.add('modal-in');
+  },
+  closeContacts(event, scope) {
+    if (this === event.target) {
+      const el = document.querySelector('.contacts-overlay');
+      el.classList.remove('modal-in');
+    }
   }
 };
 
