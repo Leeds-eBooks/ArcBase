@@ -375,7 +375,34 @@ model={
       const el = document.querySelector('.contacts-overlay');
       el.classList.remove('modal-in');
     }
-  }
+  },
+  foundContacts: [],
+  searchContacts: (function() {
+    const Contact = Parse.Object.extend("Contact"),
+          query = new Parse.Query(Contact);
+    var contacts;
+    query.find().then(res => {
+      contacts = res;
+    });
+
+    return function(event, scope) {
+      console.log(contacts);
+      if (!this.value.trim()) {
+        // TODO empty the array
+        return false;
+      }
+      for (let i = 0, l = contacts.length; i < l; i++) {
+        let contact = contacts[i],
+            name = `${contact.get('firstname')} ${contact.get('lastname')}`;
+        if (name.toLowerCase().includes(this.value.toLowerCase())) {
+          if (!model.foundContacts.includes(contact)) model.foundContacts.push(contact);
+        } else {
+          let i = model.foundContacts.indexOf(contact);
+          if (~i) model.foundContacts.splice(i, 1);
+        }
+      }
+    };
+  })()
 };
 
 rivetsView = rivets.bind(document.body, model);
