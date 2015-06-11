@@ -388,7 +388,7 @@ model={
     return function(event, scope) {
       console.log(contacts);
       if (!this.value.trim()) {
-        // TODO empty the array
+        model.foundContacts.splice(0, model.foundContacts.length);
         return false;
       }
       for (let i = 0, l = contacts.length; i < l; i++) {

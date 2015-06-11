@@ -327,7 +327,10 @@
   <div rv-on-click="closeContacts" class="contacts-overlay">
     <div class="contacts-modal">
       <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
-      <div rv-each-contact="foundContacts">X</div>
+      <div rv-each-contact="foundContacts">
+        <p>{contact#firstname} {contact#lastname}</p>
+        <p rv-html="contact#postal_work | linebreaks"></p>
+      </div>
     </div>
   </div>
 
