@@ -76,13 +76,13 @@ model={
             }
           });
         } else if (tempKey==='ISBNs') {
-          data.ISBNs=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v].replace(/\D+/g,'')};
-          });
+          data.ISBNs=Object.keys(tempInput).map(v =>
+            ({type: v, value: tempInput[v].replace(/\D+/g,'')})
+          );
         } else if (tempKey==='price') {
-          data.price=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v]};
-          });
+          data.price=Object.keys(tempInput).map(v =>
+            ({type:v,value:tempInput[v]})
+          );
         } else if (tempKey==='cover_orig') {
           coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
         } else {
@@ -381,20 +381,21 @@ model={
     const Contact = Parse.Object.extend("Contact"),
           query = new Parse.Query(Contact);
     var contacts;
+
     query.find().then(res => {
       contacts = res;
     });
 
     return function(event, scope) {
-      console.log(contacts);
       if (!this.value.trim()) {
         model.foundContacts.splice(0, model.foundContacts.length);
         return false;
       }
       for (let i = 0, l = contacts.length; i < l; i++) {
-        let contact = contacts[i],
-            name = `${contact.get('firstname')} ${contact.get('lastname')}`;
-        if (name.toLowerCase().includes(this.value.toLowerCase())) {
+        const contact = contacts[i],
+              data = _.values(contact.toJSON()).toString().toLowerCase();
+
+        if (data.includes(this.value.toLowerCase())) {
           if (!model.foundContacts.includes(contact)) model.foundContacts.push(contact);
         } else {
           let i = model.foundContacts.indexOf(contact);

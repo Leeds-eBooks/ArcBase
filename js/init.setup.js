@@ -72,7 +72,7 @@ rivets.formatters.parseDate = {
 
 rivets.formatters.toBool = {
   read: v => v,
-  publish(v) {return {'true': true, 'false': false}[v];} // to server
+  publish: v => ({'true': true, 'false': false}[v]) // to server
 };
 
 if (!String.prototype.insert) {

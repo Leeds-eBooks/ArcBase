@@ -329,6 +329,10 @@
       <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
       <div rv-each-contact="foundContacts">
         <p>{contact#firstname} {contact#lastname}</p>
+        <p rv-text="contact#organization_name"></p>
+        <p rv-text="contact#email_personal"></p>
+        <p rv-text="contact#email_work"></p>
+        <p rv-text="contact#tel_mobile"></p>
         <p rv-html="contact#postal_work | linebreaks"></p>
       </div>
     </div>
