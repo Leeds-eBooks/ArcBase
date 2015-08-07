@@ -246,6 +246,8 @@
     <button rv-on-click="load150more">Load 150 more books</button>
   </div>
 
+  <button class="open-contacts" rv-on-click="openContacts">Contacts</button>
+
   <div class="author-overlay" rv-on-click="closeAuthorModal">
     <div class="author-modal">
       <div id="age" rv-show="currentAuthor#dob" rv-text="calculateCurrentAuthorAge < currentAuthor#dob"></div>
@@ -319,6 +321,20 @@
       </label>
       <button class="long-edit" rv-on-click="editLong" rv-html="longButton" rv-class-warning="isEditing.long"></button>
       <button rv-on-click="closeLongModal">&#215;</button>
+    </div>
+  </div>
+
+  <div rv-on-click="closeContacts" class="contacts-overlay">
+    <div class="contacts-modal">
+      <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
+      <div rv-each-contact="foundContacts">
+        <p>{contact#firstname} {contact#lastname}</p>
+        <p rv-text="contact#organization_name"></p>
+        <p rv-text="contact#email_personal"></p>
+        <p rv-text="contact#email_work"></p>
+        <p rv-text="contact#tel_mobile"></p>
+        <p rv-html="contact#postal_work | linebreaks"></p>
+      </div>
     </div>
   </div>
 

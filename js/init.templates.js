@@ -10,14 +10,14 @@ docTemplates.swapNames = authorObj => {
       fn = name.substring(sep + 1).trim();
   return `${fn} ${ln}`;
 };
-docTemplates.joinMany = array => {
-  return {
+docTemplates.joinMany = array => (
+  {
     '0': 'Unknown',
     '1': array[0],
     '2': array.join(' and '),
     '3+': array.slice(0,-1).join(', ') + ' and ' + array.slice(-1)
-  }[array.length < 3 ? array.length + '' : '3+'];
-};
+  }[array.length < 3 ? array.length + '' : '3+']
+);
 
 docTemplates.authorString = book => {
   var authors = book.authors.filter(author => author.roles.author).map(docTemplates.swapNames);

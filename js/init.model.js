@@ -76,13 +76,13 @@ model={
             }
           });
         } else if (tempKey==='ISBNs') {
-          data.ISBNs=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v].replace(/\D+/g,'')};
-          });
+          data.ISBNs=Object.keys(tempInput).map(v =>
+            ({type: v, value: tempInput[v].replace(/\D+/g,'')})
+          );
         } else if (tempKey==='price') {
-          data.price=Object.keys(tempInput).map(v => {
-            return {type:v,value:tempInput[v]};
-          });
+          data.price=Object.keys(tempInput).map(v =>
+            ({type:v,value:tempInput[v]})
+          );
         } else if (tempKey==='cover_orig') {
           coverFile = new Parse.File(alphaNumeric(inputModel.title, '_') + "_cover.jpg", tempInput);
         } else {
@@ -364,7 +364,46 @@ model={
     const file = this.files[0];
     scope.book.cover_orig = file;
     this.parentNode.querySelector('button').textContent = file.name;
-  }
+  },
+
+  openContacts(event, scope) {
+    const el = document.querySelector('.contacts-overlay');
+    el.classList.add('modal-in');
+  },
+  closeContacts(event, scope) {
+    if (this === event.target) {
+      const el = document.querySelector('.contacts-overlay');
+      el.classList.remove('modal-in');
+    }
+  },
+  foundContacts: [],
+  searchContacts: (function() {
+    const Contact = Parse.Object.extend("Contact"),
+          query = new Parse.Query(Contact);
+    var contacts;
+
+    query.find().then(res => {
+      contacts = res;
+    });
+
+    return function(event, scope) {
+      if (!this.value.trim()) {
+        model.foundContacts.splice(0, model.foundContacts.length);
+        return false;
+      }
+      for (let i = 0, l = contacts.length; i < l; i++) {
+        const contact = contacts[i],
+              data = _.values(contact.toJSON()).toString().toLowerCase();
+
+        if (data.includes(this.value.toLowerCase())) {
+          if (!model.foundContacts.includes(contact)) model.foundContacts.push(contact);
+        } else {
+          let i = model.foundContacts.indexOf(contact);
+          if (~i) model.foundContacts.splice(i, 1);
+        }
+      }
+    };
+  })()
 };
 
 rivetsView = rivets.bind(document.body, model);

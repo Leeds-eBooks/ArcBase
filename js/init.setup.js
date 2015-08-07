@@ -37,6 +37,7 @@ rivets.binders['value-in-array'] = (el, value) => {
 rivets.formatters.opposite = value => !value;
 rivets.formatters.prepend = (value, string) => string ? string + "" + value : value;
 rivets.formatters.alphaNumeric = v => alphaNumeric(v);
+rivets.formatters.linebreaks = v => v.replace(/\n/g, '<br>');
 // rivets.formatters.ifUndef = function(v, def) {
 //   if (!v) return def;
 // };
@@ -71,7 +72,7 @@ rivets.formatters.parseDate = {
 
 rivets.formatters.toBool = {
   read: v => v,
-  publish(v) {return {'true': true, 'false': false}[v];} // to server
+  publish: v => ({'true': true, 'false': false}[v]) // to server
 };
 
 if (!String.prototype.insert) {

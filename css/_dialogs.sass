@@ -1,4 +1,5 @@
-.dialog-overlay
+.dialog-overlay,
+.contacts-overlay
   position: fixed
   top: 0
   left: 0
@@ -6,7 +7,7 @@
   height: 100%
   background-color: rgba(0,0,0,0.4)
 
-  div
+  > div
     position: relative
     top: 30vh
     width: 16em
@@ -24,3 +25,44 @@
   button + button,
   a + a
     margin-left: 1em
+
+.contacts-overlay
+  @extend %basic-overlay
+  +basic-trans(opacity)
+
+  > div
+    width: 28em
+    top: 10%
+    max-height: 80%
+    overflow-y: scroll
+
+    > div
+      background-color: #e7edf3
+      border-radius: 0.2em
+      text-align: left
+      padding-left: 0.5em
+
+      p
+        margin: 0.5em 0
+        &:first-child
+          font-weight: bold
+          text-decoration: underline
+
+    &, & *
+      box-sizing: border-box
+
+  input
+    color: black
+    font-size: 2em
+
+.open-contacts
+  position: fixed
+  top: auto
+  bottom: 1em
+  left: 1em
+  font-size: 2em
+  background-color: firebrick
+
+  &:active
+    top: auto
+    bottom: 0.8em
