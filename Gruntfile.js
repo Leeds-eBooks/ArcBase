@@ -6,48 +6,31 @@ module.exports = function(grunt) {
     "clean": ["dist"],
     "copy": {
       main: {
-        files: [
-          {expand: true, src: [
+        files: [{
+          expand: true,
+          src: [
             'index.html',
-            'keys.js',
             'LICENSE',
-            'js/**',
-            'scripts/**',
-            'templates/**',
-            '!js/init.js',
-            '!js/init.*.js',
-            '!js/init-compiled.js',
-            'bower_components/**/*.js',
-            'bower_components/**/LICENSE',
             'css/reset.css',
             'images/**'
-          ], dest: 'dist'}
-        ]
+          ],
+          dest: 'dist'
+        }]
       }
     },
-    "concat": {
-      main: {
-        src: [
-          'js/init.setup.js',
-          'js/init.templates.js',
-          'js/init.functions.js',
-          'js/init.model.js'
-        ],
-        dest: 'js/init.js'
-      }
-    },
-    "6to5": {
+    "browserify": {
       options: {
-        sourceMap: true
+        sourceMap: true,
+        transform: ['babelify']
       },
       dist: {
         files: {
-          "dist/js/init-compiled.js": "js/init.js"
+          "dist/js/index-compiled.js": "js/index.js"
         }
       },
       dev: {
         files: {
-          "js/init-compiled.js": "js/init.js"
+          "js/index-compiled.js": "js/index.js"
         }
       }
     },
@@ -98,7 +81,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['clean','copy','concat','sass','6to5','ftp-deploy']);
-  grunt.registerTask('dev', ['concat','sass:dev','6to5:dev']);
-
+  grunt.registerTask('default', ['clean', 'copy', 'sass', 'browserify', 'ftp-deploy']);
+  grunt.registerTask('dev', ['sass:dev', 'browserify:dev']);
 };

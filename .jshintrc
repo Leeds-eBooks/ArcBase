@@ -1,37 +1,17 @@
 {
   "esnext": true,
+  "asi": true,
   "sub": true,
   "undef": true,
+  "unused": "vars",
+  "varstmt": true,
   "browser": true,
   "devel": true,
   "nonstandard": true,
   "globals": {
-    "_": false,
-    "rivets": false,
     "saveAs": false,
     "Promise": false,
-    "Parse": false,
-
-    "humane": true,
-    "ArcBase": true,
-    "table": true,
-    "Book": true,
-    "Author": true,
-    "parseBookMap": true,
-    "docTemplates": true,
-    "notesOverlay": true,
-    "authorOverlay": true,
-    "longOverlay": true,
-    "model": true,
-    "rivetsView": true,
-    "alphaNumeric": true,
-    "model": true,
-    "formatISBN": true,
-    "preventAuthorEditing": true,
-    "clearInputs": true,
-    "authorMapper": true,
-    "update": true,
-    "saveToParse": true,
-    "getParseAuthors": true
+    "module": false,
+    "require": false
   }
 }

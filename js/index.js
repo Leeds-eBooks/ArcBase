@@ -1,4 +1,162 @@
-model={
+import 'babelify/polyfill'
+import '../bower_components/FileSaver/FileSaver.min'
+import 'sightglass'
+
+import parseG from 'parse'
+// import sightglass from 'sightglass'
+import rivets from 'rivets'
+import underscore from 'underscore';
+import _ from 'underscore-contrib';
+import humane from 'humane-js'
+
+import ArcBase from '../keys'
+
+import {preventAuthorEditing,
+        authorMapper,
+        chooseCover,
+        // update,
+        alphaNumeric,
+        saveToParse,
+        getParseAuthors} from './functions'
+
+import docTemplates from './templates'
+
+import './config'
+
+// make sure we're using the latest underscore methods
+Object.assign(_, underscore);
+
+const Parse = parseG.Parse
+Parse.initialize(ArcBase.keys.Parse.a, ArcBase.keys.Parse.b)
+
+export const Book = Parse.Object.extend("Book")
+export const Author = Parse.Object.extend("Author")
+
+const table = document.querySelector('#main table'),
+      parseBookMap = new Map(),
+      notesOverlay = document.querySelector('.notes-overlay'),
+      authorOverlay = document.querySelector('.author-overlay'),
+      longOverlay = document.querySelector('.long-overlay')
+
+export let model
+let rivetsView
+
+humane.error = humane.spawn({
+  addnCls: 'humane-flatty-error',
+  timeout: 8000,
+  clickToClose: true
+})
+
+export function update(newBook, load150more) {
+  const query = new Parse.Query(Book),
+        amountToSkip = load150more ? model.books.length : 0;
+
+  function whenLoaded(results) {
+    results.forEach(pb => { // pb = parseBook
+      const existingBook = model.books.find(book => book.id === pb.id),
+            bookObj = {
+              id: pb.id,
+              title: pb.get('title'),
+              coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
+              authors: (pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [],
+              pubdate: pb.get('pubdate'),
+              pages: pb.get('pages'),
+              shortdesc: pb.get('shortdesc'),
+              ISBNs: pb.get('ISBNs') && pb.get('ISBNs').reduce((obj, current) => {
+                obj[current.type]=current.value;
+                return obj;
+              }, {}),
+              price: (pb.get('price') && pb.get('price').reduce((obj, current) => {
+                obj[current.type] = current.value;
+                return obj;
+              }, {})) || {pbk:'', hbk:'', ebk:''},
+              button: 'Edit',
+              chooseCover: chooseCover(pb)
+            };
+
+      let modelBook;
+
+      if (pb.has('authors')) {
+        pb.get('authors').forEach(parseAuthor => {
+          if (!model.authors.some(a => a.get('name') === parseAuthor.get('name'))) {
+            model.authors.push(parseAuthor);
+          }
+        });
+      }
+
+      if (existingBook) modelBook = Object.assign(existingBook, bookObj);
+      else {
+        modelBook = Object.assign(bookObj, {
+          addAuthor(event,scope) {
+            scope.book.authors.push({
+              name:'',
+              roles: {
+                author: false,
+                translator: false,
+                editor: false,
+                introducer: false,
+                critic: false
+              }
+            });
+          },
+          isEditing() {
+            return this.button==='Save';
+          }
+        });
+        model.books[results.length > 1 ? 'push' : 'unshift'](modelBook);
+      }
+
+      parseBookMap.set(modelBook, pb);
+    });
+
+    if (newBook) clearInputs();
+  }
+
+  if (newBook) query.equalTo('objectId', newBook.id);
+
+  query
+  .descending('pubdate')
+  .skip(amountToSkip)
+  .limit(150)
+  .include('authors')
+  .find()
+  .then(whenLoaded)
+  .fail(err => {
+    console.log(JSON.stringify(err));
+  });
+}
+
+function clearInputs() {
+  model.inputs = {
+    title: '',
+    authors: [{
+      name:'',
+      roles: {
+        author: false,
+        translator: false,
+        editor: false,
+        introducer: false,
+        critic: false
+      }
+    }],
+    pubdate: '',
+    pages: '',
+    shortdesc: '',
+    ISBNs: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    price: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    button: 'Save'
+  };
+}
+
+model = {
   authors: [],
   // parseBooks: [],
   books: [],
@@ -49,11 +207,12 @@ model={
   },
 
   submit(event, modelArg, bookToEdit) {
-    var data = {},
+    const data = {},
         authors = [],
         replacedAuthorMap = {},
-        inputModel = bookToEdit || model.inputs,
-        coverFile;
+        inputModel = bookToEdit || model.inputs;
+
+    let coverFile;
 
     function continueSubmit(replacedAuthors) {
       if (!bookToEdit) model.inputs.button='<img class="loading" src="images/loading.gif">';
@@ -132,17 +291,26 @@ model={
 
       return Parse.Cloud.run('checkAuthors', {authors: inputModel.authors})
       .then(res => {
-        var cancelFlag=false,
-            replaced=res.filter(r => {
-              if (r.length===1) {
-                let name = r[0].author.get("name");
-                return confirm('Did you mean '+name+'?\n\nOk for YES, I MEANT "'+name+
-                  '"\nCancel for NO, I AM CORRECT');
-              } else {
-                cancelFlag = confirm("There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?\n\nOk for YES, I MADE A MISTAKE\nCancel for NO, I AM CORRECT");
-                return cancelFlag;
-              }
-            });
+        let cancelFlag = false;
+        const replaced = res.filter(r => {
+            if (r.length===1) {
+              let name = r[0].author.get("name");
+              return confirm(
+                `Did you mean ${name}?
+
+                Ok for YES, I MEANT "${name}"
+                Cancel for NO, I AM CORRECT`
+              );
+            } else {
+              cancelFlag = confirm(
+                `There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?
+
+                Ok for YES, I MADE A MISTAKE
+                Cancel for NO, I AM CORRECT`
+              );
+              return cancelFlag;
+            }
+          });
 
         if (replaced.length) {
           if (!cancelFlag) continueSubmit(replaced);
@@ -252,21 +420,23 @@ model={
     model.currentAuthor.change();
   },
   delTravelAvailDateRange(event, scope) {
-    var range = model.currentAuthor.get('travel_avail_dates')[scope.index];
+    const range = model.currentAuthor.get('travel_avail_dates')[scope.index];
     model.currentAuthor.remove('travel_avail_dates', range); // FIXME can't remove() after add() without saving in-between
     model.currentAuthor.change();
   },
   editAuthor(event) {
-    var isEditing = model.authorButton === 'Save';
+    const isEditing = model.authorButton === 'Save';
     model.authorButton = isEditing ?
       '<img class="loading" src="images/loading.gif">' : 'Save';
     model.isEditing.author =! isEditing;
     if (isEditing) {
       model.currentAuthor.save().then(res => {
-        var parseAuthorNewName = res.get('name');
+        const parseAuthorNewName = res.get('name');
         model.authorButton='Edit';
         model.books.forEach(book => {
-          book.authors.filter(a => a.name === model.currentAuthorOldName).forEach(author => {
+          book.authors
+          .filter(a => a.name === model.currentAuthorOldName)
+          .forEach(author => {
             author.name = parseAuthorNewName;
           });
         });
@@ -274,7 +444,7 @@ model={
     }
   },
   removeAuthor(event, scope) {
-    var x=scope.book.authors.splice(scope.index, 1);
+    /*const x = */scope.book.authors.splice(scope.index, 1);
     // TODO roles
   },
 
@@ -340,7 +510,8 @@ model={
   },
 
   smartSearch(event, scope) {
-    var column = this.getAttribute('data-search-column');
+    const column = this.getAttribute('data-search-column');
+
     for (let i = 0, l = model.books.length; i < l; i++) {
       let book = model.books[i],
           item = book[column];
@@ -380,7 +551,8 @@ model={
   searchContacts: (function() {
     const Contact = Parse.Object.extend("Contact"),
           query = new Parse.Query(Contact);
-    var contacts;
+
+    let contacts;
 
     query.find().then(res => {
       contacts = res;
