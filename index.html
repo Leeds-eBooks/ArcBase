@@ -9,16 +9,6 @@
   <link rel="stylesheet" href="css/styles.css">
 
   <link href='http://fonts.googleapis.com/css?family=Lato:400,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-
-  <script type="text/javascript" src="keys.js"></script>
-  <script type="text/javascript" src="bower_components/parse-js-sdk/lib/parse.min.js"></script>
-  <script type="text/javascript" src="bower_components/sightglass/index.js"></script>
-  <script type="text/javascript" src="bower_components/rivets/dist/rivets.js"></script>
-  <script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
-  <script type="text/javascript" src="bower_components/FileSaver/FileSaver.min.js"></script>
-  <script type="text/javascript" src="bower_components/humane/humane.min.js"></script>
-  <!-- <script type="text/javascript" src="bower_components/dropzone/dist/dropzone.js"></script> -->
-  <script type="text/javascript" src="js/browser-polyfill.js"></script>
 </head>
 
 <body>
@@ -326,19 +316,22 @@
 
   <div rv-on-click="closeContacts" class="contacts-overlay">
     <div class="contacts-modal">
+      <button class="add-contact" rv-on-click="addNewContact">+ Add a new contact</button>
       <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
       <div rv-each-contact="foundContacts">
-        <p>{contact#firstname} {contact#lastname}</p>
-        <p rv-text="contact#organization_name"></p>
-        <p rv-text="contact#email_personal"></p>
-        <p rv-text="contact#email_work"></p>
-        <p rv-text="contact#tel_mobile"></p>
-        <p rv-html="contact#postal_work | linebreaks"></p>
+        <input class="name-input" type="text" placeholder="first name" rv-value-debounced="contact+firstname">
+        <input class="name-input" type="text" placeholder="last name" rv-value-debounced="contact+lastname">
+        <input type="text" placeholder="organization name" rv-value-debounced="contact+organization_name">
+        <input type="email" placeholder="email (work)" rv-value-debounced="contact+email_work">
+        <input type="email" placeholder="email (personal)" rv-value-debounced="contact+email_personal">
+        <input type="tel" placeholder="tel (work)" rv-value-debounced="contact+tel_work">
+        <input type="tel" placeholder="tel (mobile)" rv-value-debounced="contact+tel_mobile">
+        <textarea rows="5" rv-value-debounced="contact+postal_work"></textarea>
       </div>
     </div>
   </div>
 
-  <script src="js/init-compiled.js"></script>
+  <script src="js/index-compiled.js"></script>
 </body>
 
 </html>

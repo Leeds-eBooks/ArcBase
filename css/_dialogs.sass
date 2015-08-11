@@ -40,7 +40,7 @@
       background-color: #e7edf3
       border-radius: 0.2em
       text-align: left
-      padding-left: 0.5em
+      padding: 0.5em
 
       p
         margin: 0.5em 0
@@ -51,9 +51,33 @@
     &, & *
       box-sizing: border-box
 
-  input
+  .add-contact
+    margin-bottom: 1em
+
+  input,
+  textarea
     color: black
-    font-size: 2em
+    font-size: 1em
+    display: block
+    width: 100%
+    border: none
+
+    &[type=search]
+      font-size: 2em
+
+    &.name-input
+      width: 49.5%
+      float: left
+
+  input + input,
+  input + textarea
+    margin-top: 0.2em
+
+    &.name-input
+      margin:
+        top: 0
+        left: 1%
+        bottom: 0.2em
 
 .open-contacts
   position: fixed
