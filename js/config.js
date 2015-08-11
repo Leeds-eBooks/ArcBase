@@ -1,6 +1,8 @@
 import 'sightglass'
 
-// import sightglass from 'sightglass'
+import _ from './underscore'
+import humane from './humane'
+
 import rivets from 'rivets'
 import {alphaNumeric} from './functions'
 
@@ -9,31 +11,56 @@ if (!String.prototype.insert) {
     String.prototype, 'insert', {
       enumerable: false,
       value(index, substr) {
-        return this.substring(0, index) + substr + this.substr(index);
+        return this.substring(0, index) + substr + this.substr(index)
       }
     }
-  );
+  )
 }
 
 rivets.adapters['#'] = {
-  observe(obj, keypath, cb) {obj.on(`change:${keypath}`, cb);},
-  unobserve(obj, keypath, cb) {obj.off(`change:${keypath}`, cb);},
+  observe(obj, keypath, cb) {obj.on(`change:${keypath}`, cb)},
+  unobserve(obj, keypath, cb) {obj.off(`change:${keypath}`, cb)},
   get: (obj, keypath) => obj && obj.get(keypath),
   set: (obj, keypath, value) => obj && obj.set(keypath, value)
-};
+}
 
-rivets.binders.readonly = (el, value) => {
-  el.readOnly = !!value;
-};
+rivets.adapters['+'] = _.clone(rivets.adapters['#'])
+rivets.adapters['+'].set = (obj, keypath, value) => {
+  if (obj) {
+    humane.remove()
+    humane.info('saving...')
+    obj.set(keypath, value)
+    obj.save().then(
+      () => {
+        humane.remove()
+        humane.success(`saved ${keypath}`)
+      },
+      () => {
+        humane.remove()
+        humane.error(`failed to save ${keypath}`)
+      }
+    )
+  }
+}
 
-rivets.binders['value-in-array'] = (el, value) => {
-  // TODO
-};
+rivets.binders['value-debounced'] = _.clone(rivets.binders.value)
+rivets.binders['value-debounced'].bind = function(el) {
+  if (!(el.tagName === 'INPUT' && el.type === 'radio')) {
+    this.event = el.tagName === 'SELECT' ? 'change' : 'input'
+    return el.addEventListener(this.event, _.debounce(this.publish, 300), false)
+  }
+}
 
-rivets.formatters.opposite = value => !value;
-rivets.formatters.prepend = (value, string) => string ? `${string}${value}` : value;
-rivets.formatters.alphaNumeric = v => alphaNumeric(v);
-rivets.formatters.linebreaks = v => v.replace(/\n/g, '<br>');
+rivets.binders.readonly = (el, value) => {el.readOnly = !!value}
+
+// rivets.binders['value-in-array'] = (el, value) => {
+//   // TODO
+// }
+
+rivets.formatters.opposite = value => !value
+rivets.formatters.prepend = (value, prep) => prep ? `${prep}${value}` : value
+rivets.formatters.alphaNumeric = v => alphaNumeric(v)
+rivets.formatters.linebreaks = v => _.isString(v) ? v.replace(/\n/g, '<br>') : ''
 // rivets.formatters.ifUndef = function(v, def) {
 //   if (!v) return def;
 // };

@@ -1,12 +1,12 @@
 import parseG from 'parse'
-import humane from 'humane-js'
-import {Book, Author, update} from './index.js'
-
 const Parse = parseG.Parse
+
+import humane from './humane'
+import {Book, Author, update} from './index.js'
 
 function choosy(message, options, urls) {
   return new Promise((resolve, reject) => {
-    const hasUrls = (urls && urls.length),
+    const hasUrls = urls && urls.length,
           frag = document.createDocumentFragment(),
           overlay = document.createElement('div'),
           dialog = document.createElement('div'),
@@ -22,52 +22,48 @@ function choosy(message, options, urls) {
             return button;
           });
 
-    function dismiss() {
-      document.body.removeChild(overlay);
-    }
+    function dismiss() {document.body.removeChild(overlay)}
 
-    overlay.className = 'dialog-overlay';
+    overlay.className = 'dialog-overlay'
 
-    p.innerHTML = message;
-    dialog.appendChild(p);
-    inputs.forEach(input => dialog.appendChild(input));
+    p.innerHTML = message
+    dialog.appendChild(p)
+    inputs.forEach(input => dialog.appendChild(input))
 
-    overlay.appendChild(dialog);
-    frag.appendChild(overlay);
-    document.body.appendChild(frag);
+    overlay.appendChild(dialog)
+    frag.appendChild(overlay)
+    document.body.appendChild(frag)
 
     overlay.addEventListener('click', event => {
       if (event.target === event.currentTarget) {
-        dismiss();
-        resolve(false);
+        dismiss()
+        resolve(false)
       }
     });
 
     if (!hasUrls) {
-      inputs.forEach((input, i) => {
+      inputs.forEach((input, i) =>
         input.addEventListener('click', event => {
-          dismiss();
-          resolve(options[i]);
-        });
-      });
+          dismiss()
+          resolve(options[i])
+        })
+      )
     }
-  });
+  })
 }
 
 export function chooseCover(parseBook) {
   return function(event, scope) {
-    const sizes = ['200', '600', 'full size'];
+    const sizes = ['200', '600', 'full size']
     choosy(
       'Choose cover size (width in pixels)<br><br>' +
         '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',
       sizes,
-      sizes.map(size => {
-        const key = (size === 'full size') ?
-          'cover_orig' : 'cover_' + size;
-        return parseBook.get(key).url();
-      })
-    ).catch(console.log);
-  };
+      sizes.map(size =>
+        parseBook.get(size === 'full size' ? 'cover_orig' : 'cover_' + size).url()
+      )
+    ).catch(console.log.bind(console))
+  }
 }
 
 export function authorMapper(author) {
@@ -79,13 +75,8 @@ export function authorMapper(author) {
         this.get('roleMap') && // FIXME what is `this`?
         this.get('roleMap').find(v => v.id === author.id).roles
       ) || {}
-    };
-  } else {
-    return {
-      name: "",
-      roles: {}
-    };
-  }
+    }
+  } else return {name: "", roles: {}}
 }
 
 export function alphaNumeric(str, replacement = '-') {
@@ -93,59 +84,59 @@ export function alphaNumeric(str, replacement = '-') {
 }
 
 export function formatISBN(str) {
-  return str.insert(3, '-').insert(11, '-').insert(14, '-');
+  return str.insert(3, '-').insert(11, '-').insert(14, '-')
 }
 
 export function preventAuthorEditing(i) {
   const bookRows = Array.from(document.querySelectorAll('tr.book-rows')),
-        authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'));
-  authors.forEach(a => {a.readOnly = true;});
+        authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'))
+  authors.forEach(a => {a.readOnly = true})
 }
 
 export function saveToParse(data, bookToEdit) {
   const query = new Parse.Query(Book),
-        book = bookToEdit ? query.get(bookToEdit.id) : new Book();
+        book = bookToEdit ? query.get(bookToEdit.id) : new Book()
 
   function save(book) {
     book.save(data, {
       success: update, // update(newBook)
       error: function(book, error) {
-        console.error(JSON.stringify(error));
+        console.error(JSON.stringify(error))
         if (error.code == 141) {
-          humane.error('The upload failed! Please try again.');
-          update(book);
+          humane.error('The upload failed! Please try again.')
+          update(book)
         }
       }
-    });
+    })
   }
 
-  if (bookToEdit) {
-    book.then(save);
-  } else {
-    save(book);
-  }
+  if (bookToEdit) book.then(save)
+  else save(book)
 }
 
 export function getParseAuthors(authorsArray) {
-  return new Promise(function(resolve, reject) {
-    const query = new Parse.Query(Author);
-    query.containedIn('name', authorsArray);
+  return new Promise((resolve, reject) => {
+    const query = new Parse.Query(Author)
+    query.containedIn('name', authorsArray)
     query.find({
       success(savedAuthors) {
-        const savedAuthorNames = savedAuthors.map(v => v.get('name'));
+        const savedAuthorNames = savedAuthors.map(v => v.get('name'))
 
         if (savedAuthorNames.length !== authorsArray.length) {
           const promisedAuthors = authorsArray.map(name => {
             if (!savedAuthorNames.includes(name)) {
-              const newAuthor = new Author();
-              return newAuthor.save({name});
-            } else return savedAuthors.find(savedAuthor =>
-              savedAuthor.get('name') === name);
-          });
-          Promise.all(promisedAuthors).then(resolve);
-        } else resolve(savedAuthors);
+              const newAuthor = new Author()
+              return newAuthor.save({name})
+            } else {
+              return savedAuthors.find(savedAuthor =>
+                savedAuthor.get('name') === name
+              )
+            }
+          })
+          Promise.all(promisedAuthors).then(resolve)
+        } else resolve(savedAuthors)
       },
       error: reject
-    });
-  });
+    })
+  })
 }

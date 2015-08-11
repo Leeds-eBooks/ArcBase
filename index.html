@@ -316,14 +316,17 @@
 
   <div rv-on-click="closeContacts" class="contacts-overlay">
     <div class="contacts-modal">
+      <button class="add-contact" rv-on-click="addNewContact">+ Add a new contact</button>
       <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
       <div rv-each-contact="foundContacts">
-        <p>{contact#firstname} {contact#lastname}</p>
-        <p rv-text="contact#organization_name"></p>
-        <p rv-text="contact#email_personal"></p>
-        <p rv-text="contact#email_work"></p>
-        <p rv-text="contact#tel_mobile"></p>
-        <p rv-html="contact#postal_work | linebreaks"></p>
+        <input class="name-input" type="text" placeholder="first name" rv-value-debounced="contact+firstname">
+        <input class="name-input" type="text" placeholder="last name" rv-value-debounced="contact+lastname">
+        <input type="text" placeholder="organization name" rv-value-debounced="contact+organization_name">
+        <input type="email" placeholder="email (work)" rv-value-debounced="contact+email_work">
+        <input type="email" placeholder="email (personal)" rv-value-debounced="contact+email_personal">
+        <input type="tel" placeholder="tel (work)" rv-value-debounced="contact+tel_work">
+        <input type="tel" placeholder="tel (mobile)" rv-value-debounced="contact+tel_mobile">
+        <textarea rows="5" rv-value-debounced="contact+postal_work"></textarea>
       </div>
     </div>
   </div>

@@ -1,15 +1,13 @@
 import 'babelify/polyfill'
-import '../bower_components/FileSaver/FileSaver.min'
 import 'sightglass'
 
 import parseG from 'parse'
-// import sightglass from 'sightglass'
 import rivets from 'rivets'
-import underscore from 'underscore';
-import _ from 'underscore-contrib';
-import humane from 'humane-js'
+import FileSaver from '../bower_components/FileSaver/FileSaver.min'
 
 import ArcBase from '../keys'
+// import humane from './humane'
+// import _ from './underscore'
 
 import {preventAuthorEditing,
         authorMapper,
@@ -23,8 +21,8 @@ import docTemplates from './templates'
 
 import './config'
 
-// make sure we're using the latest underscore methods
-Object.assign(_, underscore);
+import searchContacts, {Contact} from './contacts'
+// import addNewContact from './add-contact'
 
 const Parse = parseG.Parse
 Parse.initialize(ArcBase.keys.Parse.a, ArcBase.keys.Parse.b)
@@ -40,12 +38,6 @@ const table = document.querySelector('#main table'),
 
 export let model
 let rivetsView
-
-humane.error = humane.spawn({
-  addnCls: 'humane-flatty-error',
-  timeout: 8000,
-  clickToClose: true
-})
 
 export function update(newBook, load150more) {
   const query = new Parse.Query(Book),
@@ -498,7 +490,7 @@ model = {
           AI = docTemplates.AI(book),
           blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
 
-    saveAs(blob, `${book.title} AI.txt`);
+    FileSaver.saveAs(blob, `${book.title} AI.txt`);
   },
 
   downloadPR(event, scope) {
@@ -506,7 +498,7 @@ model = {
           PR = docTemplates.PR(book),
           blob = new Blob([PR], {type: "text/plain;charset=utf-8"});
 
-    saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`);
+    FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`);
   },
 
   smartSearch(event, scope) {
@@ -548,34 +540,11 @@ model = {
     }
   },
   foundContacts: [],
-  searchContacts: (function() {
-    const Contact = Parse.Object.extend("Contact"),
-          query = new Parse.Query(Contact);
-
-    let contacts;
-
-    query.find().then(res => {
-      contacts = res;
-    });
-
-    return function(event, scope) {
-      if (!this.value.trim()) {
-        model.foundContacts.splice(0, model.foundContacts.length);
-        return false;
-      }
-      for (let i = 0, l = contacts.length; i < l; i++) {
-        const contact = contacts[i],
-              data = _.values(contact.toJSON()).toString().toLowerCase();
-
-        if (data.includes(this.value.toLowerCase())) {
-          if (!model.foundContacts.includes(contact)) model.foundContacts.push(contact);
-        } else {
-          let i = model.foundContacts.indexOf(contact);
-          if (~i) model.foundContacts.splice(i, 1);
-        }
-      }
-    };
-  })()
+  searchContacts: searchContacts(),
+  addNewContact(event, scope) {
+    const newContact = new Contact()
+    newContact.save().then(newContact => model.foundContacts.unshift(newContact))
+  }
 };
 
 rivetsView = rivets.bind(document.body, model);

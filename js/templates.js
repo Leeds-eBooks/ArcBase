@@ -1,11 +1,7 @@
-import underscore from 'underscore';
-import _ from 'underscore-contrib';
+import _ from './underscore'
 
 import {formatISBN} from './functions'
 import {model} from './index'
-
-// make sure we're using the latest underscore methods
-Object.assign(_, underscore);
 
 function swapNames(authorObj) {
   const name = authorObj.name,
@@ -13,7 +9,7 @@ function swapNames(authorObj) {
         ln = name.substring(0, sep),
         fn = name.substring(sep + 1).trim();
 
-  return `${fn} ${ln}`;
+  return `${fn} ${ln}`
 }
 
 function joinMany(array) {
@@ -21,39 +17,33 @@ function joinMany(array) {
     '0': 'Unknown',
     '1': array[0],
     '2': array.join(' and '),
-    '3+': array.slice(0,-1).join(', ') + ' and ' + array.slice(-1)
-  }[array.length < 3 ? array.length + '' : '3+']
+    '3+': `${array.slice(0,-1).join(', ')} and ${array.slice(-1)}`
+  }[array.length < 3 ? `${array.length}` : '3+']
 }
 
 export default {
 
   para: `
-  `,
+`,
 
   authorString: function(book) {
-    const authors = book.authors.filter(author => author.roles.author).map(swapNames);
-    return `by ${joinMany(authors)}`;
+    const authors = book.authors.filter(author => author.roles.author).map(swapNames)
+    return `by ${joinMany(authors)}`
   },
 
   translatorString: function(book) {
-    const translators = book.authors.filter(author => author.roles.translator).map(swapNames);
-    return translators.length ?
-      `translated by ${joinMany(translators)}` :
-      '';
+    const translators = book.authors.filter(author => author.roles.translator).map(swapNames)
+    return translators.length ? `translated by ${joinMany(translators)}` : ''
   },
 
   editorString(book) {
-    const editors = book.authors.filter(author => author.roles.editor).map(swapNames);
-    return editors.length ?
-      `edited by ${joinMany(editors)}` :
-      '';
+    const editors = book.authors.filter(author => author.roles.editor).map(swapNames)
+    return editors.length ? `edited by ${joinMany(editors)}` : ''
   },
 
   introducerString(book) {
-    const introducers = book.authors.filter(author => author.roles.introducer).map(swapNames);
-    return introducers.length ?
-      `with an introduction by ${joinMany(introducers)}` :
-      '';
+    const introducers = book.authors.filter(author => author.roles.introducer).map(swapNames)
+    return introducers.length ? `with an introduction by ${joinMany(introducers)}` : ''
   },
 
   bios(book) {
