@@ -563,6 +563,8 @@ function update(newBook, load150more) {
         id: pb.id,
         title: pb.get('title'),
         coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
+        coverimgFull: pb.has('cover_orig') ? pb.get('cover_orig').url() : '',
+        coverimg600: pb.has('cover_600') ? pb.get('cover_600').url() : '',
         authors: pb.get('authors') && pb.get('authors').map(_functions.authorMapper, pb) || [],
         pubdate: pb.get('pubdate'),
         pages: pb.get('pages'),
@@ -1008,6 +1010,29 @@ exports.model = model = {
     _bower_componentsFileSaverFileSaverMin2['default'].saveAs(blob, 'Press Release Arc Publications - ' + book.title + '.txt');
   },
 
+  downloadCataloguePage: function downloadCataloguePage(event, scope) {
+    var book = scope.book,
+        cat = _templates2['default'].CataloguePage(book),
+        blob = new Blob([cat], { type: "text/plain;charset=utf-8" });
+
+    _bower_componentsFileSaverFileSaverMin2['default'].saveAs(blob, 'CataloguePage-' + book.title.replace(/\s+/g, '') + '.html');
+  },
+
+  downloadCatalogue: function downloadCatalogue() {
+    var range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD').split(' to ').map(function (str) {
+      return new Date(str);
+    }),
+        cat = model.books.filter(function (book) {
+      var pubdate = new Date(book.pubdate);
+      return range[0] <= pubdate && pubdate <= range[1];
+    }).map(function (book) {
+      return _templates2['default'].CataloguePage(book);
+    }).join('<p style="page-break-after:always;"></p>'),
+        blob = new Blob([cat], { type: "text/plain;charset=utf-8" });
+
+    _bower_componentsFileSaverFileSaverMin2['default'].saveAs(blob, 'Catalogue.html');
+  },
+
   smartSearch: function smartSearch(event, scope) {
     var _this = this;
 
@@ -1066,6 +1091,9 @@ exports.model = model = {
 };
 
 rivetsView = _rivets2['default'].bind(document.body, model);
+
+window.model = model;
+
 update();
 
 // update,
@@ -1096,13 +1124,21 @@ function swapNames(authorObj) {
   return fn + ' ' + ln;
 }
 
+// function joinMany(array) {
+//   return {
+//     '0': 'Unknown',
+//     '1': array[0],
+//     '2': array.join(' and '),
+//     '3+': `${array.slice(0,-1).join(', ')} and ${array.slice(-1)}`
+//   }[array.length < 3 ? `${array.length}` : '3+']
+// }
+
 function joinMany(array) {
   return ({
     '0': 'Unknown',
     '1': array[0],
-    '2': array.join(' and '),
-    '3+': array.slice(0, -1).join(', ') + ' and ' + array.slice(-1)
-  })[array.length < 3 ? '' + array.length : '3+'];
+    '2+': array.join(', ')
+  })[array.length < 2 ? '' + array.length : '2+'];
 }
 
 exports['default'] = {
@@ -1157,6 +1193,12 @@ exports['default'] = {
 
   PR: function PR(book) {
     return '<<< insert logo here >>>\nNanholme Mill, Shaw Wood Road, Todmorden, LANCS OL14 6DA\nTel 01706 812338, Fax 01706 818948\nben@arcpublications.co.uk\nwww.arcpublications.co.uk @Arc_Poetry\n\nFor immediate use ' + new Date().toDateString() + '\n\nANNOUNCING THE PUBLICATION OF\n\n' + book.title + '\n\n' + _underscore2['default'].compact([this.authorString(book), this.translatorString(book), this.editorString(book), this.introducerString(book)]).join(this.para) + '\n\n' + book.shortdesc + '\n\n' + this.bios(book) + '\n\nENDS\n\nNotes to the Editor:\n\n' + book.title + '\n' + joinMany(_underscore2['default'].compact([this.authorString(book), this.translatorString(book), this.editorString(book), this.introducerString(book)])) + '\nPublication date: ' + new Date(book.pubdate).toDateString() + '\n' + (book.pages ? book.pages + ' pages' : '') + '\n' + (book.ISBNs.pbk ? (0, _functions.formatISBN)(book.ISBNs.pbk) + ' paperback £' + (book.price.pbk || '?') : '') + '\n' + (book.ISBNs.hbk ? (0, _functions.formatISBN)(book.ISBNs.hbk) + ' hardback £' + (book.price.hbk || '?') : '') + '\n' + (book.ISBNs.ebk ? (0, _functions.formatISBN)(book.ISBNs.ebk) + ' ebook £' + (book.price.ebk || '?') : '') + '\n\nFurther information can be found on our website www.arcpublications.co.uk\nPlease contact Tony Ward, Angela Jarman or Ben Styles on 01706 812338\nor email ben@arcpublications.co.uk with any queries';
+  },
+
+  ////////////////////////////////////////
+
+  CataloguePage: function CataloguePage(book) {
+    return ('\n<style>\n  .wrapper {\n    margin: 0;\n    padding: 2em;\n  }\n  img {\n    width: 40%;\n    float: left;\n    margin: 1em 2em 2em 1em;\n    box-shadow: 0.8em 0.8em 4em rgba(0,0,0,0.5);\n  }\n  h1 {\n    font-family: sans-serif;\n  }\n  .footer {\n    clear: both;\n    padding: 1em;\n    background-color: #e7edf3;\n  }\n  .footer > * {\n    margin: 0;\n    padding: 0;\n    font-size: 0.8em;\n  }\n  p {\n    font-size: 1.2em;\n  }\n  .desc {\n    margin-top: 3em;\n  }\n  .author {\n    font-size: 1em;\n  }\n</style>\n\n<div class="wrapper">\n  <h1>' + book.title + '</h1>\n  <p class="author">' + joinMany(_underscore2['default'].compact([this.authorString(book), this.translatorString(book), this.editorString(book), this.introducerString(book)])) + '</p>\n\n  <img src="' + book.coverimg600 + '" />\n\n  <p class="desc">' + book.shortdesc + '</p>\n\n  <div class="footer">\n    <h3>Bibliographic Details</h3>\n    ' + (book.ISBNs.pbk ? '<p>' + (0, _functions.formatISBN)(book.ISBNs.pbk) + ' pbk £' + (book.price.pbk || '?') + '</p>' : '') + '\n    ' + (book.ISBNs.hbk ? '<p>' + (0, _functions.formatISBN)(book.ISBNs.hbk) + ' hbk £' + (book.price.hbk || '?') + '</p>' : '') + '\n    ' + (book.ISBNs.ebk ? '<p>' + (0, _functions.formatISBN)(book.ISBNs.ebk) + ' ebk £' + (book.price.ebk || '?') + '</p>' : '') + '\n    ' + (book.pages ? '<p>' + book.pages + 'pp</p>' : '') + '\n    <p>Publication Date: ' + new Date(book.pubdate).toDateString() + '</p>\n  </div>\n</div>').replace(/£/g, '&pound;');
   }
 };
 module.exports = exports['default'];

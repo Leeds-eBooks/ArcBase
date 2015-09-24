@@ -50,6 +50,8 @@ export function update(newBook, load150more) {
               id: pb.id,
               title: pb.get('title'),
               coverimg: pb.has('cover_200') ? pb.get('cover_200').url() : '',
+              coverimgFull: pb.has('cover_orig') ? pb.get('cover_orig').url() : '',
+              coverimg600: pb.has('cover_600') ? pb.get('cover_600').url() : '',
               authors: (pb.get('authors') && pb.get('authors').map(authorMapper,pb)) || [],
               pubdate: pb.get('pubdate'),
               pages: pb.get('pages'),
@@ -501,6 +503,30 @@ model = {
     FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`);
   },
 
+  downloadCataloguePage(event, scope) {
+    const book = scope.book,
+          cat = docTemplates.CataloguePage(book),
+          blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+
+    FileSaver.saveAs(blob, `CataloguePage-${book.title.replace(/\s+/g, '')}.html`);
+  },
+
+  downloadCatalogue() {
+    const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
+            .split(' to ')
+            .map(str => new Date(str)),
+          cat = model.books
+            .filter(book => {
+              const pubdate = new Date(book.pubdate)
+              return range[0] <= pubdate && pubdate <= range[1]
+            })
+            .map(book => docTemplates.CataloguePage(book))
+            .join('<p style="page-break-after:always;"></p>'),
+          blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+
+    FileSaver.saveAs(blob, 'Catalogue.html');
+  },
+
   smartSearch(event, scope) {
     const column = this.getAttribute('data-search-column');
 
@@ -548,4 +574,7 @@ model = {
 };
 
 rivetsView = rivets.bind(document.body, model);
+
+window.model = model
+
 update();
