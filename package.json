@@ -12,7 +12,8 @@
     "rivets": "^0.8.1",
     "sightglass": "^0.2.4",
     "underscore": "^1.8.3",
-    "underscore-contrib": "git+https://github.com/Leeds-eBooks/underscore-contrib.git#underscore_1_8_3"
+    "underscore-contrib": "git+https://github.com/Leeds-eBooks/underscore-contrib.git#underscore_1_8_3",
+    "whatwg-fetch": "^0.9.0"
   },
   "devDependencies": {
     "babelify": "^6.1.3",

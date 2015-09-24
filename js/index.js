@@ -1,4 +1,5 @@
 import 'babelify/polyfill'
+import 'whatwg-fetch'
 import 'sightglass'
 
 import parseG from 'parse'
@@ -515,6 +516,7 @@ model = {
     const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
             .split(' to ')
             .map(str => new Date(str)),
+          email = prompt('Email address to send Catalogue to:'),
           cat = model.books
             .filter(book => {
               const pubdate = new Date(book.pubdate)
@@ -524,8 +526,28 @@ model = {
             .join('<p style="page-break-after:always;"></p>'),
           blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
 
-    FileSaver.saveAs(blob, 'Catalogue.html');
+    fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
+      method: 'post',
+      body: blob
+    })
+    // FileSaver.saveAs(blob, 'Catalogue.html');
   },
+
+  // downloadCatalogue() {
+  //   const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
+  //           .split(' to ')
+  //           .map(str => new Date(str)),
+  //         cat = model.books
+  //           .filter(book => {
+  //             const pubdate = new Date(book.pubdate)
+  //             return range[0] <= pubdate && pubdate <= range[1]
+  //           })
+  //           .map(book => docTemplates.CataloguePage(book))
+  //           .join('<p style="page-break-after:always;"></p>'),
+  //         blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+  //
+  //   FileSaver.saveAs(blob, 'Catalogue.html');
+  // },
 
   smartSearch(event, scope) {
     const column = this.getAttribute('data-search-column');
