@@ -9,10 +9,10 @@ import send from './cat/mail'
 const server = http.createServer()
 
 server.on('request', (request, response) => {
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Request-Method', 'POST');
-  response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
-  response.setHeader('Access-Control-Allow-Headers', '*');
+  response.setHeader('Access-Control-Allow-Origin', 'http://arcpublications.co.uk/arcbase/')
+  response.setHeader('Access-Control-Request-Method', 'POST')
+  response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
+  response.setHeader('Access-Control-Allow-Headers', '*')
 
   if (request.method === 'POST') {
     const {query} = url.parse(request.url),
@@ -26,12 +26,21 @@ server.on('request', (request, response) => {
 
     request.on('end', () => {
       response.writeHead(200, "OK", {'Content-Type': 'text/html'})
-      response.write('<html><head><title>Success</title></head><body><h1>Success!</h1></body></html>')
+      response.write(
+        `<html>
+          <head>
+            <title>Success</title>
+          </head>
+          <body>
+            <h1>Success!</h1>
+          </body>
+        </html>`
+      )
       response.end()
 
       // TODO http-pdf, then save to file
 
-      pdf.create(html).toFile('./Catalogue.pdf', (err, res) => {
+      pdf.create(html, {format: 'A5'}).toFile('./Catalogue.pdf', (err, res) => {
         if (err) console.error(err)
         else send(email, res.filename)
       })
@@ -40,10 +49,22 @@ server.on('request', (request, response) => {
   } else if (request.method === 'OPTIONS') {
 		response.writeHead(200)
 		response.end()
+
 	} else {
     console.log("[405] " + request.method + " to " + request.url)
     response.writeHead(405, "Method not supported", {'Content-Type': 'text/html'})
-    response.end('<html><head><title>405 - Method not supported</title></head><body><h1>Method not supported.</h1></body></html>')
+    response.end(
+      `<html>
+        <head>
+          <title>405 - Method not supported</title>
+        </head>
+        <body>
+          <h1>
+            Method not supported.
+          </h1>
+        </body>
+      </html>`
+    )
   }
 })
 

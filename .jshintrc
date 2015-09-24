@@ -6,6 +6,7 @@
   "unused": "vars",
   "varstmt": true,
   "browser": true,
+  "node": true,
   "devel": true,
   "nonstandard": true,
   "globals": {
