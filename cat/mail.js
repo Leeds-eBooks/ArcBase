@@ -4,7 +4,7 @@ const transporter = mailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'intern.arcpublications@gmail.com',
-    pass: 'd17ryden'
+    pass: process.env.SMTPPASS
   }
 })
 
