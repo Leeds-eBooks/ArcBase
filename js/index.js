@@ -7,6 +7,8 @@ import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
 
 import ArcBase from '../keys'
+
+import dropin from './dropin'
 // import humane from './humane'
 // import _ from './underscore'
 
@@ -513,24 +515,36 @@ model = {
   },
 
   downloadCatalogue() {
-    const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
-            .split(' to ')
-            .map(str => new Date(str)),
-          email = prompt('Email address to send Catalogue to:'),
-          cat = model.books
-            .filter(book => {
-              const pubdate = new Date(book.pubdate)
-              return range[0] <= pubdate && pubdate <= range[1]
-            })
-            .map(book => docTemplates.CataloguePage(book))
-            .join('<p style="page-break-after:always;"></p>'),
-          blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+    dropin('Details for automatic catalogue generation', [{
+      key: 'from',
+      placeholder: 'start date',
+      type: 'date'
+    }, {
+      key: 'to',
+      placeholder: 'end date',
+      type: 'date'
+    }, {
+      key: 'email',
+      placeholder: 'email address',
+      type: 'email',
+      value: 'angela@arcpublications.co.uk'
+    }])
+    .then(({from, to, email}) => {
+      const range = [from, to].map(str => new Date(str)),
+            cat = model.books
+              .filter(book => {
+                const pubdate = new Date(book.pubdate)
+                return range[0] <= pubdate && pubdate <= range[1]
+              })
+              .map(book => docTemplates.CataloguePage(book))
+              .join('<p style="page-break-after:always;"></p>'),
+            blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
 
-    fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
-      method: 'post',
-      body: blob
+      fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
+        method: 'post',
+        body: blob
+      })
     })
-    // FileSaver.saveAs(blob, 'Catalogue.html');
   },
 
   // downloadCatalogue() {

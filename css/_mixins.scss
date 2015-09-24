@@ -4,3 +4,16 @@
   -webkit-transition-property: $properties;
           transition-property: $properties;
 }
+
+@mixin v-center {
+  margin-top: 0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+}
+
+@mixin h-center($width) {
+  display: block;
+  @if $width {max-width: $width;}
+  margin-left: auto;
+  margin-right: auto;
+}
