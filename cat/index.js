@@ -1,7 +1,7 @@
 import 'babel/register'
 import http from 'http'
 import url from 'url'
-import fs from 'fs'
+// import fs from 'fs'
 import pdf from 'html-pdf'
 import _ from 'underscore-contrib'
 import send from './cat/mail'
@@ -38,3 +38,5 @@ server.on('request', (request, response) => {
     response.end('<html><head><title>405 - Method not supported</title></head><body><h1>Method not supported.</h1></body></html>')
   }
 })
+
+server.listen(process.env.PORT || 8080)
