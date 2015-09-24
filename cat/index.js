@@ -4,7 +4,7 @@ import url from 'url'
 import fs from 'fs'
 import pdf from 'html-pdf'
 import _ from 'underscore-contrib'
-import send from './mail'
+import send from './cat/mail'
 
 const server = http.createServer()
 
