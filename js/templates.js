@@ -156,7 +156,7 @@ return `
     padding: 2em;
   }
   img {
-    width: 40%;
+    width: 35%;
     float: left;
     margin: 1em 2em 2em 1em;
     box-shadow: 0.8em 0.8em 4em rgba(0,0,0,0.5);
@@ -175,11 +175,9 @@ return `
     font-size: 0.8em;
   }
   p {
-    font-size: 1.2em;
+    font-size: 1.1em;
   }
-  .desc {
-    margin-top: 3em;
-  }
+  .desc {}
   .author {
     font-size: 1em;
   }

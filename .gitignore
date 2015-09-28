@@ -5,6 +5,7 @@ node_modules
 bower_components
 /dist
 js/init-compiled.*
+js/index-compiled.js
 js/init.js
 css/styles.css
 *.map
