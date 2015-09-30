@@ -10,3 +10,4 @@ js/init.js
 css/styles.css
 *.map
 .DS_Store
+.tags*
