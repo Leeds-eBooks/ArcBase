@@ -334,9 +334,9 @@ model = {
   },
 
   calculatePrice(event, scope) {
-    const mod = scope.book || scope.inputs;
-    mod.price.hbk = (parseFloat(this.value) + 3) + "";
-    mod.price.ebk = ((Math.ceil(parseFloat(this.value)) / 2) - 0.01) + "";
+    const mod = scope.book || scope.inputs
+    mod.price.hbk = (parseFloat(this.value) + 3) + ""
+    mod.price.ebk = (parseFloat(this.value) - 4) + ""
   },
 
   calculatePriceFromPages(event, scope) {
@@ -356,9 +356,9 @@ model = {
             );
           };
     if (!book.price.pbk || parseFloat(book.price.pbk) < 13) {
-      book.price.pbk = book.pages ? pageRange[getRange(book.pages)] : "";
-      book.price.hbk = (parseFloat(book.price.pbk) + 3) + "";
-      book.price.ebk = ((Math.ceil(parseFloat(book.price.pbk)) / 2) - 0.01) + "";
+      book.price.pbk = book.pages ? pageRange[getRange(book.pages)] : ""
+      book.price.hbk = (parseFloat(book.price.pbk) + 3) + ""
+      book.price.ebk = (parseFloat(book.price.pbk) - 4) + ""
     }
   },
 
