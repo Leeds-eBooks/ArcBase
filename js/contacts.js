@@ -1,9 +1,8 @@
 import _ from './underscore'
-
 import parseG from 'parse'
 const Parse = parseG.Parse
-
 import {model} from './index'
+import {saved, failed} from './ui'
 
 export const Contact = Parse.Object.extend("Contact")
 
@@ -34,3 +33,13 @@ export default function() {
     })
   }
 }
+
+export const updateContact = _.debounce(
+  (contact, el) => {
+    contact.save().then(
+      () => saved(el),
+      () => failed(el)
+    )
+  },
+  500
+)

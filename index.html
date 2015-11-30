@@ -321,14 +321,40 @@
       <button class="add-contact" rv-on-click="addNewContact">+ Add a new contact</button>
       <input type="search" placeholder="search" rv-on-input="searchContacts" rv-on-keyup="searchContacts">
       <div rv-each-contact="foundContacts">
-        <input class="name-input" type="text" placeholder="first name" rv-value-debounced="contact+firstname">
-        <input class="name-input" type="text" placeholder="last name" rv-value-debounced="contact+lastname">
-        <input type="text" placeholder="organization name" rv-value-debounced="contact+organization_name">
-        <input type="email" placeholder="email (work)" rv-value-debounced="contact+email_work">
-        <input type="email" placeholder="email (personal)" rv-value-debounced="contact+email_personal">
-        <input type="tel" placeholder="tel (work)" rv-value-debounced="contact+tel_work">
-        <input type="tel" placeholder="tel (mobile)" rv-value-debounced="contact+tel_mobile">
-        <textarea rows="5" rv-value-debounced="contact+postal_work" placeholder="postal address (work)"></textarea>
+        <input type="text"
+               class="name-input"
+               placeholder="first name"
+               rv-value="contact#firstname"
+               rv-on-input="updateContact">
+        <input type="text"
+               class="name-input"
+               placeholder="last name"
+               rv-value="contact#lastname"
+               rv-on-input="updateContact">
+        <input type="text"
+               placeholder="organization name"
+               rv-value="contact#organization_name"
+               rv-on-input="updateContact">
+        <input type="email"
+               placeholder="email (work)"
+               rv-value="contact#email_work"
+               rv-on-input="updateContact">
+        <input type="email"
+               placeholder="email (personal)"
+               rv-value="contact#email_personal"
+               rv-on-input="updateContact">
+        <input type="tel"
+               placeholder="tel (work)"
+               rv-value="contact#tel_work"
+               rv-on-input="updateContact">
+        <input type="tel"
+               placeholder="tel (mobile)"
+               rv-value="contact#tel_mobile"
+               rv-on-input="updateContact">
+        <textarea rows="5"
+                  placeholder="postal address (work)"
+                  rv-value="contact#postal_work"
+                  rv-on-input="updateContact"></textarea>
       </div>
     </div>
   </div>

@@ -1,31 +1,22 @@
 import 'babelify/polyfill'
 import 'whatwg-fetch'
 import 'sightglass'
-
+import _ from './underscore'
 import parseG from 'parse'
 import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
-
 import ArcBase from '../keys'
-
 import dropin from './dropin'
-// import humane from './humane'
-// import _ from './underscore'
-
 import {preventAuthorEditing,
         authorMapper,
         chooseCover,
-        // update,
         alphaNumeric,
         saveToParse,
         getParseAuthors} from './functions'
-
 import docTemplates from './templates'
-
 import './config'
-
-import searchContacts, {Contact} from './contacts'
-// import addNewContact from './add-contact'
+import searchContacts, {Contact, updateContact} from './contacts'
+import {saving} from './ui'
 
 const Parse = parseG.Parse
 Parse.initialize(ArcBase.keys.Parse.a, ArcBase.keys.Parse.b)
@@ -592,15 +583,21 @@ model = {
   },
 
   openContacts(event, scope) {
-    const el = document.querySelector('.contacts-overlay');
-    el.classList.add('modal-in');
+    const el = document.querySelector('.contacts-overlay')
+    el.classList.add('modal-in')
   },
   closeContacts(event, scope) {
     if (this === event.target) {
-      const el = document.querySelector('.contacts-overlay');
-      el.classList.remove('modal-in');
+      const el = document.querySelector('.contacts-overlay')
+      el.classList.remove('modal-in')
     }
   },
+
+  updateContact(event, scope) {
+    saving(this)
+    updateContact(scope.contact, this)
+  },
+
   foundContacts: [],
   searchContacts: searchContacts(),
   addNewContact(event, scope) {

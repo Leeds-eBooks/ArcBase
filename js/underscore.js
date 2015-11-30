@@ -1,5 +1,5 @@
-import underscore from 'underscore'
+// import underscore from 'underscore'
 import _ from 'underscore-contrib'
-Object.assign(_, underscore)
+// Object.assign(_, underscore)
 
 export default _
