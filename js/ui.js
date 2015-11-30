@@ -1,23 +1,20 @@
 import _ from './underscore'
 
-export function saving(el) {
+function handleClasses(el, toRemove, toAdd) {
   if (_.isElement(el)) {
-    el.classList.remove('saved')
-    el.classList.add('saving')
+    toRemove.forEach(el.classList.remove.bind(el.classList))
+    toAdd.forEach(el.classList.add.bind(el.classList))
   }
+}
+
+export function saving(el) {
+  return handleClasses(el, ['saved'], ['saving'])
 }
 
 export function saved(el) {
-  if (_.isElement(el)) {
-    el.classList.remove('saving')
-    el.classList.add('saved')
-  }
+  return handleClasses(el, ['saving'], ['saved'])
 }
 
 export function failed(el) {
-  if (_.isElement(el)) {
-    el.classList.remove('saving')
-    el.classList.remove('saved')
-    el.classList.add('failed')
-  }
+  return handleClasses(el, ['saving', 'saved'], ['failed'])
 }
