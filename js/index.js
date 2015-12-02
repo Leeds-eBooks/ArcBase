@@ -1,7 +1,6 @@
 import 'babelify/polyfill'
 import 'whatwg-fetch'
 import 'sightglass'
-import _ from './underscore'
 import parseG from 'parse'
 import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
@@ -31,7 +30,6 @@ const table = document.querySelector('#main table'),
       longOverlay = document.querySelector('.long-overlay')
 
 export let model
-let rivetsView
 
 export function update(newBook, load150more) {
   const query = new Parse.Query(Book),
@@ -403,7 +401,7 @@ model = {
   },
 
   authorButton: 'Edit',
-  addTravelAvailDateRange(event, scope) {
+  addTravelAvailDateRange() {
     model.currentAuthor.addUnique('travel_avail_dates', ['','']);
     model.currentAuthor.change();
   },
@@ -412,7 +410,7 @@ model = {
     model.currentAuthor.remove('travel_avail_dates', range); // FIXME can't remove() after add() without saving in-between
     model.currentAuthor.change();
   },
-  editAuthor(event) {
+  editAuthor() {
     const isEditing = model.authorButton === 'Save';
     model.authorButton = isEditing ?
       '<img class="loading" src="images/loading.gif">' : 'Save';
@@ -468,18 +466,20 @@ model = {
     if (this === event.target) return model.closeModal('long');
   },
   editModal(which) {
-    const button = `${which}Button`;
-    const isEditing = model[button] === 'Save';
-    model[button] = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save';
-    model.isEditing[which] = !isEditing;
+    const button = `${which}Button`,
+          isEditing = model[button] === 'Save'
+
+    model[button] = isEditing ? '<img class="loading" src="images/loading.gif">' : 'Save'
+    model.isEditing[which] = !isEditing
+
     if (isEditing) {
-      model.currentBook.save().then(res => {
-        model[button] = 'Edit';
-      }).fail(console.log);
+      model.currentBook.save()
+      .then(() => model[button] = 'Edit')
+      .fail(console.log)
     }
   },
-  editNotes: event => model.editModal('notes'),
-  editLong: event => model.editModal('long'),
+  editNotes: () => model.editModal('notes'),
+  editLong: () => model.editModal('long'),
 
   downloadAI(event, scope) {
     const book = scope.book,
@@ -554,7 +554,7 @@ model = {
   //   FileSaver.saveAs(blob, 'Catalogue.html');
   // },
 
-  smartSearch(event, scope) {
+  smartSearch() {
     const column = this.getAttribute('data-search-column');
 
     for (let i = 0, l = model.books.length; i < l; i++) {
@@ -573,7 +573,7 @@ model = {
     if (this.value) this.classList.add('warning');
     else this.classList.remove('warning');
   },
-  openFilesCover(event, scope) {
+  openFilesCover() {
     this.parentNode.querySelector('input[type=file]').click();
   },
   coverSelected(event, scope) {
@@ -582,11 +582,11 @@ model = {
     this.parentNode.querySelector('button').textContent = file.name;
   },
 
-  openContacts(event, scope) {
+  openContacts() {
     const el = document.querySelector('.contacts-overlay')
     el.classList.add('modal-in')
   },
-  closeContacts(event, scope) {
+  closeContacts(event) {
     if (this === event.target) {
       const el = document.querySelector('.contacts-overlay')
       el.classList.remove('modal-in')
@@ -600,14 +600,14 @@ model = {
 
   foundContacts: [],
   searchContacts: searchContacts(),
-  addNewContact(event, scope) {
+  addNewContact() {
     const newContact = new Contact()
     newContact.save().then(newContact => model.foundContacts.unshift(newContact))
   }
 };
 
-rivetsView = rivets.bind(document.body, model);
+rivets.bind(document.body, model)
 
 window.model = model
 
-update();
+update()
