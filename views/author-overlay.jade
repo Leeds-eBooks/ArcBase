@@ -1,0 +1,45 @@
+.author-overlay(rv-on-click='closeAuthorModal')
+  .author-modal
+    
+    #age(rv-show='currentAuthor#dob', rv-text='calculateCurrentAuthorAge < currentAuthor#dob')
+    
+    input.author-header(rv-on-click='selectAll', rv-value='currentAuthor#name', rv-readonly='isEditing.author | opposite', placeholder='Name')
+    
+    // <input class="author-header" rv-on-click="selectAll" rv-value="currentAuthor#name" placeholder="Name" readonly>
+    
+    textarea(rows='6', rv-value='currentAuthor#biog', rv-on-click='selectAll', rv-readonly='isEditing.author | opposite', placeholder='Biography')
+    
+    input.author-input(rv-on-click='selectAll', type='email', rv-value='currentAuthor#author_email', rv-readonly='isEditing.author | opposite', placeholder='Email address')
+    
+    label.info(for='dob') Date of birth:
+    
+    input#dob.author-input(rv-on-click='selectAll', type='date', rv-value='currentAuthor#dob | parseDate', rv-readonly='isEditing.author | opposite')
+    
+    input.author-input(rv-on-click='selectAll', type='tel', rv-value='currentAuthor#author_mobile', rv-readonly='isEditing.author | opposite', placeholder='Mobile phone number')
+    
+    input.author-input(rv-on-click='selectAll', type='tel', rv-value='currentAuthor#author_tel', rv-readonly='isEditing.author | opposite', placeholder='Home phone number')
+    
+    .can-travel
+      div
+        div
+          input#will-not-travel(type='radio', name='travel-avail', value='false', rv-checked='currentAuthor#travel_avail_bool | toBool', rv-enabled='isEditing.author')
+          label(for='will-not-travel') Will not travel
+        div
+          input#will-travel(type='radio', name='travel-avail', value='true', rv-checked='currentAuthor#travel_avail_bool | toBool', rv-enabled='isEditing.author')
+          label(for='will-travel') Can travel
+      
+      ul
+        span.info Available on the following dates:
+        li(rv-each-range='currentAuthor#travel_avail_dates')
+          input(type='date', rv-value='range | arrayAt 0', rv-readonly='isEditing.author | opposite')
+          span.info to
+          input(type='date', rv-value='range | arrayAt 1', rv-readonly='isEditing.author | opposite')
+          button.delete(rv-show='isEditing.author', rv-on-click='delTravelAvailDateRange') &#x2715;
+          // FIXME
+        button.add-input(rv-show='isEditing.author', rv-on-click='addTravelAvailDateRange') Add a date range
+    
+    textarea(rows='5', rv-on-click='selectAll', rv-value='currentAuthor#author_address', rv-readonly='isEditing.author | opposite', placeholder='Postal address')
+    
+    button.author-edit(rv-on-click='editAuthor', rv-html='authorButton', rv-class-warning='isEditing.author')
+    
+    button(rv-on-click='closeAuthorModal') &times;

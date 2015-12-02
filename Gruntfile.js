@@ -3,13 +3,15 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
+
     "clean": ["dist"],
+
     "copy": {
       main: {
         files: [{
           expand: true,
           src: [
-            'index.html',
+            // 'index.html',
             'LICENSE',
             'css/reset.css',
             'images/**'
@@ -18,6 +20,16 @@ module.exports = function(grunt) {
         }]
       }
     },
+
+    "jade": {
+      dist: {
+        files: {'dist/index.html': 'index.jade'}
+      },
+      dev: {
+        files: {'index.html': 'index.jade'}
+      }
+    },
+
     "browserify": {
       options: {
         sourceMap: true,
@@ -34,6 +46,7 @@ module.exports = function(grunt) {
         }
       }
     },
+
     "sass": {
       dist: {
         options: {
@@ -52,7 +65,8 @@ module.exports = function(grunt) {
         }
       }
     },
-    'ftp-deploy': {
+
+    "ftp-deploy": {
       arctour: {
         auth: {
           host: 'ftp.arctour.co.uk',
@@ -72,15 +86,21 @@ module.exports = function(grunt) {
         dest: '/arcbase'
       }
     },
-    'watch': {
+
+    "watch": {
       files: ['css/*.scss','index.html','js/init.js'],
       tasks: ['dev'],
       options: {
         livereload: true
       }
     }
-  });
+  })
 
-  grunt.registerTask('default', ['clean', 'copy', 'sass', 'browserify', 'ftp-deploy']);
-  grunt.registerTask('dev', ['sass:dev', 'browserify:dev']);
-};
+  grunt.registerTask('default', [
+    'clean', 'copy', 'jade', 'sass', 'browserify', 'ftp-deploy'
+  ])
+
+  grunt.registerTask('dev', [
+    'jade:dev', 'sass:dev', 'browserify:dev'
+  ])
+}
