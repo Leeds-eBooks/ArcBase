@@ -23,7 +23,7 @@ rivets.adapters['#'] = {
   set: (obj, keypath, value) => obj && obj.set(keypath, value)
 }
 
-rivets.binders.readonly = (el, value) => {el.readOnly = !!value}
+rivets.binders.readonly = (el, value) => {el.readOnly = Boolean(value)}
 
 rivets.formatters.opposite = value => !value
 rivets.formatters.prepend = (value, prep) => prep ? `${prep}${value}` : value
@@ -60,5 +60,5 @@ rivets.formatters.parseDate = {
 
 rivets.formatters.toBool = {
   read: v => v,
-  publish: v => ({true, false}[v])
+  publish: v => ({true: true, false: false}[v])
 };
