@@ -120,7 +120,7 @@ html(lang='en')
 
         tr.book-rows(rv-each-book='books', rv-hide='book.filterOut', rv-constructer='initRow')
           td
-            img.coverimg(rv-src='book.coverimg', rv-on-click='book.chooseCover')
+            img.coverimg(rv-src='book.cover_orig._downloadURL', rv-on-click='book.chooseCover')
             input(type='text', rv-value='book.title', rv-on-click='selectAll', rv-readonly='book.isEditing < button | opposite')
             input(type='file', rv-id="book.title | prepend 'cover-' | alphaNumeric", accept='image/*', style='display:none', rv-on-change='coverSelected')
             button.cover-upload(rv-on-click='openFilesCover', rv-show='book.isEditing < button') &#x21E7; cover
