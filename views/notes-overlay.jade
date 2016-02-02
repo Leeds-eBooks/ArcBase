@@ -1,10 +1,10 @@
 .notes-overlay(rv-on-click='closeNotesModal')
   .notes-modal
-    //- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook#title" rv-readonly="isEditing.notes | opposite" placeholder="Book title">
+    //- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook.title" rv-readonly="isEditing.notes | opposite" placeholder="Book title">
     
     input.notes-header(
       rv-on-click='selectAll'
-      rv-value='currentBook#title'
+      rv-value='currentBook.title'
       placeholder='Book title'
       readonly='')
     
@@ -12,7 +12,7 @@
       | Review copies
       textarea(
         rows='20'
-        rv-value='currentBook#review_copies'
+        rv-value='currentBook.review_copies'
         rv-on-click='selectAll'
         rv-readonly='isEditing.notes | opposite')
     
@@ -20,7 +20,7 @@
       | Royalties
       textarea(
         rows='20'
-        rv-value='currentBook#author_copies'
+        rv-value='currentBook.author_copies'
         rv-on-click='selectAll'
         rv-readonly='isEditing.notes | opposite')
     

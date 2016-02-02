@@ -1,26 +1,22 @@
 import _ from './underscore'
-import parseG from 'parse'
-const Parse = parseG.Parse
 import {model} from './index'
 import {saved, failed} from './ui'
 
-export const Contact = Parse.Object.extend("Contact")
-
 export default function() {
-  const query = new Parse.Query(Contact)
+  const query = new Kinvey.Query()
 
   let contacts = []
 
-  query.find().then(res => contacts.push(...res))
+  Kinvey.DataStore.find('Contact', query).then(res => contacts.push(...res))
 
-  return function(event, scope) {
+  return function() {
     if (!this.value.trim()) {
       model.foundContacts.splice(0, model.foundContacts.length)
       return false
     }
 
     contacts.forEach(contact => {
-      const data = _.values(contact.toJSON()).toString().toLowerCase()
+      const data = JSON.stringify(_.compact(_.values(contact))).toLowerCase()
 
       if (data.includes(this.value.toLowerCase())) {
         if (!model.foundContacts.includes(contact)) {
@@ -35,11 +31,9 @@ export default function() {
 }
 
 export const updateContact = _.debounce(
-  (contact, el) => {
-    contact.save().then(
-      () => saved(el),
-      () => failed(el)
-    )
-  },
+  (contact, el) =>
+    Kinvey.DataStore.update('Contact', contact)
+    .then(() => saved(el))
+    .catch(() => failed(el)),
   500
 )

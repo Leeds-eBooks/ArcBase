@@ -1,11 +1,12 @@
-import parseG from 'parse'
-const Parse = parseG.Parse
+// import parseG from 'parse'
+// const Parse = parseG.Parse
 
 import humane from './humane'
-import {Book, Author, update} from './index.js'
+import {update} from './index.js'
+import _ from './underscore'
 
 function choosy(message, options, urls) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const hasUrls = urls && urls.length,
           frag = document.createDocumentFragment(),
           overlay = document.createElement('div'),
@@ -14,10 +15,10 @@ function choosy(message, options, urls) {
           inputs = options.map((option, i) => {
             const button = hasUrls ?
               document.createElement('a') : document.createElement('button');
-            button.textContent = option;
+            button.textContent = option
             if (hasUrls) {
-              button.href = urls[i];
-              button.target = "_blank";
+              button.href = urls[i]
+              button.target = "_blank"
             }
             return button;
           });
@@ -43,7 +44,7 @@ function choosy(message, options, urls) {
 
     if (!hasUrls) {
       inputs.forEach((input, i) =>
-        input.addEventListener('click', event => {
+        input.addEventListener('click', () => {
           dismiss()
           resolve(options[i])
         })
@@ -53,7 +54,7 @@ function choosy(message, options, urls) {
 }
 
 export function chooseCover(parseBook) {
-  return function(event, scope) {
+  return function() {
     const sizes = ['200', '600', 'full size']
     choosy(
       'Choose cover size (width in pixels)<br><br>' +
@@ -67,16 +68,20 @@ export function chooseCover(parseBook) {
 }
 
 export function authorMapper(author) {
-  // var obj = this;
-  if (author && author.get) {
+  // this = kinvey book
+  if (author) {
     return {
-      name: author.get('name'),
-      roles: (
-        this.get('roleMap') && // FIXME what is `this`?
-        this.get('roleMap').find(v => v.id === author.id).roles
-      ) || {}
+      name: author.name,
+      roles: this.roleMap && this.roleMap.length ?
+        this.roleMap.find(({_id}) => _id === author._id).roles :
+        {}
     }
-  } else return {name: "", roles: {}}
+  } else {
+    return {
+      name: "",
+      roles: {}
+    }
+  }
 }
 
 export function alphaNumeric(str, replacement = '-') {
@@ -94,49 +99,49 @@ export function preventAuthorEditing(i) {
 }
 
 export function saveToParse(data, bookToEdit) {
-  const query = new Parse.Query(Book),
-        book = bookToEdit ? query.get(bookToEdit.id) : new Book()
+  const book = bookToEdit ? Kinvey.DataStore.get('Book', bookToEdit._id) : {}
 
-  function save(book) {
-    book.save(data, {
-      success: update, // update(newBook)
-      error: function(book, error) {
-        console.error(JSON.stringify(error))
-        if (error.code == 141) {
-          humane.error('The upload failed! Please try again.')
-          update(book)
-        }
-      }
-    })
+  async function save(book) {
+    console.log(book)
+    try {
+      const newBook = await Kinvey.DataStore[bookToEdit ? 'update' : 'save'](
+        'Book',
+        Object.assign(book, data),
+        {relations: {authors: 'Author'}}
+      )
+      update(newBook)
+    } catch (error) {
+      console.error(JSON.stringify(error))
+      // if (error.code === 141) {
+      //   humane.error('The upload failed! Please try again.') // TODO
+      //   update(book)
+      // }
+    }
   }
 
   if (bookToEdit) book.then(save)
   else save(book)
 }
 
-export function getParseAuthors(authorsArray) {
+export function getKinveyAuthors(authorsArray) {
   return new Promise((resolve, reject) => {
-    const query = new Parse.Query(Author)
-    query.containedIn('name', authorsArray)
-    query.find({
-      success(savedAuthors) {
-        const savedAuthorNames = savedAuthors.map(v => v.get('name'))
+    const query = new Kinvey.Query()
+    query.contains('name', authorsArray)
 
-        if (savedAuthorNames.length !== authorsArray.length) {
-          const promisedAuthors = authorsArray.map(name => {
-            if (!savedAuthorNames.includes(name)) {
-              const newAuthor = new Author()
-              return newAuthor.save({name})
-            } else {
-              return savedAuthors.find(savedAuthor =>
-                savedAuthor.get('name') === name
-              )
-            }
-          })
-          Promise.all(promisedAuthors).then(resolve)
-        } else resolve(savedAuthors)
-      },
-      error: reject
-    })
+    Kinvey.DataStore.find('Author', query)
+    .then(function(savedAuthors) {
+      const savedAuthorNames = _.pluck(savedAuthors, 'name')
+
+      if (savedAuthorNames.length !== authorsArray.length) {
+        const promisedAuthors = authorsArray.map(name =>
+          savedAuthorNames.includes(name) ?
+            savedAuthors.find(savedAuthor => savedAuthor.name === name) :
+            Kinvey.DataStore.save('Author', {name})
+        )
+        Promise.all(promisedAuthors).then(resolve)
+      } else {
+        resolve(savedAuthors)
+      }
+    }).catch(reject)
   })
 }

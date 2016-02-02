@@ -46,3 +46,4 @@ rules:
     - nofunc
 
 globals:
+  Kinvey: false
