@@ -377,7 +377,7 @@ Kinvey.init({
               "193-999": "12.99"
             },
             getRange = pages => {
-              const pp = parseInt(pages, 10);
+              const pp = parseInt(pages, 10)
               return Object.keys(pageRange).find(range =>
                 pp >= parseInt(range.substr(0, 3), 10) &&
                 pp <= parseInt(range.substr(4, 3), 10)
@@ -445,9 +445,9 @@ Kinvey.init({
 
     calculateCurrentAuthorAge() {
       if (model.currentAuthor && model.currentAuthor.dob) {
-        let dob = model.currentAuthor.dob,
-            now = new Date();
-        return '(Age: ' + Math.floor((now - dob) / 3.15569e10) + ')'
+        return `(Age: ${
+          Math.floor((new Date() - model.currentAuthor.dob) / 3.15569e10)
+        })`
       }
     },
 
@@ -455,20 +455,20 @@ Kinvey.init({
 
     addTravelAvailDateRange() {
       model.currentAuthor.addUnique('travel_avail_dates', ['',''])
-      model.currentAuthor.change()
+      model.currentAuthor.change() // TODO kv
     },
 
     delTravelAvailDateRange(event, scope) {
       const range = model.currentAuthor.travel_avail_dates[scope.index]
       model.currentAuthor.remove('travel_avail_dates', range) // FIXME can't remove() after add() without saving in-between
-      model.currentAuthor.change()
+      model.currentAuthor.change() // TODO kv
     },
 
     async editAuthor() {
       const isEditing = model.authorButton === 'Save'
       model.authorButton = isEditing ?
         '<img class="loading" src="images/loading.gif">' : 'Save'
-      model.isEditing.author =! isEditing
+      model.isEditing.author = !isEditing
 
       if (isEditing) {
         console.log(model.currentAuthor)
@@ -668,9 +668,9 @@ Kinvey.init({
     foundContacts: [],
     searchContacts: searchContacts(),
 
-    addNewContact() {
-      Kinvey.DataStore.save('Contact', {})
-      .then(newContact => model.foundContacts.unshift(newContact))
+    async addNewContact() {
+      const newContact = await Kinvey.DataStore.save('Contact', {})
+      model.foundContacts.unshift(newContact)
     }
   }
 
