@@ -1,5 +1,5 @@
 import _ from './underscore'
-import {model} from './index'
+import {model} from '../index'
 import {saved, failed} from './ui'
 
 export default function() {

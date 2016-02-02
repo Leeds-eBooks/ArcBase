@@ -11,10 +11,9 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           src: [
-            // 'index.html',
             'LICENSE',
             'css/reset.css',
-            'images/**'
+            'images/**/*'
           ],
           dest: 'dist'
         }]
@@ -101,16 +100,8 @@ module.exports = function(grunt) {
 
     "watch": {
       files: [
-        'js/config.js',
-        'js/contacts.js',
-        'js/dropin.js',
-        'js/functions.js',
-        'js/humane.js',
-        'js/index.js',
-        'js/templates.js',
-        'js/ui.js',
-        'js/underscore.js',
-        'js/util.js'
+        'js/modules/**/*',
+        'js/index.js'
       ],
       tasks: ['dev'],
       options: {

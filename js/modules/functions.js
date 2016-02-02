@@ -1,8 +1,8 @@
 // import parseG from 'parse'
 // const Parse = parseG.Parse
 
-import humane from './humane'
-import {update} from './index.js'
+// import humane from './humane'
+import {update} from '../index.js'
 import _ from './underscore'
 
 function choosy(message, options, urls) {
@@ -55,15 +55,15 @@ function choosy(message, options, urls) {
 
 export function chooseCover(parseBook) {
   return function() {
-    const sizes = ['200', '600', 'full size']
+    const sizes = [/*'200', '600', */'full size']
     choosy(
       'Choose cover size (width in pixels)<br><br>' +
         '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',
       sizes,
       sizes.map(size =>
-        parseBook.get(size === 'full size' ? 'cover_orig' : 'cover_' + size).url()
+        parseBook[size === 'full size' ? 'cover_orig' : 'cover_' + size]._downloadURL
       )
-    ).catch(console.log.bind(console))
+    ).catch(console.error.bind(console))
   }
 }
 

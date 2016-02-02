@@ -4,18 +4,18 @@ import 'sightglass'
 import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
 import ArcBase from '../keys'
-import dropin from './dropin'
+import dropin from './modules/dropin'
 import {preventAuthorEditing,
         authorMapper,
         chooseCover,
         alphaNumeric,
         saveToParse,
-        getKinveyAuthors} from './functions'
-import docTemplates from './templates'
-import './config'
-import searchContacts, {updateContact} from './contacts'
-import {saving} from './ui'
-import _ from './underscore'
+        getKinveyAuthors} from './modules/functions'
+import docTemplates from './modules/templates'
+import './modules/config'
+import searchContacts, {updateContact} from './modules/contacts'
+import {saving} from './modules/ui'
+import _ from './modules/underscore'
 
 const parseBookMap = new Map()
 
@@ -26,24 +26,26 @@ export function update(newBook, load150more) {
         amountToSkip = load150more ? model.books.length : 0;
 
   function whenLoaded(results) {
-    results.forEach(pb => { // pb = parseBook
-      const existingBook = model.books.find(book => book._id === pb._id),
+    results.forEach(kb => { // kb = parseBook
+      const existingBook = model.books.find(book => book._id === kb._id),
             bookObj = {
-              _id: pb._id,
-              title: pb.title,
-              coverimg: pb.cover_200 ? pb.cover_200._downloadURL : '',
-              coverimgFull: pb.cover_orig ? pb.cover_orig._downloadURL : '',
-              coverimg600: pb.cover_600 ? pb.cover_600._downloadURL : '',
-              authors: pb.authors ? pb.authors.map(authorMapper, pb) : [],
-              pubdate: pb.pubdate,
-              pages: pb.pages,
-              shortdesc: pb.shortdesc,
-              ISBNs: pb.ISBNs && pb.ISBNs.reduce((obj, current) => {
+              _id: kb._id,
+              title: kb.title,
+              // coverimg: kb.cover_200 ? kb.cover_200._downloadURL : '',
+              // coverimgFull: kb.cover_orig ? kb.cover_orig._downloadURL : '',
+              // coverimg600: kb.cover_600 ? kb.cover_600._downloadURL : '',
+              // coverimg: kb.cover_orig ? kb.cover_orig._downloadURL : '',
+              cover_orig: kb.cover_orig,
+              authors: kb.authors ? kb.authors.map(authorMapper, kb) : [],
+              pubdate: kb.pubdate,
+              pages: kb.pages,
+              shortdesc: kb.shortdesc,
+              ISBNs: kb.ISBNs && kb.ISBNs.reduce((obj, current) => {
                 obj[current.type]=current.value
                 return obj
               }, {}),
-              price: pb.price ?
-                pb.price.reduce((obj, current) => {
+              price: kb.price ?
+                kb.price.reduce((obj, current) => {
                   obj[current.type] = current.value
                   return obj
                 }, {}) :
@@ -53,13 +55,13 @@ export function update(newBook, load150more) {
                   ebk: ''
                 },
               button: 'Edit',
-              chooseCover: chooseCover(pb)
+              chooseCover: chooseCover(kb)
             };
 
       let modelBook
 
-      if (pb.authors) {
-        pb.authors.forEach(kvAuthor => {
+      if (kb.authors) {
+        kb.authors.forEach(kvAuthor => {
           if (!model.authors.some(a => a.name === kvAuthor.name)) {
             model.authors.push(kvAuthor)
           }
@@ -89,7 +91,7 @@ export function update(newBook, load150more) {
         model.books[results.length > 1 ? 'push' : 'unshift'](modelBook)
       }
 
-      parseBookMap.set(modelBook, pb)
+      parseBookMap.set(modelBook, kb)
     })
 
     if (newBook) clearInputs()
@@ -258,8 +260,8 @@ Kinvey.init({
             if (
               'function' !== typeof input &&
               key !== 'button' &&
-              key !== 'filterOut' &&
-              key !== 'coverimg'
+              key !== 'filterOut'/* &&
+              key !== 'coverimg'*/
             ) data[key] = input && input.trim().replace(/\s{1,}/g,' ')
           }
         })
