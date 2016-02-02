@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  require('load-grunt-tasks')(grunt);
+  require('load-grunt-tasks')(grunt)
 
   grunt.initConfig({
 
@@ -22,10 +22,20 @@ module.exports = function(grunt) {
     },
 
     "jade": {
+      options: {
+        data: {
+          livereload: false
+        }
+      },
       dist: {
         files: {'dist/index.html': 'index.jade'}
       },
       dev: {
+        options: {
+          data: {
+            livereload: true
+          }
+        },
         files: {'index.html': 'index.jade'}
       }
     },
@@ -66,6 +76,8 @@ module.exports = function(grunt) {
       }
     },
 
+
+
     "ftp-deploy": {
       arctour: {
         auth: {
@@ -88,10 +100,21 @@ module.exports = function(grunt) {
     },
 
     "watch": {
-      files: ['css/*.scss','index.html','js/init.js'],
+      files: [
+        'js/config.js',
+        'js/contacts.js',
+        'js/dropin.js',
+        'js/functions.js',
+        'js/humane.js',
+        'js/index.js',
+        'js/templates.js',
+        'js/ui.js',
+        'js/underscore.js',
+        'js/util.js'
+      ],
       tasks: ['dev'],
       options: {
-        livereload: true
+        livereload: 34768
       }
     }
   })
@@ -100,7 +123,11 @@ module.exports = function(grunt) {
     'clean', 'copy', 'jade', 'sass', 'browserify', 'ftp-deploy'
   ])
 
+  grunt.registerTask('prod', [
+    'clean', 'copy', 'jade', 'sass', 'browserify'
+  ])
+
   grunt.registerTask('dev', [
-    'jade:dev', 'sass:dev', 'browserify:dev'
+    'jade:dev', 'sass:dev', 'browserify:dev', 'watch'
   ])
 }
