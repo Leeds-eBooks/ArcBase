@@ -1,7 +1,7 @@
 import 'sightglass'
 import _ from './underscore'
 import rivets from 'rivets'
-import {alphaNumeric} from './functions'
+import {alphaNumeric} from './util'
 
 if (!String.prototype.insert) {
   Object.defineProperty(

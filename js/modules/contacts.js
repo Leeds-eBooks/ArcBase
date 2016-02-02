@@ -7,7 +7,8 @@ export default function() {
 
   let contacts = []
 
-  Kinvey.DataStore.find('Contact', query).then(res => contacts.push(...res))
+  Kinvey.DataStore.find('Contact', query)
+  .then(res => contacts.push(...res))
 
   return function() {
     if (!this.value.trim()) {
@@ -31,9 +32,13 @@ export default function() {
 }
 
 export const updateContact = _.debounce(
-  (contact, el) =>
-    Kinvey.DataStore.update('Contact', contact)
-    .then(() => saved(el))
-    .catch(() => failed(el)),
+  async function(contact, el) {
+    try {
+      await Kinvey.DataStore.update('Contact', contact)
+      saved(el)
+    } catch (e) {
+      failed(el)
+    }
+  },
   500
 )

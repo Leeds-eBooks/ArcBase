@@ -1,6 +1,6 @@
 import _ from './underscore'
 
-import {formatISBN} from './functions'
+import {formatISBN} from './util'
 import {model} from '../index'
 
 function swapNames(authorObj) {

@@ -1,3 +1,5 @@
+import {model} from '../index'
+
 /**
   * Promisified CSS transition events
   * @param  {HTMLElement} el        The element to watch
@@ -15,3 +17,41 @@ export const trans = (el, action, className) =>
     el.addEventListener(eventStr, end)
     el.classList[action](className)
   })
+
+export function alphaNumeric(str, replacement = '-') {
+  return str.replace(/\W+/g, replacement)
+}
+
+export function formatISBN(str) {
+  return str.insert(3, '-').insert(11, '-').insert(14, '-')
+}
+
+export function clearInputs() {
+  model.inputs = {
+    title: '',
+    authors: [{
+      name:'',
+      roles: {
+        author: false,
+        translator: false,
+        editor: false,
+        introducer: false,
+        critic: false
+      }
+    }],
+    pubdate: '',
+    pages: '',
+    shortdesc: '',
+    ISBNs: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    price: {
+      pbk: '',
+      hbk: '',
+      ebk: ''
+    },
+    button: 'Save'
+  }
+}
