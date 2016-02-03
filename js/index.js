@@ -16,9 +16,8 @@ import docTemplates from './modules/templates'
 import './modules/config'
 import searchContacts, {updateContact} from './modules/contacts'
 import {saving} from './modules/ui'
-import _ from './modules/underscore'
+import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
-
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),

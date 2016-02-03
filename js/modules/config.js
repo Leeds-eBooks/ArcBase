@@ -1,5 +1,5 @@
 import 'sightglass'
-import _ from './underscore'
+import _ from 'underscore-contrib-up-to-date'
 import rivets from 'rivets'
 import {alphaNumeric} from './util'
 

@@ -1,6 +1,6 @@
 // import humane from './humane'
-import {update} from '../index.js'
-import _ from './underscore'
+import update from './update'
+import _ from 'underscore-contrib-up-to-date'
 import choosy from './choosy'
 
 export function chooseCover(parseBook) {

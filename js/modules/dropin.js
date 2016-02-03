@@ -1,4 +1,4 @@
-import _ from './underscore'
+import _ from 'underscore-contrib-up-to-date'
 import {trans} from './util'
 
 /**
