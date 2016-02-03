@@ -23,7 +23,7 @@ export function authorMapper(author) {
     return {
       name: author.name,
       roles: this.roleMap && this.roleMap.length ?
-        this.roleMap.find(({_id}) => _id === author._id).roles :
+        this.roleMap.find(({id}) => id === author._id).roles :
         {}
     }
   } else {

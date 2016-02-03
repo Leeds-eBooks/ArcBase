@@ -9,6 +9,7 @@ export default function() {
 
   Kinvey.DataStore.find('Contact', query)
   .then(res => contacts.push(...res))
+  .catch(console.error.bind(console))
 
   return function() {
     if (!this.value.trim()) {

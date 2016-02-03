@@ -1,3 +1,27 @@
+var path = require('path')
+var OccurrenceOrderPlugin = require('webpack/lib/optimize/OccurrenceOrderPlugin')
+var DedupePlugin = require('webpack/lib/optimize/DedupePlugin')
+var UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin')
+
+var webpackConfig = {
+  loaders: [
+    {
+      loader: 'babel',
+      test: /\.jsx?$/,
+      include: [
+        path.resolve(__dirname, 'js/'),
+        path.resolve(__dirname, 'keys.js')
+      ],
+      query: {
+        presets: [
+          'es2015',
+          'stage-3'
+        ]
+      }
+    }
+  ]
+}
+
 module.exports = function(grunt) {
 
   require('load-grunt-tasks')(grunt)
@@ -39,20 +63,32 @@ module.exports = function(grunt) {
       }
     },
 
-    "browserify": {
-      options: {
-        sourceMap: true,
-        transform: ['babelify']
+    "webpack": {
+      dev: {
+        entry: ['./js/index.js'],
+        output: {
+          path: 'js/',
+          filename: 'index-compiled.js'
+        },
+        module: webpackConfig,
+        plugins: [
+          new OccurrenceOrderPlugin(true)//,
+          // new DedupePlugin(),
+          // new UglifyJsPlugin({compress: false})
+        ]
       },
       dist: {
-        files: {
-          "dist/js/index-compiled.js": "js/index.js"
-        }
-      },
-      dev: {
-        files: {
-          "js/index-compiled.js": "js/index.js"
-        }
+        entry: ['./js/index.js'],
+        output: {
+          path: 'dist/js/',
+          filename: 'index-compiled.js'
+        },
+        module: webpackConfig,
+        plugins: [
+          new OccurrenceOrderPlugin(true),
+          new DedupePlugin(),
+          new UglifyJsPlugin({compress: false})
+        ]
       }
     },
 
@@ -101,7 +137,11 @@ module.exports = function(grunt) {
     "watch": {
       files: [
         'js/modules/**/*',
-        'js/index.js'
+        'js/index.js',
+        '**/*.jade',
+        '**/*.scss',
+        '**/*.sass',
+        'node_modules/kinvey-html5/kinvey.js'
       ],
       tasks: ['dev'],
       options: {
@@ -111,14 +151,14 @@ module.exports = function(grunt) {
   })
 
   grunt.registerTask('default', [
-    'clean', 'copy', 'jade', 'sass', 'browserify', 'ftp-deploy'
+    'clean', 'copy', 'jade', 'sass', 'webpack', 'ftp-deploy'
   ])
 
   grunt.registerTask('prod', [
-    'clean', 'copy', 'jade', 'sass', 'browserify'
+    'clean', 'copy', 'jade', 'sass', 'webpack'
   ])
 
   grunt.registerTask('dev', [
-    'jade:dev', 'sass:dev', 'browserify:dev', 'watch'
+    'jade:dev', 'sass:dev', 'webpack:dev', 'watch'
   ])
 }
