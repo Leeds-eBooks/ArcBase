@@ -184,7 +184,10 @@ html(lang='en')
             button(rv-on-click='downloadAI') &#x21E9; AI
             button(rv-on-click='downloadPR') &#x21E9; PR
             button(rv-on-click='downloadCataloguePage') &#x21E9; Cat
-      button(rv-on-click='load150more') Load 150 more books
+      
+      button.load-more(
+        rv-show='config.canLoadMore'
+        rv-on-click='load150more') Load 150 more books
 
     button.open-contacts(rv-on-click='openContacts') Contacts
     button.download-catalogue(rv-on-click='downloadCatalogue') &#x21E9; Catalogue

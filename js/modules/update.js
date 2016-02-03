@@ -3,15 +3,13 @@ import {authorMapper, chooseCover} from './functions'
 import {clearInputs} from './util'
 
 function whenLoaded(results, newBook) {
-  results.forEach(kb => { // kb = parseBook
+  if (results.length < 150) model.config.canLoadMore = false
+
+  results.forEach(kb => { // kb = kinveyBook
     const existingBook = model.books.find(book => book._id === kb._id),
           bookObj = {
             _id: kb._id,
             title: kb.title,
-            // coverimg: kb.cover_200 ? kb.cover_200._downloadURL : '',
-            // coverimgFull: kb.cover_orig ? kb.cover_orig._downloadURL : '',
-            // coverimg600: kb.cover_600 ? kb.cover_600._downloadURL : '',
-            // coverimg: kb.cover_orig ? kb.cover_orig._downloadURL : '',
             cover_orig: kb.cover_orig,
             authors: kb.authors ? kb.authors.map(authorMapper, kb) : [],
             pubdate: kb.pubdate,
