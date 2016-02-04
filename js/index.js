@@ -18,6 +18,7 @@ import searchContacts, {updateContact} from './modules/contacts'
 import {saving} from './modules/ui'
 import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
+import moment from 'moment'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -32,7 +33,7 @@ void async function() {
   try {
     const user = await Kinvey.init({
       appKey: ArcBase.keys.Kinvey.a,
-      appSecret: ArcBase.keys.Kinvey.b,
+      appSecret: ArcBase.keys.Kinvey.b
       // sync: {
       //   enable: true,
       //   online: window.navigator.onLine
@@ -338,7 +339,7 @@ void async function() {
       calculateCurrentAuthorAge() {
         if (model.currentAuthor && model.currentAuthor.dob) {
           return `(Age: ${
-            Math.floor((new Date() - model.currentAuthor.dob) / 3.15569e10)
+            Math.floor(moment().diff(model.currentAuthor.dob) / 3.15569e10)
           })`
         }
       },

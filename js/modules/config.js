@@ -2,6 +2,7 @@ import 'sightglass'
 import _ from 'underscore-contrib-up-to-date'
 import rivets from 'rivets'
 import {alphaNumeric} from './util'
+import moment from 'moment'
 
 if (!String.prototype.insert) {
   Object.defineProperty(
@@ -34,19 +35,8 @@ rivets.formatters.arrayAt = {
 }
 
 rivets.formatters.parseDate = {
-  read(v) { // from server
-    const d = new Date(v)
-    if (!v) return null
-    return [
-      d.getFullYear(),
-      ("0" + (d.getMonth() + 1)).slice(-2),
-      ("0" + d.getDate()).slice(-2)
-    ].join('-')
-  },
-  publish(v) { // to server
-    if (!v) return null
-    return new Date(v)
-  }
+  read: v => v && moment(v).format('YYYY-MM-DD'),
+  publish: v => v && moment(v).toISOString()
 }
 
 rivets.formatters.toBool = {
