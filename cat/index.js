@@ -15,36 +15,53 @@ server.on('request', (request, response) => {
   response.setHeader('Access-Control-Allow-Headers', '*')
 
   if (request.method === 'POST') {
-    const {query} = url.parse(request.url),
-          {email} = _.fromQuery(query)
+    const {query, pathname} = url.parse(request.url),
+          parsedQuery = _.fromQuery(query);
 
-    let html = ''
+    if (pathname.includes('catalogue')) {
+      const {email} = parsedQuery
 
-    request.on('data', chunk => {
-      html += chunk.toString()
-    })
+      let html = ''
 
-    request.on('end', () => {
-      response.writeHead(200, "OK", {'Content-Type': 'text/html'})
-      response.write(
-        `<html>
-          <head>
-            <title>Success</title>
-          </head>
-          <body>
-            <h1>Success!</h1>
-          </body>
-        </html>`
-      )
-      response.end()
-
-      // TODO http-pdf, then save to file
-
-      pdf.create(html, {format: 'A5'}).toFile('./Catalogue.pdf', (err, res) => {
-        if (err) console.error(err)
-        else send(email, res.filename)
+      request.on('data', chunk => {
+        html += chunk.toString()
       })
-    })
+
+      request.on('end', () => {
+        response.writeHead(200, "OK", {'Content-Type': 'text/html'})
+        response.write(
+          `<html>
+            <head>
+              <title>Success</title>
+            </head>
+            <body>
+              <h1>Success!</h1>
+            </body>
+          </html>`
+        )
+        response.end()
+
+        // TODO http-pdf, then save to file
+
+        pdf.create(html, {format: 'A5'}).toFile('./Catalogue.pdf', (err, res) => {
+          if (err) console.error(err)
+          else send(email, res.filename)
+        })
+      })
+    } else if (pathname.includes('cover')) {
+      request.setEncoding('binary')
+      let image = ''
+
+      request.on('data', chunk => {
+        image += chunk
+      })
+
+      request.on('end', () => {
+        response.writeHead(200, 'OK', {'Content-Type': 'text/html'})
+        const scaled = image // TODO scale image
+        response.end(scaled)
+      })
+    }
 
   } else if (request.method === 'OPTIONS') {
 		response.writeHead(200)
