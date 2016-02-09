@@ -1,4 +1,7 @@
 import {model} from '../index'
+import resize from 'resize-image'
+import reader from './file-reader'
+import blob from 'blob-util'
 
 /**
   * Promisified CSS transition events
@@ -56,6 +59,25 @@ export function clearInputs() {
   }
 }
 
-export function getTargetHeight(origWidth, targetWidth, origHeight) {
+function getTargetHeight(origWidth, targetWidth, origHeight) {
   return (targetWidth / origWidth) * origHeight
+}
+
+export function resizer(file, width) {
+  return new Promise(async (resolve) => {
+    const img = new Image()
+    img.onload = async function() {
+      const targetHeight = getTargetHeight(this.width, width, this.height)
+      try {
+        resolve(
+          await blob.dataURLToBlob(
+            resize.resize(img, width, targetHeight, resize.JPEG)
+          )
+        )
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    img.src = await reader(file)
+  })
 }
