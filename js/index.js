@@ -11,7 +11,7 @@ import {
   saveToKinvey,
   getKinveyAuthors
 } from './modules/functions'
-import {alphaNumeric, getTargetHeight} from './modules/util'
+import {alphaNumeric, resizer} from './modules/util'
 import docTemplates from './modules/templates'
 import './modules/config'
 import searchContacts, {updateContact} from './modules/contacts'
@@ -19,10 +19,7 @@ import {saving} from './modules/ui'
 import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
 import moment from 'moment'
-import resize from 'resize-image'
-import reader from './modules/file-reader'
 import Lazy from 'lazy.js'
-import blob from 'blob-util'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -108,9 +105,8 @@ void async function() {
             replacedAuthorMap = {},
             inputModel = bookToEdit || model.inputs;
 
-        let coverFile
-
         async function continueSubmit(replacedAuthors) {
+          let coverFile
           if (!bookToEdit) model.inputs.button = '<img class="loading" src="images/loading.gif">'
 
           _.each(inputModel, (input, key) => {
@@ -126,7 +122,7 @@ void async function() {
                 } else {
                   if (v.name.trim()) authors.push(v.name.trim().replace(/\s{1,}/g,' '))
                 }
-              });
+              })
             } else if (key === 'ISBNs') {
               data.ISBNs = Object.keys(input)
                 .map(type =>
@@ -147,59 +143,26 @@ void async function() {
               if (input instanceof File) {
                 coverFile = {
                   file: input,
-                  filename: `${alphaNumeric(inputModel.title, '-')}.jpg`
+                  filename: `${alphaNumeric(inputModel.title)}.jpg`
                 }
               }
             } else {
               if (
                 'function' !== typeof input &&
                 key !== 'button' &&
-                key !== 'filterOut'
+                key !== 'filterOut' &&
+                !key.includes('cover_')
               ) data[key] = input && input.trim().replace(/\s{1,}/g,' ')
             }
           })
 
           if (coverFile) {
             try {
-              const img200 = new Image(),
-                    img600 = new Image(),
-                    [resized200, resized600] = await Promise.all([
-                      new Promise(async (resolve) => {
-                        img200.onload = async function() {
-                          const targetHeight = getTargetHeight(this.width, 200, this.height)
-                          try {
-                            resolve(
-                              await blob.dataURLToBlob(
-                                resize.resize(img200, 200, targetHeight, resize.JPEG)
-                              )
-                            )
-                          } catch (e) {
-                            console.error(e)
-                          }
-                        }
-                        img200.src = await reader(coverFile.file)
-                      }),
-                      new Promise(async (resolve) => {
-                        img600.onload = async function() {
-                          const targetHeight = getTargetHeight(this.width, 600, this.height)
-                          try {
-                            resolve(
-                              await blob.dataURLToBlob(
-                                resize.resize(img200, 600, targetHeight, resize.JPEG)
-                              )
-                            )
-                          } catch (e) {
-                            console.error(e)
-                          }
-                        }
-                        img600.src = await reader(coverFile.file)
-                      })
-                    ]);
               Object.assign(coverFile, {
-                resized: [
-                  resized200,
-                  resized600
-                ]
+                resized: await Promise.all([
+                  resizer(coverFile.file, 200),
+                  resizer(coverFile.file, 600)
+                ])
               })
             } catch (e) {
               console.error(e)
@@ -213,16 +176,15 @@ void async function() {
                 Promise.all(
                   Lazy([coverFile.file, ...coverFile.resized])
                   .compact()
-                  .map(file =>
-                    Kinvey.File.upload(file, {
+                  .map(async (file) => {
+                    const {_id} = await Kinvey.File.upload(file, {
                       _filename: coverFile.filename,
                       mimeType: file.type
                     }, {public: true})
-                    .then(res => res._id)
-                  )
-                  .toArray()
+                    return _id
+                  }).toArray()
                 ) :
-                Promise.resolve()
+                Promise.resolve([])
             ])
 
             data.authors = returnedAuthors
@@ -240,19 +202,21 @@ void async function() {
               })
             })
 
-            if (images) {
-              data.cover_orig = {
-                _type: 'KinveyFile',
-                _id: images[0]
-              }
-              data.cover_200 = {
-                _type: 'KinveyFile',
-                _id: images[1]
-              }
-              data.cover_600 = {
-                _type: 'KinveyFile',
-                _id: images[2]
-              }
+            if (images.length) {
+              Object.assign(data, {
+                cover_orig: {
+                  _type: 'KinveyFile',
+                  _id: images[0]
+                },
+                cover_200: {
+                  _type: 'KinveyFile',
+                  _id: images[1]
+                },
+                cover_600: {
+                  _type: 'KinveyFile',
+                  _id: images[2]
+                }
+              })
             }
 
             await saveToKinvey(data, bookToEdit)
@@ -300,6 +264,7 @@ void async function() {
 
             }).catch(error => {
               console.log('BL error caught', error)
+              console.log('continuing...')
               continueSubmit()
             })
         }
