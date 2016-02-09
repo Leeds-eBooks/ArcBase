@@ -5,7 +5,7 @@ import choosy from './choosy'
 
 export function chooseCover(parseBook) {
   return function() {
-    const sizes = [/*'200', '600', */'full size']
+    const sizes = ['200', '600', 'full size']
     choosy(
       'Choose cover size (width in pixels)<br><br>' +
         '<strong>Right-click and choose "Save&nbsp;link&nbsp;as..." to download</strong>',

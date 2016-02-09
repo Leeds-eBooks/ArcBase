@@ -55,3 +55,7 @@ export function clearInputs() {
     button: 'Save'
   }
 }
+
+export function getTargetHeight(origWidth, targetWidth, origHeight) {
+  return (targetWidth / origWidth) * origHeight
+}

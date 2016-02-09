@@ -11,6 +11,8 @@ function whenLoaded(results, newBook) {
             _id: kb._id,
             title: kb.title,
             cover_orig: kb.cover_orig,
+            cover_200: kb.cover_200,
+            cover_600: kb.cover_600,
             authors: kb.authors ? kb.authors.map(authorMapper, kb) : [],
             pubdate: kb.pubdate,
             pages: kb.pages,

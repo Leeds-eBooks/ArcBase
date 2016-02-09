@@ -11,7 +11,7 @@ import {
   saveToKinvey,
   getKinveyAuthors
 } from './modules/functions'
-import {alphaNumeric} from './modules/util'
+import {alphaNumeric, getTargetHeight} from './modules/util'
 import docTemplates from './modules/templates'
 import './modules/config'
 import searchContacts, {updateContact} from './modules/contacts'
@@ -19,6 +19,10 @@ import {saving} from './modules/ui'
 import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
 import moment from 'moment'
+import resize from 'resize-image'
+import reader from './modules/file-reader'
+import Lazy from 'lazy.js'
+import blob from 'blob-util'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -140,31 +144,84 @@ void async function() {
                   })
                 )
             } else if (key === 'cover_orig') {
-              if (input) {
+              if (input instanceof File) {
                 coverFile = {
                   file: input,
-                  filename: `${alphaNumeric(inputModel.title, '_')}_cover.jpg`
+                  filename: `${alphaNumeric(inputModel.title, '-')}.jpg`
                 }
               }
             } else {
               if (
                 'function' !== typeof input &&
                 key !== 'button' &&
-                key !== 'filterOut'/* &&
-                key !== 'coverimg'*/
+                key !== 'filterOut'
               ) data[key] = input && input.trim().replace(/\s{1,}/g,' ')
             }
           })
 
+          if (coverFile) {
+            try {
+              const img200 = new Image(),
+                    img600 = new Image(),
+                    [resized200, resized600] = await Promise.all([
+                      new Promise(async (resolve) => {
+                        img200.onload = async function() {
+                          const targetHeight = getTargetHeight(this.width, 200, this.height)
+                          try {
+                            resolve(
+                              await blob.dataURLToBlob(
+                                resize.resize(img200, 200, targetHeight, resize.JPEG)
+                              )
+                            )
+                          } catch (e) {
+                            console.error(e)
+                          }
+                        }
+                        img200.src = await reader(coverFile.file)
+                      }),
+                      new Promise(async (resolve) => {
+                        img600.onload = async function() {
+                          const targetHeight = getTargetHeight(this.width, 600, this.height)
+                          try {
+                            resolve(
+                              await blob.dataURLToBlob(
+                                resize.resize(img200, 600, targetHeight, resize.JPEG)
+                              )
+                            )
+                          } catch (e) {
+                            console.error(e)
+                          }
+                        }
+                        img600.src = await reader(coverFile.file)
+                      })
+                    ]);
+              Object.assign(coverFile, {
+                resized: [
+                  resized200,
+                  resized600
+                ]
+              })
+            } catch (e) {
+              console.error(e)
+            }
+          }
+
           try {
-            const [returnedAuthors, _id] = await Promise.all([
+            const [returnedAuthors, images] = await Promise.all([
               getKinveyAuthors(authors),
               coverFile ?
-                Kinvey.File.upload(coverFile.file, {
-                  _filename: coverFile.filename,
-                  mimeType: coverFile.file.type
-                }, {public: true})
-                .then(res => res._id) :
+                Promise.all(
+                  Lazy([coverFile.file, ...coverFile.resized])
+                  .compact()
+                  .map(file =>
+                    Kinvey.File.upload(file, {
+                      _filename: coverFile.filename,
+                      mimeType: file.type
+                    }, {public: true})
+                    .then(res => res._id)
+                  )
+                  .toArray()
+                ) :
                 Promise.resolve()
             ])
 
@@ -183,9 +240,19 @@ void async function() {
               })
             })
 
-            if (_id) data.cover_orig = {
-              _type: 'KinveyFile',
-              _id
+            if (images) {
+              data.cover_orig = {
+                _type: 'KinveyFile',
+                _id: images[0]
+              }
+              data.cover_200 = {
+                _type: 'KinveyFile',
+                _id: images[1]
+              }
+              data.cover_600 = {
+                _type: 'KinveyFile',
+                _id: images[2]
+              }
             }
 
             await saveToKinvey(data, bookToEdit)
@@ -500,6 +567,8 @@ void async function() {
           method: 'post',
           body: blob
         })
+        .then(console.log.bind(console))
+        .catch(console.error.bind(console))
       },
 
       // downloadCatalogue() {
