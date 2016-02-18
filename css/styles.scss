@@ -9,6 +9,9 @@
 #col-menu {
   width: 3em;
 }
+#col-downloadAI {
+  width: 7.3em;
+}
 
 @for $i from 1 through 3 {
   tr:nth-child(#{$i}) {
@@ -135,6 +138,10 @@ button.add-input {
   &::before {
     content: '+ ';
   }
+}
+
+.download-button {
+  margin-right: 0.2em;
 }
 
 .loading {

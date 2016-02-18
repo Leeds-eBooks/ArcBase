@@ -181,9 +181,9 @@ html(lang='en')
             button(rv-on-click='showNotesModal') &#x2630;
             button(rv-on-click='showLongModal') &#x270E;
           td
-            button(rv-on-click='downloadAI') &#x21E9; AI
-            button(rv-on-click='downloadPR') &#x21E9; PR
-            button(rv-on-click='downloadCataloguePage') &#x21E9; Cat
+            button.download-button(rv-on-click='downloadAI') &#x21E9; AI
+            button.download-button(rv-on-click='downloadPR') &#x21E9; PR
+            button.download-button(rv-on-click='downloadCataloguePage') &#x21E9; Cat
       
       button.load-more(
         rv-show='config.canLoadMore'
