@@ -1,7 +1,7 @@
-import _ from './underscore'
+import _ from 'underscore-contrib-up-to-date'
 
-import {formatISBN} from './functions'
-import {model} from './index'
+import {formatISBN} from './util'
+import {model} from '../index'
 
 function swapNames(authorObj) {
   const name = authorObj.name,
@@ -47,8 +47,8 @@ export default {
 
   bios(book) {
     return book.authors.map(author => model.getCurrentAuthor(author.name))
-      .filter(parseAuthor => parseAuthor.has('biog'))
-      .map(parseAuthor => parseAuthor.get('biog'))
+      .filter(({biog}) => biog)
+      .map(({biog}) => biog)
       .join(this.para + this.para)
   },
 
@@ -185,7 +185,7 @@ return `
     ]))
   }</p>
 
-  <img src="${book.coverimg600}" />
+  <img src="${book.cover_orig._downloadURL}" />
 
   <p class="desc">${book.shortdesc}</p>
 

@@ -120,7 +120,7 @@ html(lang='en')
 
         tr.book-rows(rv-each-book='books', rv-hide='book.filterOut', rv-constructer='initRow')
           td
-            img.coverimg(rv-src='book.coverimg', rv-on-click='book.chooseCover')
+            img.coverimg(rv-src='book.cover_200._downloadURL', rv-on-click='book.chooseCover')
             input(type='text', rv-value='book.title', rv-on-click='selectAll', rv-readonly='book.isEditing < button | opposite')
             input(type='file', rv-id="book.title | prepend 'cover-' | alphaNumeric", accept='image/*', style='display:none', rv-on-change='coverSelected')
             button.cover-upload(rv-on-click='openFilesCover', rv-show='book.isEditing < button') &#x21E7; cover
@@ -184,7 +184,10 @@ html(lang='en')
             button(rv-on-click='downloadAI') &#x21E9; AI
             button(rv-on-click='downloadPR') &#x21E9; PR
             button(rv-on-click='downloadCataloguePage') &#x21E9; Cat
-      button(rv-on-click='load150more') Load 150 more books
+      
+      button.load-more(
+        rv-show='config.canLoadMore'
+        rv-on-click='load150more') Load 150 more books
 
     button.open-contacts(rv-on-click='openContacts') Contacts
     button.download-catalogue(rv-on-click='downloadCatalogue') &#x21E9; Catalogue
@@ -195,3 +198,5 @@ html(lang='en')
     include views/contacts-overlay
     
     script(src='js/index-compiled.js')
+    if livereload
+      script(src='//localhost:34768/livereload.js')

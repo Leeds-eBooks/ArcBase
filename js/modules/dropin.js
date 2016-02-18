@@ -1,4 +1,4 @@
-import _ from './underscore'
+import _ from 'underscore-contrib-up-to-date'
 import {trans} from './util'
 
 /**
@@ -9,7 +9,7 @@ import {trans} from './util'
    * @return {Promise}               Resolves with key/val object
    */
 export default function dropin(text, questionsArray) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     const frag = document.createDocumentFragment(),
           overlay = document.createElement('div'),
           form = document.createElement('form'),
@@ -27,7 +27,7 @@ export default function dropin(text, questionsArray) {
         input.type = q.type
       }
       input.placeholder = q.placeholder
-      _.each(q.attributes, (v, k) => {input[k] = v;})
+      _.each(q.attributes, (v, k) => input[k] = v)
       if (q.value) input.value = q.value
       return input
     }
@@ -57,12 +57,11 @@ export default function dropin(text, questionsArray) {
 
     _.defer(() => overlay.className = "overlay-show")
 
-    overlay.addEventListener('click', event => {
+    overlay.addEventListener('click', async event => {
       if (event.target === event.currentTarget) {
-        trans(overlay,'remove','overlay-show').then(function() {
-          overlay.parentNode.removeChild(overlay)
-          reject()
-        })
+        await trans(overlay, 'remove', 'overlay-show')
+        overlay.parentNode.removeChild(overlay)
+        reject()
       }
     })
 
@@ -71,21 +70,20 @@ export default function dropin(text, questionsArray) {
 
       const requiredFields = _.pluck(questionsArray, 'required')
 
-      function complete() {
-        trans(overlay,'remove','overlay-show').then(() => {
-          resolve(
-            _.chain(inputs)
-              .pluck('value')
-              .indexBy((q, i) => questionsArray[i].key)
-              .value()
-          )
-          overlay.parentNode.removeChild(overlay)
-        })
+      async function complete() {
+        await trans(overlay, 'remove', 'overlay-show')
+        resolve(
+          _.chain(inputs)
+            .pluck('value')
+            .indexBy((q, i) => questionsArray[i].key)
+            .value()
+        )
+        overlay.parentNode.removeChild(overlay)
       }
 
       if (_.some(requiredFields, _.identity)) { // required fields exist
         if (
-          inputs.map(function(input, i) {
+          inputs.map((input, i) => {
             if (requiredFields[i]) {
               if (input.value) {
                 inputs[i].classList.remove('invalid')
@@ -94,10 +92,14 @@ export default function dropin(text, questionsArray) {
                 inputs[i].classList.add('invalid')
                 return false
               }
-            } else return true
+            } else {
+              return true
+            }
           }).every(_.identity)
         ) complete()
-      } else complete() // no required fields
-    });
-  });
+      } else {
+        complete() // no required fields
+      }
+    })
+  })
 }
