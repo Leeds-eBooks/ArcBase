@@ -11,7 +11,7 @@ import {
   saveToKinvey,
   getKinveyAuthors
 } from './modules/functions'
-import {alphaNumeric, resizer} from './modules/util'
+import {alphaNumeric, resizer, $$} from './modules/util'
 import docTemplates from './modules/templates'
 import './modules/config'
 import searchContacts, {updateContact} from './modules/contacts'
@@ -20,6 +20,7 @@ import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
+import Mousetrap from 'mousetrap'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -617,7 +618,17 @@ void async function() {
 
     update()
 
+    const searchBoxes = $$('tr#search input[type="search"]')
+
+    Mousetrap.bind(
+      Lazy.range(searchBoxes.length).map(v => `${v}`).toArray(),
+      (event, combo) => {
+        event.preventDefault()
+        searchBoxes[parseInt(Lazy(combo).last(), 10) - 1].focus()
+      }
+    )
+
   } catch (e) {
-    window.alert(`There has been an error while attempting to connect to the database.\n\n${e}`)
+    window.alert(e)
   }
 }()
