@@ -624,7 +624,7 @@ void async function() {
       Lazy.range(searchBoxes.length).map(v => `${v}`).toArray(),
       (event, combo) => {
         event.preventDefault()
-        searchBoxes[parseInt(Lazy(combo).last(), 10) - 1].focus()
+        searchBoxes[parseInt(Lazy(combo).last(), 10) - 1].select()
       }
     )
 
