@@ -21,6 +21,7 @@ import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
+import swal from './modules/sweetalert'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -235,27 +236,50 @@ void async function() {
           return false
         } else {
           return Kinvey.execute('checkauthors', {authors: inputModel.authors})
-            .then(res => {
+            .then(async res => {
               let cancelFlag = false
-              const replaced = res.filter(r => {
-                if (r.length === 1) {
-                  let name = r[0].author.name
-                  return confirm(
-                    `Did you mean ${name}?
 
-                    Ok for YES, I MEANT "${name}"
-                    Cancel for NO, I AM CORRECT`
-                  )
-                } else {
-                  cancelFlag = confirm(
-                    `There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?
+              const replaced = (await Promise.all(
+                res.map(async r => {
+                  if (r.length === 1) {
+                    let name = r[0].author.name
+                    return await swal({
+                      title: `Did you mean ${name}?`,
+                      confirmButtonText: `Yes, I meant "${name}"`,
+                      cancelButtonText: 'No, I am correct'
+                    })
+                  } else {
+                    cancelFlag = await swal({
+                      title: 'There is an author with a similar name on the database already',
+                      text: 'If there’s a typo, do you want to go back and fix it?',
+                      confirmButtonText: 'Yes, I made a mistake',
+                      cancelButtonText: 'No, I am correct'
+                    })
+                    return cancelFlag
+                  }
+                })
+              )).filter(x => x)
 
-                    Ok for YES, I MADE A MISTAKE
-                    Cancel for NO, I AM CORRECT`
-                  )
-                  return cancelFlag
-                }
-              })
+              console.log(replaced)
+              // const replaced = res.filter(r => {
+              //   if (r.length === 1) {
+              //     let name = r[0].author.name
+              //     return confirm(
+              //       `Did you mean ${name}?
+              //
+              //       Ok for YES, I MEANT "${name}"
+              //       Cancel for NO, I AM CORRECT`
+              //     )
+              //   } else {
+              //     cancelFlag = confirm(
+              //       `There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?
+              //
+              //       Ok for YES, I MADE A MISTAKE
+              //       Cancel for NO, I AM CORRECT`
+              //     )
+              //     return cancelFlag
+              //   }
+              // })
 
               if (replaced.length) {
                 if (!cancelFlag) continueSubmit(replaced)
@@ -264,8 +288,8 @@ void async function() {
               }
 
             }).catch(error => {
-              console.log('BL error caught', error)
-              console.log('continuing...')
+              console.info('BL error caught', error)
+              console.info('continuing...')
               continueSubmit()
             })
         }
