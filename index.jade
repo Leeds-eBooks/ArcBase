@@ -2,7 +2,7 @@ doctype html
 html(lang='en')
 
   include views/head
-  
+
   body
     #main
       table
@@ -41,142 +41,351 @@ html(lang='en')
           td
           td
           td
-      
+
         tr#inputs
           td
             input#title(rv-value='inputs.title', type='text', placeholder='new title')
 
           td.authors
             div(rv-each-authorinput='inputs.authors')
-              input(rv-value='authorinput.name', type='text', placeholder='new author')
-              input(rv-id="index | prepend 'roles-input-author-' | alphaNumeric", type='checkbox', value='author', rv-checked='authorinput.roles.author')
+              input(
+                rv-value='authorinput.name'
+                type='text'
+                placeholder='new author')
+              input(
+                rv-id="index | prepend 'roles-input-author-' | alphaNumeric"
+                type='checkbox'
+                value='author'
+                rv-checked='authorinput.roles.author')
               label(rv-for="index | prepend 'roles-input-author-' | alphaNumeric") A
-              input(rv-id="index | prepend 'roles-input-translator-' | alphaNumeric", type='checkbox', value='translator', rv-checked='authorinput.roles.translator')
+              input(
+                rv-id="index | prepend 'roles-input-translator-' | alphaNumeric"
+                type='checkbox'
+                value='translator'
+                rv-checked='authorinput.roles.translator')
               label(rv-for="index | prepend 'roles-input-translator-' | alphaNumeric") T
-              input(rv-id="index | prepend 'roles-input-editor-' | alphaNumeric", type='checkbox', value='editor', rv-checked='authorinput.roles.editor')
+              input(
+                rv-id="index | prepend 'roles-input-editor-' | alphaNumeric"
+                type='checkbox'
+                value='editor'
+                rv-checked='authorinput.roles.editor')
               label(rv-for="index | prepend 'roles-input-editor-' | alphaNumeric") E
-              input(rv-id="index | prepend 'roles-input-introducer-' | alphaNumeric", type='checkbox', value='introducer', rv-checked='authorinput.roles.introducer')
+              input(
+                rv-id="index | prepend 'roles-input-introducer-' | alphaNumeric"
+                type='checkbox'
+                value='introducer'
+                rv-checked='authorinput.roles.introducer')
               label(rv-for="index | prepend 'roles-input-introducer-' | alphaNumeric") I
-              input(rv-id="index | prepend 'roles-input-critic-' | alphaNumeric", type='checkbox', value='critic', rv-checked='authorinput.roles.critic')
+              input(
+                rv-id="index | prepend 'roles-input-critic-' | alphaNumeric"
+                type='checkbox'
+                value='critic'
+                rv-checked='authorinput.roles.critic')
               label(rv-for="index | prepend 'roles-input-critic-' | alphaNumeric") C
             button.add-input(rv-on-click='addAuthor') Add another person
-          
-          td
-            label#pbk
-              | pbk:
-              input.ISBNs(rv-value='inputs.ISBNs.pbk', rv-on-input='validateISBN', type='text')
-            br
-            label#hbk
-              | hbk:
-              input.ISBNs(rv-value='inputs.ISBNs.hbk', type='text')
-            br
-            label#ebk
-              | ebk:
-              input.ISBNs(rv-value='inputs.ISBNs.ebk', type='text')
-
-          td
-            input(rv-value='inputs.pages', rv-on-input='calculatePriceFromPages', type='number', step='1', min='0', max='9999', placeholder='pages')
 
           td
             label#pbk
               | pbk:
-              input.ISBNs(rv-value='inputs.price.pbk', rv-on-input='calculatePrice', type='number', step='0.01', min='0', max='999')
+              input.ISBNs(
+                rv-value='inputs.ISBNs.pbk'
+                rv-on-input='validateISBN', type='text')
             br
             label#hbk
               | hbk:
-              input.ISBNs(rv-value='inputs.price.hbk', type='number', step='0.01', min='0', max='999')
+              input.ISBNs(
+                rv-value='inputs.ISBNs.hbk'
+                type='text')
             br
             label#ebk
               | ebk:
-              input.ISBNs(rv-value='inputs.price.ebk', type='number', step='0.01', min='0', max='999')
+              input.ISBNs(
+                rv-value='inputs.ISBNs.ebk'
+                type='text')
 
           td
-            input(type='date', rv-value='inputs.pubdate')
+            input(
+              rv-value='inputs.pages'
+              rv-on-input='calculatePriceFromPages'
+              type='number'
+              step='1'
+              min='0'
+              max='9999'
+              placeholder='pages')
+
           td
-            textarea(maxlength='350', cols='30', rows='10', rv-value='inputs.shortdesc')
+            label#pbk
+              | pbk:
+              input.ISBNs(
+                rv-value='inputs.price.pbk'
+                rv-on-input='calculatePrice'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999')
+            br
+            label#hbk
+              | hbk:
+              input.ISBNs(
+                rv-value='inputs.price.hbk'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999')
+            br
+            label#ebk
+              | ebk:
+              input.ISBNs(
+                rv-value='inputs.price.ebk'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999')
+
           td
-            button(rv-on-click='submit', rv-html='inputs.button')
+            input(
+              type='date'
+              rv-value='inputs.pubdate')
+          td
+            textarea(
+              maxlength='350'
+              cols='30'
+              rows='10'
+              rv-value='inputs.shortdesc')
+          td
+            button(
+              rv-on-click='submit'
+              rv-html='inputs.button')
           td
           td
 
         tr#search
           td
-            input(type='search', placeholder='search', data-search-column='title', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='title'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='search', data-search-column='authors', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='authors'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='search', data-search-column='ISBNs', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='ISBNs'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='search', data-search-column='pages', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='pages'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='search', data-search-column='price', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='price'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='YYYY-MM-DD', data-search-column='pubdate', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='YYYY-MM-DD'
+              data-search-column='pubdate'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
-            input(type='search', placeholder='search', data-search-column='shortdesc', rv-on-input='smartSearch', rv-on-keyup='smartSearch')
+            input(
+              type='search'
+              placeholder='search'
+              data-search-column='shortdesc'
+              rv-on-input='smartSearch'
+              rv-on-keyup='smartSearch')
           td
           td
           td
 
-        tr.book-rows(rv-each-book='books', rv-hide='book.filterOut', rv-constructer='initRow')
+        tr.book-rows(
+          rv-each-book='books'
+          rv-hide='book.filterOut'
+          rv-constructer='initRow')
+
           td
-            img.coverimg(rv-src='book.cover_200._downloadURL', rv-on-click='book.chooseCover')
-            input(type='text', rv-value='book.title', rv-on-click='selectAll', rv-readonly='book.isEditing < button | opposite')
-            input(type='file', rv-id="book.title | prepend 'cover-' | alphaNumeric", accept='image/*', style='display:none', rv-on-change='coverSelected')
-            button.cover-upload(rv-on-click='openFilesCover', rv-show='book.isEditing < button') &#x21E7; cover
-          
+            img.coverimg(
+              rv-src='book.cover_200._downloadURL'
+              rv-on-click='book.chooseCover')
+            input(
+              type='text'
+              rv-value='book.title'
+              rv-on-click='selectAll'
+              rv-readonly!='book.isEditing < button | opposite')
+            input(
+              type='file'
+              rv-id="book.title | prepend 'cover-' | alphaNumeric"
+              accept='image/*'
+              style='display:none'
+              rv-on-change='coverSelected')
+            button.cover-upload(
+              rv-on-click='openFilesCover'
+              rv-show!='book.isEditing < button') &#x21E7; cover
+
           td.authors
             div(rv-each-author='book.authors')
-              button.delete(rv-show='book.isEditing < button', rv-on-click='removeAuthor') &#x2715;
-              input.author-button(rv-value='author.name', type='text', rv-on-click='showAuthorModal', placeholder='new author', rv-readonly='book.isEditing < button | opposite')
+              button.delete(
+                rv-show!='book.isEditing < button'
+                rv-on-click='removeAuthor') &#x2715;
+              input.author-button(
+                rv-value='author.name'
+                type='text'
+                rv-on-click='showAuthorModal'
+                placeholder='new author'
+                rv-readonly!='book.isEditing < button | opposite')
+
               //- TODO prevent editing
-              input(rv-id="index | prepend author.name | prepend 'roles-author-' | alphaNumeric", type='checkbox', value='author', rv-checked='author.roles.author', rv-enabled='book.isEditing < button')
+              input(
+                rv-id="index | prepend author.name | prepend 'roles-author-' | alphaNumeric"
+                type='checkbox'
+                value='author'
+                rv-checked='author.roles.author'
+                rv-enabled!='book.isEditing < button')
               label(rv-for="index | prepend author.name | prepend 'roles-author-' | alphaNumeric") A
-              input(rv-id="index | prepend author.name | prepend 'roles-translator-' | alphaNumeric", type='checkbox', value='translator', rv-checked='author.roles.translator', rv-enabled='book.isEditing < button')
+              input(
+                rv-id="index | prepend author.name | prepend 'roles-translator-' | alphaNumeric"
+                type='checkbox'
+                value='translator'
+                rv-checked='author.roles.translator'
+                rv-enabled!='book.isEditing < button')
               label(rv-for="index | prepend author.name | prepend 'roles-translator-' | alphaNumeric") T
-              input(rv-id="index | prepend author.name | prepend 'roles-editor-' | alphaNumeric", type='checkbox', value='editor', rv-checked='author.roles.editor', rv-enabled='book.isEditing < button')
+              input(
+                rv-id="index | prepend author.name | prepend 'roles-editor-' | alphaNumeric"
+                type='checkbox'
+                value='editor'
+                rv-checked='author.roles.editor'
+                rv-enabled!='book.isEditing < button')
               label(rv-for="index | prepend author.name | prepend 'roles-editor-' | alphaNumeric") E
-              input(rv-id="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric", type='checkbox', value='introducer', rv-checked='author.roles.introducer', rv-enabled='book.isEditing < button')
+              input(
+                rv-id="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric"
+                type='checkbox'
+                value='introducer'
+                rv-checked='author.roles.introducer'
+                rv-enabled!='book.isEditing < button')
               label(rv-for="index | prepend author.name | prepend 'roles-introducer-' | alphaNumeric") I
-              input(rv-id="index | prepend author.name | prepend 'roles-critic-' | alphaNumeric", type='checkbox', value='critic', rv-checked='author.roles.critic', rv-enabled='book.isEditing < button')
+              input(
+                rv-id="index | prepend author.name | prepend 'roles-critic-' | alphaNumeric"
+                type='checkbox'
+                value='critic'
+                rv-checked='author.roles.critic'
+                rv-enabled!='book.isEditing < button')
               label(rv-for="index | prepend author.name | prepend 'roles-critic-' | alphaNumeric") C
-            button.add-input(rv-show='book.isEditing < button', rv-on-click='book.addAuthor') Add another person
-      
-          td
-            label
-              span.info pbk:
-              input.ISBNs(rv-value='book.ISBNs.pbk', rv-on-click='selectAll', rv-on-input='validateISBN', type='text', placeholder='ISBN', rv-readonly='book.isEditing < button | opposite')
-            br
-            label
-              span.info hbk:
-              input.ISBNs(rv-value='book.ISBNs.hbk', rv-on-click='selectAll', type='text', placeholder='ISBN', rv-readonly='book.isEditing < button | opposite')
-            br
-            label
-              span.info ebk:
-              input.ISBNs(rv-value='book.ISBNs.ebk', rv-on-click='selectAll', type='text', placeholder='ISBN', rv-readonly='book.isEditing < button | opposite')
-          
-          td
-            input(rv-value='book.pages', rv-on-click='selectAll', rv-on-input='calculatePriceFromPages', rv-readonly='book.isEditing < button | opposite', type='number', step='1', min='0', max='9999', placeholder='pages')
-          
-          td
-            label
-              span.info pbk:
-              input.ISBNs(rv-value='book.price.pbk', rv-on-click='selectAll', rv-on-input='calculatePrice', type='number', step='0.01', min='0', max='999', placeholder='price', rv-readonly='book.isEditing < button | opposite')
-            br
-            label
-              span.info hbk:
-              input.ISBNs(rv-value='book.price.hbk', rv-on-click='selectAll', type='number', step='0.01', min='0', max='999', placeholder='price', rv-readonly='book.isEditing < button | opposite')
-            br
-            label
-              span.info ebk:
-              input.ISBNs(rv-value='book.price.ebk', rv-on-click='selectAll', type='number', step='0.01', min='0', max='999', placeholder='price', rv-readonly='book.isEditing < button | opposite')
+            button.add-input(
+              rv-show!='book.isEditing < button'
+              rv-on-click='book.addAuthor') Add another person
 
           td
-            input(type='date', rv-value='book.pubdate', rv-readonly='book.isEditing < button | opposite')
+            label
+              span.info pbk:
+              input.ISBNs(
+                rv-value='book.ISBNs.pbk'
+                rv-on-click='selectAll'
+                rv-on-input='validateISBN'
+                type='text'
+                placeholder='ISBN'
+                rv-readonly!='book.isEditing < button | opposite')
+            br
+            label
+              span.info hbk:
+              input.ISBNs(
+                rv-value='book.ISBNs.hbk'
+                rv-on-click='selectAll'
+                type='text'
+                placeholder='ISBN'
+                rv-readonly!='book.isEditing < button | opposite')
+            br
+            label
+              span.info ebk:
+              input.ISBNs(
+                rv-value='book.ISBNs.ebk'
+                rv-on-click='selectAll'
+                type='text'
+                placeholder='ISBN'
+                rv-readonly!='book.isEditing < button | opposite')
+
           td
-            textarea(maxlength='350', cols='30', rows='10', rv-value='book.shortdesc', rv-on-click='selectAll', rv-readonly='book.isEditing < button | opposite')
+            input(
+              rv-value='book.pages'
+              rv-on-click='selectAll'
+              rv-on-input='calculatePriceFromPages'
+              rv-readonly!='book.isEditing < button | opposite'
+              type='number'
+              step='1'
+              min='0'
+              max='9999'
+              placeholder='pages')
+
           td
-            button(rv-on-click='editOrSubmit', rv-html='book.button', rv-class-warning='book.isEditing < button')
+            label
+              span.info pbk:
+              input.ISBNs(
+                rv-value='book.price.pbk'
+                rv-on-click='selectAll'
+                rv-on-input='calculatePrice'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999'
+                placeholder='price'
+                rv-readonly!='book.isEditing < button | opposite')
+            br
+            label
+              span.info hbk:
+              input.ISBNs(
+                rv-value='book.price.hbk'
+                rv-on-click='selectAll'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999'
+                placeholder='price'
+                rv-readonly!='book.isEditing < button | opposite')
+            br
+            label
+              span.info ebk:
+              input.ISBNs(
+                rv-value='book.price.ebk'
+                rv-on-click='selectAll'
+                type='number'
+                step='0.01'
+                min='0'
+                max='999'
+                placeholder='price'
+                rv-readonly!='book.isEditing < button | opposite')
+
+          td
+            input(
+              type='date'
+              rv-value='book.pubdate'
+              rv-readonly!='book.isEditing < button | opposite')
+          td
+            textarea(
+              maxlength='350'
+              cols='30'
+              rows='10'
+              rv-value='book.shortdesc'
+              rv-on-click='selectAll'
+              rv-readonly!='book.isEditing < button | opposite')
+          td
+            button(
+              rv-on-click='editOrSubmit'
+              rv-html='book.button'
+              rv-class-warning!='book.isEditing < button')
           td
             button(rv-on-click='showNotesModal') &#x2630;
             button(rv-on-click='showLongModal') &#x270E;
@@ -184,7 +393,7 @@ html(lang='en')
             button.download-button(rv-on-click='downloadAI') &#x21E9; AI
             button.download-button(rv-on-click='downloadPR') &#x21E9; PR
             button.download-button(rv-on-click='downloadCataloguePage') &#x21E9; Cat
-      
+
       button.load-more(
         rv-show='config.canLoadMore'
         rv-on-click='load150more') Load 150 more books
@@ -198,7 +407,7 @@ html(lang='en')
     include views/notes-overlay
     include views/long-overlay
     include views/contacts-overlay
-    
+
     script(src='js/index-compiled.js')
     if livereload
       script(src='//localhost:34768/livereload.js')
