@@ -72,9 +72,7 @@ module.exports = function(grunt) {
         },
         module: webpackConfig,
         plugins: [
-          new OccurrenceOrderPlugin(true)//,
-          // new DedupePlugin(),
-          // new UglifyJsPlugin({compress: false})
+          new OccurrenceOrderPlugin(true)
         ]
       },
       dist: {
