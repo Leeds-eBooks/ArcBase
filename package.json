@@ -1,6 +1,6 @@
 {
   "name": "Arcbase",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Fledgling Parse database front-end for (poetry) publishers",
   "main": "index.html",
   "dependencies": {
@@ -52,7 +52,8 @@
     "bump:patch": "bump patch",
     "bump:minor": "bump minor",
     "bump:major": "bump major",
-    "commit-bump": "git add package.json && git commit -m \"version bump\""
+    "commit-bump": "git add package.json && git commit -m \"version bump\"",
+    "build:minor": "npm run bump:minor && npm run commit-bump && grunt"
   },
   "repository": {
     "type": "git",
