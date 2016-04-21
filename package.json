@@ -1,6 +1,6 @@
 {
   "name": "Arcbase",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Fledgling Parse database front-end for (poetry) publishers",
   "main": "index.html",
   "dependencies": {
@@ -28,6 +28,7 @@
     "babel-loader": "^6.2.1",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-3": "^6.3.13",
+    "bump-tag": "^1.1.0",
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-connect": "^1.0.1",
@@ -47,7 +48,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "cat": "babel cat/cat.js | node",
-    "start": "babel ./cat/index.js | node"
+    "start": "babel ./cat/index.js | node",
+    "bump:patch": "bump patch",
+    "bump:minor": "bump minor",
+    "bump:major": "bump major",
+    "commit-bump": "git add package.json && git commit -m \"version bump\""
   },
   "repository": {
     "type": "git",
