@@ -174,7 +174,7 @@ module.exports = function(grunt) {
   })
 
   grunt.registerTask('default', [
-    'clean', 'copy', 'jade', 'sass', 'webpack', 'ftp-deploy', 'ftps_deploy'
+    'clean', 'copy', 'jade:dist', 'sass:dist', 'webpack:dist', 'ftp-deploy', 'ftps_deploy'
   ])
 
   grunt.registerTask('deploy', [
@@ -182,7 +182,7 @@ module.exports = function(grunt) {
   ])
 
   grunt.registerTask('prod', [
-    'clean', 'copy', 'jade', 'sass', 'webpack'
+    'clean', 'copy', 'jade:dist', 'sass:dist', 'webpack:dist'
   ])
 
   grunt.registerTask('dev', [
