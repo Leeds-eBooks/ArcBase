@@ -12,3 +12,5 @@ css/styles.css
 .DS_Store
 .tags*
 index.html
+id_rsa
+id_rsa.pub

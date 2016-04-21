@@ -1,7 +1,8 @@
-var path = require('path')
+var path                  = require('path')
 var OccurrenceOrderPlugin = require('webpack/lib/optimize/OccurrenceOrderPlugin')
-var DedupePlugin = require('webpack/lib/optimize/DedupePlugin')
-var UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin')
+var DedupePlugin          = require('webpack/lib/optimize/DedupePlugin')
+var UglifyJsPlugin        = require('webpack/lib/optimize/UglifyJsPlugin')
+var packageJSON           = require('./package.json')
 
 var webpackConfig = {
   loaders: [
@@ -47,7 +48,8 @@ module.exports = function(grunt) {
     "jade": {
       options: {
         data: {
-          livereload: false
+          livereload: false,
+          version: packageJSON.version
         }
       },
       dist: {
@@ -56,7 +58,8 @@ module.exports = function(grunt) {
       dev: {
         options: {
           data: {
-            livereload: true
+            livereload: true,
+            version: packageJSON.version
           }
         },
         files: {'index.html': 'index.jade'}
@@ -109,8 +112,6 @@ module.exports = function(grunt) {
       }
     },
 
-
-
     "ftp-deploy": {
       arctour: {
         auth: {
@@ -120,15 +121,26 @@ module.exports = function(grunt) {
         },
         src: 'dist',
         dest: '/public_html/arcbase'
-      },
+      }
+    },
+
+    "ftps_deploy": {
       arcpublications: {
-        auth: {
-          host: 'arcpublications.co.uk',
-          port: 21,
-          authKey: 'ben-arcpublications'
+        options: {
+          auth: {
+            host: 'ftp.arcpublications.co.uk',
+            port: 21,
+            authKey: 'arcbase',
+            secure: true
+          },
+          silent: false
         },
-        src: 'dist',
-        dest: '/arcbase'
+        files: [{
+          expand: true,
+          cwd: 'dist/',
+          src: ['**/*'],
+          dest: '/'
+        }]
       }
     },
 
@@ -141,15 +153,32 @@ module.exports = function(grunt) {
         '**/*.sass',
         'node_modules/kinvey-html5/kinvey.js'
       ],
-      tasks: ['dev'],
+      tasks: [
+        'jade:dev',
+        'sass:dev',
+        'webpack:dev'
+      ],
       options: {
         livereload: 34768
+      }
+    },
+
+    "connect": {
+      dev: {
+        options: {
+          // livereload: true,
+          open: true
+        }
       }
     }
   })
 
   grunt.registerTask('default', [
-    'clean', 'copy', 'jade', 'sass', 'webpack', 'ftp-deploy'
+    'clean', 'copy', 'jade', 'sass', 'webpack', 'ftp-deploy', 'ftps_deploy'
+  ])
+
+  grunt.registerTask('deploy', [
+    'ftps_deploy'
   ])
 
   grunt.registerTask('prod', [
@@ -157,6 +186,6 @@ module.exports = function(grunt) {
   ])
 
   grunt.registerTask('dev', [
-    'jade:dev', 'sass:dev', 'webpack:dev', 'watch'
+    'jade:dev', 'sass:dev', 'webpack:dev', 'connect', 'watch'
   ])
 }
