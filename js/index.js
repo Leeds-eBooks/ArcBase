@@ -473,7 +473,7 @@ void async function() {
 
       downloadAI(event, scope) {
         const book = scope.book,
-              AI = docTemplates.AI(book),
+              AI = docTemplates.AI(book, kvBookMap.get(book)),
               blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
 
         FileSaver.saveAs(blob, `${book.title} AI.txt`)
