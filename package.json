@@ -6,6 +6,7 @@
   "dependencies": {
     "babel-polyfill": "^6.3.14",
     "blob-util": "^1.2.0",
+    "deep-freeze-strict": "^1.1.1",
     "html-pdf": "^1.4.0",
     "humane-js": "^3.2.2",
     "kinvey-html5": "^1.6.6",

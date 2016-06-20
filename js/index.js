@@ -11,6 +11,7 @@ import {
   saveToKinvey,
   getKinveyAuthors
 } from './modules/functions'
+import {pricing} from './modules/constants'
 import {alphaNumeric, resizer, $$} from './modules/util'
 import docTemplates from './modules/templates'
 import './modules/config'
@@ -293,25 +294,18 @@ void async function() {
       },
 
       calculatePriceFromPages(event, scope) {
-        const book = scope.book || scope.inputs,
-              pageRange = {
-                "0-89":     "8.99",
-                "90-128":   "9.99",
-                "129-160": "10.99",
-                "161-192": "11.99",
-                "193-999": "12.99"
-              };
+        const book = scope.book || scope.inputs
 
         function getRange(pages) {
           const p = parseInt(pages, 10)
-          return Object.keys(pageRange).find(range =>
+          return Object.keys(pricing).find(range =>
             p >= parseInt(range.split('-')[0], 10) &&
             p <= parseInt(range.split('-')[1], 10)
           )
         }
 
         if (!book.price.pbk || parseFloat(book.price.pbk) < 13) {
-          book.price.pbk = book.pages ? pageRange[getRange(book.pages)] : ""
+          book.price.pbk = book.pages ? pricing[getRange(book.pages)] : ""
           book.price.hbk = String(parseFloat(book.price.pbk) + 3)
           book.price.ebk = String(parseFloat(book.price.pbk) - 4)
         }
