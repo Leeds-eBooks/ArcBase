@@ -28,6 +28,12 @@ export const trans = (el, action, className) =>
     el.classList[action](className)
   })
 
+/**
+ * Remove non-word characters (e.g. space)
+ * @param  {String} str         Input string
+ * @param  {String} replacement Replacement character
+ * @return {String}             Output string
+ */
 export function alphaNumeric(str, replacement = '-') {
   return str.replace(/\W+/g, replacement)
 }

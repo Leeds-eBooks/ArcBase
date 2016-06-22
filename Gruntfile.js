@@ -19,6 +19,9 @@ var webpackConfig = {
           'stage-3'
         ]
       }
+    }, {
+      loader: 'json',
+      test: /\.json$/
     }
   ]
 }

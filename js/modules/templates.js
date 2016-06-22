@@ -2,6 +2,7 @@ import _ from 'underscore-contrib-up-to-date'
 import dedent from 'dedent'
 import {formatISBN} from './util'
 import {model} from '../index'
+import blobUtil from 'blob-util'
 
 function swapNames(authorObj) {
   const name = authorObj.name,
@@ -147,65 +148,55 @@ export default {
 
   ////////////////////////////////////////
 
-  CataloguePage(book) {
-    return dedent`
-      <style>
-        .wrapper {
-          margin: 0;
-          padding: 2em;
-        }
-        img {
-          width: 35%;
-          float: left;
-          margin: 1em 2em 2em 1em;
-          box-shadow: 0.8em 0.8em 4em rgba(0,0,0,0.5);
-        }
-        h1 {
-          font-family: sans-serif;
-        }
-        .footer {
-          clear: both;
-          padding: 1em;
-          background-color: #e7edf3;
-        }
-        .footer > * {
-          margin: 0;
-          padding: 0;
-          font-size: 0.8em;
-        }
-        p {
-          font-size: 1.1em;
-        }
-        .desc {}
-        .author {
-          font-size: 1em;
-        }
-      </style>
-
-      <div class="wrapper">
-        <h1>${book.title}</h1>
-        <p class="author">${
-          joinMany(_.compact([
+  async CataloguePage(book) {
+    if (!book.cover_orig) throw new Error('missing cover image')
+    else return {
+      info: {
+        title: `${book.title} Catalogue Page`
+      },
+      content: [
+        {
+          text: book.title,
+          style: 'h1'
+        }, {
+          text:  joinMany(_.compact([
             this.authorString(book),
             this.translatorString(book),
             this.editorString(book),
             this.introducerString(book)
-          ]))
-        }</p>
-
-        <img src="${book.cover_orig._downloadURL}" />
-
-        <p class="desc">${book.shortdesc}</p>
-
-        <div class="footer">
-          <h3>Bibliographic Details</h3>
-          ${book.ISBNs.pbk ? `<p>${formatISBN(book.ISBNs.pbk)} pbk £${book.price.pbk || '?'}</p>` : ''}
-          ${book.ISBNs.hbk ? `<p>${formatISBN(book.ISBNs.hbk)} hbk £${book.price.hbk || '?'}</p>` : ''}
-          ${book.ISBNs.ebk ? `<p>${formatISBN(book.ISBNs.ebk)} ebk £${book.price.ebk || '?'}</p>` : ''}
-          ${book.pages ? `<p>${book.pages}pp</p>` : ''}
-          <p>Publication Date: ${(new Date(book.pubdate)).toDateString()}</p>
-        </div>
-      </div>
-    `.replace(/£/g, '&pound;')
+          ])),
+          style: 'author'
+        }, {
+          margin: [0, 30],
+          columns: [
+            {
+              image: `data:image/jpeg;base64,${
+                await Kinvey.File.download(book.cover_orig._id)
+                  .then(res => res._data)
+                  .then(blob => blobUtil.blobToBase64String(blob))
+                }`,
+              width: 130
+            }, {
+              text: book.shortdesc
+            }
+          ],
+          columnGap: 10
+        },
+        `Publication date: ${(new Date(book.pubdate)).toDateString()}`,
+        `${book.pages ? `${book.pages} pages` : ''}`,
+        `${book.ISBNs.pbk ? `${formatISBN(book.ISBNs.pbk)} paperback £${book.price.pbk || '?'}` : ''}`,
+        `${book.ISBNs.hbk ? `${formatISBN(book.ISBNs.hbk)} hardback £${book.price.hbk || '?'}` : ''}`,
+        `${book.ISBNs.ebk ? `${formatISBN(book.ISBNs.ebk)} ebook £${book.price.ebk || '?'}` : ''}`
+      ],
+      styles: {
+        h1: {
+          fontSize: 20
+        },
+        author: {
+          fontSize: 12
+        }
+      },
+      pageSize: 'A5'
+    }
   }
-};
+}

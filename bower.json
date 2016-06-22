@@ -19,6 +19,7 @@
     "tests"
   ],
   "dependencies": {
-    "FileSaver": "*"
+    "FileSaver": "*",
+    "pdfmake": "^0.1.20"
   }
 }

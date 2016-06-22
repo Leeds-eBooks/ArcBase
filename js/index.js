@@ -1,17 +1,19 @@
 import 'babel-polyfill'
 import 'whatwg-fetch'
 import 'sightglass'
-import 'script!kinvey-html5/kinvey'
 import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
 import ArcBase from '../keys'
-import dropin from './modules/dropin'
+// import dropin from './modules/dropin'
 import {
   preventAuthorEditing,
   saveToKinvey,
   getKinveyAuthors
 } from './modules/functions'
-import {pricing} from './modules/constants'
+import {
+  pricing,
+  loadingGif
+} from './modules/constants'
 import {alphaNumeric, resizer, $$} from './modules/util'
 import docTemplates from './modules/templates'
 import './modules/config'
@@ -22,6 +24,10 @@ import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
+
+import 'script!kinvey-html5/kinvey'
+import 'script!../bower_components/pdfmake/build/pdfmake.min'
+import 'script!../bower_components/pdfmake/build/vfs_fonts.js'
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -109,7 +115,7 @@ void async function() {
 
         async function continueSubmit(replacedAuthors) {
           let coverFile
-          if (!bookToEdit) model.inputs.button = '<img class="loading" src="images/loading.gif">'
+          if (!bookToEdit) model.inputs.button = loadingGif
 
           _.each(inputModel, (input, key) => {
             if (key === 'authors') {
@@ -278,7 +284,7 @@ void async function() {
           preventAuthorEditing(scope.index)
         } else {
           if (model.submit(null, null, scope.book)) {
-            scope.book.button = '<img class="loading" src="images/loading.gif">'
+            scope.book.button = loadingGif
 
             table
             .querySelectorAll('.book-rows')[scope.index]
@@ -387,7 +393,7 @@ void async function() {
       async editAuthor() {
         const isEditing = model.authorButton === 'Save'
         model.authorButton = isEditing ?
-          '<img class="loading" src="images/loading.gif">' : 'Save'
+          loadingGif : 'Save'
         model.isEditing.author = !isEditing
 
         if (isEditing) {
@@ -453,7 +459,7 @@ void async function() {
               isEditing = model[button] === 'Save';
 
         model[button] = isEditing ?
-          '<img class="loading" src="images/loading.gif">' :
+          loadingGif :
           'Save'
 
         model.isEditing[which] = !isEditing
@@ -487,49 +493,60 @@ void async function() {
         FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`)
       },
 
-      downloadCataloguePage(event, scope) {
-        const book = scope.book,
-              cat = docTemplates.CataloguePage(book),
-              blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+      async downloadCataloguePage(event, scope) {
+        const textCache = this.textContent
+        try {
+          this.innerHTML = loadingGif
+          const book = scope.book,
+                doc = await docTemplates.CataloguePage(book, kvBookMap.get(book));
 
-        FileSaver.saveAs(blob, `CataloguePage-${book.title.replace(/\s+/g, '')}.html`)
+          window.pdfMake.createPdf(doc).download(`${alphaNumeric(book.title)}-catalogue-page`)
+
+        } catch (e) {
+          console.error(e)
+          if (e.message.toLowerCase().includes('missing cover image')) {
+            alert('Missing cover image – add a cover image and try again.')
+          }
+        } finally {
+          this.textContent = textCache
+        }
       },
 
-      async downloadCatalogue() {
-        const {from, to, email} = await dropin(
-                'Details for automatic catalogue generation',
-                [{
-                  key: 'from',
-                  placeholder: 'start date',
-                  type: 'date'
-                }, {
-                  key: 'to',
-                  placeholder: 'end date',
-                  type: 'date'
-                }, {
-                  key: 'email',
-                  placeholder: 'email address',
-                  type: 'email',
-                  value: 'angela@arcpublications.co.uk'
-                }]
-              ),
-              range = [from, to].map(str => new Date(str)),
-              cat = model.books
-                .filter(book => {
-                  const pubdate = new Date(book.pubdate)
-                  return range[0] <= pubdate && pubdate <= range[1]
-                })
-                .map(book => docTemplates.CataloguePage(book))
-                .join('<p style="page-break-after:always;"></p>'),
-              blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
-
-        fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
-          method: 'post',
-          body: blob
-        })
-        .then(console.log.bind(console))
-        .catch(console.error.bind(console))
-      },
+      // async downloadCatalogue() {
+      //   const {from, to, email} = await dropin(
+      //           'Details for automatic catalogue generation',
+      //           [{
+      //             key: 'from',
+      //             placeholder: 'start date',
+      //             type: 'date'
+      //           }, {
+      //             key: 'to',
+      //             placeholder: 'end date',
+      //             type: 'date'
+      //           }, {
+      //             key: 'email',
+      //             placeholder: 'email address',
+      //             type: 'email',
+      //             value: 'angela@arcpublications.co.uk'
+      //           }]
+      //         ),
+      //         range = [from, to].map(str => new Date(str)),
+      //         cat = model.books
+      //           .filter(book => {
+      //             const pubdate = new Date(book.pubdate)
+      //             return range[0] <= pubdate && pubdate <= range[1]
+      //           })
+      //           .map(book => docTemplates.CataloguePage(book))
+      //           .join('<p style="page-break-after:always;"></p>'),
+      //         blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
+      //
+      //   fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
+      //     method: 'post',
+      //     body: blob
+      //   })
+      //   .then(console.log.bind(console))
+      //   .catch(console.error.bind(console))
+      // },
 
       // downloadCatalogue() {
       //   const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
