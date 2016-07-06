@@ -401,15 +401,35 @@ void async function() {
         if (isEditing) {
           console.log(model.currentAuthor)
           try {
-            const updated = await Kinvey.DataStore.update('Author', model.currentAuthor)
-            model.authorButton = 'Edit'
+            if (model.currentAuthor.author_photo instanceof File) {
+
+              const {_id} = await Kinvey.File.upload(model.currentAuthor.author_photo, {
+                _filename: `${alphaNumeric(model.currentAuthor.name)}.jpg`,
+                mimeType: model.currentAuthor.author_photo.type
+              }, {public: true})
+
+              model.currentAuthor.author_photo = {
+                _type: 'KinveyFile',
+                _id
+              }
+            }
+
             model.books.forEach(book =>
               book.authors
               .filter(a => a.name === model.currentAuthorOldName)
-              .forEach(author => author.name = updated.name)
+              .forEach(author => author.name = model.currentAuthor.name)
             )
+
+            const {_id} = await Kinvey.DataStore.update('Author', model.currentAuthor)
+            Object.assign(
+              model.currentAuthor,
+              await Kinvey.DataStore.get('Author', _id)
+            )
+
           } catch (e) {
             console.error(e)
+          } finally {
+            model.authorButton = 'Edit'
           }
         }
       },
@@ -541,6 +561,12 @@ void async function() {
       coverSelected(event, scope) {
         const file = this.files[0]
         scope.book.cover_orig = file
+        this.parentNode.querySelector('button').textContent = file.name
+      },
+
+      authorPhotoSelected(event, scope) {
+        const file = this.files[0]
+        scope.currentAuthor.author_photo = file
         this.parentNode.querySelector('button').textContent = file.name
       },
 
