@@ -15,7 +15,7 @@ import {
   loadingGif
 } from './modules/constants'
 import {alphaNumeric, resizer, $$} from './modules/util'
-import docTemplates from './modules/templates'
+import * as docTemplates from './modules/templates'
 import './modules/config'
 import searchContacts, {updateContact} from './modules/contacts'
 import {saving} from './modules/ui'
@@ -24,6 +24,7 @@ import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
+import touringSheet from './modules/templates/touring'
 
 import 'script!kinvey-html5/kinvey'
 import 'script!../bower_components/pdfmake/build/pdfmake.min'
@@ -515,12 +516,12 @@ void async function() {
         FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`)
       },
 
-      async downloadCataloguePage(event, scope) {
+      async downloadTouringSheet(event, scope) {
         const textCache = this.textContent
         try {
           this.innerHTML = loadingGif
           const book = scope.book,
-                doc = await docTemplates.CataloguePage(book, kvBookMap.get(book));
+                doc = await touringSheet(book);
 
           window.pdfMake.createPdf(doc).download(`${alphaNumeric(book.title)}-catalogue-page`)
 

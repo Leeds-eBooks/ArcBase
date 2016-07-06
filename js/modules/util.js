@@ -94,3 +94,20 @@ export function resizer(file, width) {
     img.src = await reader(file)
   })
 }
+
+export function swapNames(authorObj) {
+  const name = authorObj.name,
+        sep = name.indexOf(','),
+        ln = name.substring(0, sep),
+        fn = name.substring(sep + 1).trim();
+
+  return `${fn} ${ln}`
+}
+
+export function joinMany(array) {
+  return {
+    '0': 'Unknown',
+    '1': array[0],
+    '2+': array.join(', ')
+  }[array.length < 2 ? `${array.length}` : '2+']
+}
