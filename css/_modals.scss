@@ -27,7 +27,7 @@
 .notes-modal,
 .long-modal {
   $input-width: 40%;
-  $date-label-width: 6em;
+  $date-label-width: 12em;
 
   position: absolute;
   top: 10%;
@@ -55,9 +55,10 @@
   .author-input {
     margin-top: 1em;
     width: $input-width;
+    text-align: center;
 
     &[type=date] {
-      width: calc(#{$input-width} - #{$date-label-width});
+      width: $date-label-width;
       text-align: left;
     }
   }
@@ -84,10 +85,15 @@
     display: block;
     width: 80%;
     margin: auto;
-    border: 2px solid rgba(0,0,0,0.1);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+
+    &.author-biog {
+      margin-left: 1em;
+      width: 50%;
+    }
   }
 
-  button {
+  > button {
     position: absolute;
     top: 1em;
     left: auto;
@@ -105,6 +111,21 @@
     }
   }
 }
+
+.author-photo-section {
+  width: calc(40% - 1em);
+  min-height: 17em;
+  float: left;
+
+  button {
+    margin: 1em;
+  }
+
+  img {
+    width: 90%;
+  }
+}
+
 .modal-in {
   opacity: 1;
   -webkit-transform: translate3d(0, 0, 0);

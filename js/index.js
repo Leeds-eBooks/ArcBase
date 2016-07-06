@@ -160,7 +160,9 @@ void async function() {
                 key !== 'button' &&
                 key !== 'filterOut' &&
                 !key.includes('cover_')
-              ) data[key] = input && input.trim().replace(/\s{1,}/g,' ')
+              ) {
+                data[key] = input && input.trim().replace(/\s{1,}/g,' ')
+              }
             }
           })
 
@@ -532,7 +534,7 @@ void async function() {
         else this.classList.remove('warning')
       },
 
-      openFilesCover() {
+      openFileInput() {
         this.parentNode.querySelector('input[type=file]').click()
       },
 

@@ -1,12 +1,55 @@
 .long-overlay(rv-on-click='closeLongModal')
   .long-modal
     //- <input class="notes-header" rv-on-click="selectAll" rv-value="currentBook.title" rv-readonly="isEditing.notes | opposite" placeholder="Book title">
-    input.long-header(rv-on-click='selectAll', rv-value='currentBook.title', placeholder='Book title', readonly='')
+    input.long-header(
+      rv-on-click='selectAll'
+      rv-value='currentBook.title'
+      placeholder='Book title'
+      readonly='')
+
     label
       | Long description
-      textarea(rows='20', rv-value='currentBook.longdesc', rv-on-click='selectAll', rv-readonly='isEditing.long | opposite')
+      textarea(
+        rows='8'
+        rv-value='currentBook.longdesc'
+        rv-on-click='selectAll'
+        rv-readonly='isEditing.long | opposite')
+
     label
       | Back cover blurb
-      textarea(rows='20', rv-value='currentBook.backcover', rv-on-click='selectAll', rv-readonly='isEditing.long | opposite')
-    button.long-edit(rv-on-click='editLong', rv-html='longButton', rv-class-warning='isEditing.long')
+      textarea(
+        rows='8'
+        rv-value='currentBook.backcover'
+        rv-on-click='selectAll'
+        rv-readonly='isEditing.long | opposite')
+
+    label.padding-top
+      | Sample poem
+      textarea(
+        rows='8'
+        rv-value='currentBook.sample'
+        rv-on-click='selectAll'
+        rv-readonly='isEditing.long | opposite')
+
+    label.padding-top
+      | Prizes
+      textarea(
+        rows='8'
+        rv-value='currentBook.prizes'
+        rv-on-click='selectAll'
+        rv-readonly='isEditing.long | opposite')
+
+    label.padding-top
+      | Review quotes
+      textarea(
+        rows='8'
+        rv-value='currentBook.reviews'
+        rv-on-click='selectAll'
+        rv-readonly='isEditing.long | opposite')
+
+    button.long-edit(
+      rv-on-click='editLong'
+      rv-html='longButton'
+      rv-class-warning='isEditing.long')
+
     button(rv-on-click='closeLongModal') &times;

@@ -1,52 +1,73 @@
 .author-overlay(rv-on-click='closeAuthorModal')
   .author-modal
-    
+
     #age(
       rv-show='currentAuthor.dob'
       rv-text='calculateCurrentAuthorAge < currentAuthor.dob')
-    
+
     input.author-header(
       rv-on-click='selectAll'
       rv-value='currentAuthor.name'
       rv-readonly='isEditing.author | opposite'
       placeholder='Name')
-    
-    textarea(
+
+    div.author-photo-section
+
+      a(rv-href='currentAuthor.author_photo._downloadURL')
+        img.author-photo(rv-src='currentAuthor.author_photo._downloadURL')
+      input(
+        type='file'
+        rv-id="currentAuthor.name | prepend 'author-photo-' | alphaNumeric"
+        accept='image/*'
+        style='display:none'
+        rv-on-change='authorPhotoSelected')
+      button.cover-upload(
+        rv-on-click='openFileInput'
+        rv-show!='isEditing.author') &#x21E7; photo
+
+      input.author-photo-credit(
+        rv-on-click='selectAll'
+        type='text'
+        rv-value='currentAuthor.author_photo_credit'
+        rv-readonly='isEditing.author | opposite'
+        placeholder='author photo credit')
+
+    textarea.author-biog(
       rows='6'
       rv-value='currentAuthor.biog'
       rv-on-click='selectAll'
       rv-readonly='isEditing.author | opposite'
       placeholder='Biography')
-    
+
     input.author-input(
       rv-on-click='selectAll'
       type='email'
       rv-value='currentAuthor.author_email'
       rv-readonly='isEditing.author | opposite'
       placeholder='Email address')
-    
-    label.info(for='dob') Date of birth:
-    
-    input#dob.author-input(
-      rv-on-click='selectAll'
-      type='date'
-      rv-value='currentAuthor.dob | parseDate'
-      rv-readonly='isEditing.author | opposite')
-    
+
+    label.info
+      | Date of birth:
+      input#dob.author-input(
+        rv-on-click='selectAll'
+        type='date'
+        rv-value='currentAuthor.dob | parseDate'
+        rv-readonly='isEditing.author | opposite')
+
     input.author-input(
       rv-on-click='selectAll'
       type='tel'
       rv-value='currentAuthor.author_mobile'
       rv-readonly='isEditing.author | opposite'
       placeholder='Mobile phone number')
-    
+
     input.author-input(
       rv-on-click='selectAll'
       type='tel'
       rv-value='currentAuthor.author_tel'
       rv-readonly='isEditing.author | opposite'
       placeholder='Home phone number')
-    
+
     .can-travel
       div
         div
