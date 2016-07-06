@@ -58,8 +58,8 @@
   color: grey;
 }
 
-input[readonly], textarea[readonly] {
-  /*display: block;*/
+[readonly] {
+  // display: block;
   border: none;
   background-color: transparent;
   cursor: pointer;

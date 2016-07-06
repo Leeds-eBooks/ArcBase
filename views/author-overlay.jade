@@ -67,7 +67,7 @@
             rv-enabled='isEditing.author')
           label(
             for='will-travel') Can travel
-      
+
       ul
         span.info Available on the following dates:
         li(rv-each-range='currentAuthor.travel_avail_dates')
@@ -87,17 +87,17 @@
         button.add-input(
           rv-show='isEditing.author'
           rv-on-click='addTravelAvailDateRange') Add a date range
-    
+
     textarea(
       rows='5'
       rv-on-click='selectAll'
       rv-value='currentAuthor.author_address'
       rv-readonly='isEditing.author | opposite'
       placeholder='Postal address')
-    
+
     button.author-edit(
       rv-on-click='editAuthor'
       rv-html='authorButton'
       rv-class-warning='isEditing.author')
-    
+
     button(rv-on-click='closeAuthorModal') &times;

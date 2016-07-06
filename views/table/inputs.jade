@@ -1,0 +1,119 @@
+tr#inputs
+  td
+    input#title(
+      rv-value='inputs.title'
+      type='text'
+      placeholder='new title')
+
+  td.authors
+    div(rv-each-authorinput='inputs.authors')
+      input(
+        rv-value='authorinput.name'
+        type='text'
+        placeholder='new author')
+      input(
+        rv-id="index | prepend 'roles-input-author-' | alphaNumeric"
+        type='checkbox'
+        value='author'
+        rv-checked='authorinput.roles.author')
+      label(rv-for="index | prepend 'roles-input-author-' | alphaNumeric") A
+      input(
+        rv-id="index | prepend 'roles-input-translator-' | alphaNumeric"
+        type='checkbox'
+        value='translator'
+        rv-checked='authorinput.roles.translator')
+      label(rv-for="index | prepend 'roles-input-translator-' | alphaNumeric") T
+      input(
+        rv-id="index | prepend 'roles-input-editor-' | alphaNumeric"
+        type='checkbox'
+        value='editor'
+        rv-checked='authorinput.roles.editor')
+      label(rv-for="index | prepend 'roles-input-editor-' | alphaNumeric") E
+      input(
+        rv-id="index | prepend 'roles-input-introducer-' | alphaNumeric"
+        type='checkbox'
+        value='introducer'
+        rv-checked='authorinput.roles.introducer')
+      label(rv-for="index | prepend 'roles-input-introducer-' | alphaNumeric") I
+      input(
+        rv-id="index | prepend 'roles-input-critic-' | alphaNumeric"
+        type='checkbox'
+        value='critic'
+        rv-checked='authorinput.roles.critic')
+      label(rv-for="index | prepend 'roles-input-critic-' | alphaNumeric") C
+    button.add-input(rv-on-click='addAuthor') Add another person
+
+  td
+    label#pbk
+      | pbk:
+      input.ISBNs(
+        rv-value='inputs.ISBNs.pbk'
+        rv-on-input='validateISBN', type='text')
+    br
+    label#hbk
+      | hbk:
+      input.ISBNs(
+        rv-value='inputs.ISBNs.hbk'
+        type='text')
+    br
+    label#ebk
+      | ebk:
+      input.ISBNs(
+        rv-value='inputs.ISBNs.ebk'
+        type='text')
+
+  td
+    input(
+      rv-value='inputs.pages'
+      rv-on-input='calculatePriceFromPages'
+      type='number'
+      step='1'
+      min='0'
+      max='9999'
+      placeholder='pages')
+
+  td
+    label#pbk
+      | pbk:
+      input.ISBNs(
+        rv-value='inputs.price.pbk'
+        rv-on-input='calculatePrice'
+        type='number'
+        step='0.01'
+        min='0'
+        max='999')
+    br
+    label#hbk
+      | hbk:
+      input.ISBNs(
+        rv-value='inputs.price.hbk'
+        type='number'
+        step='0.01'
+        min='0'
+        max='999')
+    br
+    label#ebk
+      | ebk:
+      input.ISBNs(
+        rv-value='inputs.price.ebk'
+        type='number'
+        step='0.01'
+        min='0'
+        max='999')
+
+  td
+    input(
+      type='date'
+      rv-value='inputs.pubdate')
+  td
+    textarea(
+      maxlength='350'
+      cols='30'
+      rows='10'
+      rv-value='inputs.shortdesc')
+  td
+    button(
+      rv-on-click='submit'
+      rv-html='inputs.button')
+  td
+  td

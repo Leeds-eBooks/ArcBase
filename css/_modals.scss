@@ -1,4 +1,4 @@
-/* MODALS */
+// MODALS
 
 %basic-overlay {
   position: fixed;
@@ -66,10 +66,11 @@
     display: inline-block;
     width: 44%;
     margin: 0 1%;
+
     textarea {
       display: block;
       width: 100%;
-      border: 2px solid rgba(0,0,0,0.1);
+      border: 2px solid rgba(0, 0, 0, 0.1);
     }
 
     &[for=dob] {
@@ -92,17 +93,21 @@
     left: auto;
     right: 1em;
     font-size: 1.5em;
-    &:active {top:1.2em;}
+    &:active {
+      top: 1.2em;
+    }
     &.author-edit, &.notes-edit, &.long-edit {
       top: auto;
       bottom: 1em;
-      &:active {bottom:0.8em;}
+      &:active {
+        bottom: 0.8em;
+      }
     }
   }
 }
 .modal-in {
   opacity: 1;
-  -webkit-transform: translate3d(0,0vh,0);
-      -ms-transform: translate3d(0,0vh,0);
-          transform: translate3d(0,0vh,0);
+  -webkit-transform: translate3d(0, 0, 0);
+      -ms-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
 }

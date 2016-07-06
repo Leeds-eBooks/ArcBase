@@ -512,58 +512,6 @@ void async function() {
         }
       },
 
-      // async downloadCatalogue() {
-      //   const {from, to, email} = await dropin(
-      //           'Details for automatic catalogue generation',
-      //           [{
-      //             key: 'from',
-      //             placeholder: 'start date',
-      //             type: 'date'
-      //           }, {
-      //             key: 'to',
-      //             placeholder: 'end date',
-      //             type: 'date'
-      //           }, {
-      //             key: 'email',
-      //             placeholder: 'email address',
-      //             type: 'email',
-      //             value: 'angela@arcpublications.co.uk'
-      //           }]
-      //         ),
-      //         range = [from, to].map(str => new Date(str)),
-      //         cat = model.books
-      //           .filter(book => {
-      //             const pubdate = new Date(book.pubdate)
-      //             return range[0] <= pubdate && pubdate <= range[1]
-      //           })
-      //           .map(book => docTemplates.CataloguePage(book))
-      //           .join('<p style="page-break-after:always;"></p>'),
-      //         blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
-      //
-      //   fetch(`https://arcbase.herokuapp.com/?email=${encodeURIComponent(email)}`, {
-      //     method: 'post',
-      //     body: blob
-      //   })
-      //   .then(console.log.bind(console))
-      //   .catch(console.error.bind(console))
-      // },
-
-      // downloadCatalogue() {
-      //   const range = prompt('Date range\n\nFormat: YYYY-MM-DD to YYYY-MM-DD')
-      //           .split(' to ')
-      //           .map(str => new Date(str)),
-      //         cat = model.books
-      //           .filter(book => {
-      //             const pubdate = new Date(book.pubdate)
-      //             return range[0] <= pubdate && pubdate <= range[1]
-      //           })
-      //           .map(book => docTemplates.CataloguePage(book))
-      //           .join('<p style="page-break-after:always;"></p>'),
-      //         blob = new Blob([cat], {type: "text/plain;charset=utf-8"});
-      //
-      //   FileSaver.saveAs(blob, 'Catalogue.html');
-      // },
-
       smartSearch() {
         const column = this.getAttribute('data-search-column')
 
@@ -640,6 +588,6 @@ void async function() {
     )
 
   } catch (e) {
-    window.alert(e)
+    window.alert(e.message || e)
   }
 }()
