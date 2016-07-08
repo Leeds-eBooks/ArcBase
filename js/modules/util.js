@@ -111,3 +111,17 @@ export function joinMany(array) {
     '2+': array.join(', ')
   }[array.length < 2 ? `${array.length}` : '2+']
 }
+
+export function rebuildArray(oldArr, newArr) {
+  oldArr.length = 0
+  return oldArr.push(...newArr)
+}
+
+export function cutAtNextFullStop(str, len) {
+  const fullStopIndex = str.indexOf('.', len)
+  if (fullStopIndex >= 0) {
+    return str.substr(0, fullStopIndex + 1)
+  } else {
+    return str
+  }
+}

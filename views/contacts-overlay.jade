@@ -1,59 +1,63 @@
 .contacts-overlay(rv-on-click='closeContacts')
   .contacts-modal
     button.add-contact(rv-on-click='addNewContact') + Add a new contact
-    
+
     input(
       type='search'
       placeholder='search'
       rv-on-input='searchContacts'
       rv-on-keyup='searchContacts')
-    
+
     div(rv-each-contact='foundContacts')
-      
+
       input.name-input(
         type='text'
         placeholder='first name'
         rv-value='contact.firstname'
         rv-on-input='updateContact')
-      
+
       input.name-input(
         type='text'
         placeholder='last name'
         rv-value='contact.lastname'
         rv-on-input='updateContact')
-      
+
       input(
         type='text'
         placeholder='organization name'
         rv-value='contact.organization_name'
         rv-on-input='updateContact')
-      
+
       input(
         type='email'
         placeholder='email (work)'
         rv-value='contact.email_work'
         rv-on-input='updateContact')
-      
+
       input(
         type='email'
         placeholder='email (personal)'
         rv-value='contact.email_personal'
         rv-on-input='updateContact')
-      
+
       input(
         type='tel'
         placeholder='tel (work)'
         rv-value='contact.tel_work'
         rv-on-input='updateContact')
-      
+
       input(
         type='tel'
         placeholder='tel (mobile)'
         rv-value='contact.tel_mobile'
         rv-on-input='updateContact')
-      
+
       textarea(
         rows='5'
         placeholder='postal address (work)'
         rv-value='contact.postal_work'
         rv-on-input='updateContact')
+
+      button(
+        type='button'
+        rv-on-click='deleteContact') Delete contact

@@ -14,10 +14,13 @@ import {
   pricing,
   loadingGif
 } from './modules/constants'
-import {alphaNumeric, resizer, $$} from './modules/util'
-import * as docTemplates from './modules/templates'
+import {alphaNumeric, resizer, $$, swapNames} from './modules/util'
+import * as docTemplates from './modules/template-helpers'
 import './modules/config'
-import searchContacts, {updateContact} from './modules/contacts'
+import searchContacts, {
+  updateContact,
+  deleteContact as moduleDeleteContact
+} from './modules/contacts'
 import {saving} from './modules/ui'
 import _ from 'underscore-contrib-up-to-date'
 import update from './modules/update'
@@ -37,7 +40,7 @@ const table = document.querySelector('#main table'),
 
 export const kvBookMap = new Map()
 
-export let model
+export const model = {}
 
 void async function() {
   try {
@@ -52,7 +55,7 @@ void async function() {
 
     if (!user) await Kinvey.User.login('default', 'qwertyui')
 
-    model = {
+    Object.assign(model, {
       authors: [],
       books: [],
       inputs: {
@@ -583,19 +586,23 @@ void async function() {
         }
       },
 
-      updateContact(event, scope) {
+      updateContact(event, {contact}) {
         saving(this)
-        updateContact(scope.contact, this)
+        updateContact(contact, this)
       },
 
       foundContacts: [],
-      searchContacts: searchContacts(),
+      searchContacts: searchContacts(model),
+
+      deleteContact(event, {contact}) {
+        moduleDeleteContact(contact, model.foundContacts)
+      },
 
       async addNewContact() {
         const newContact = await Kinvey.DataStore.save('Contact', {})
         model.foundContacts.unshift(newContact)
       }
-    }
+    })
 
     rivets.bind(document.body, model)
 
