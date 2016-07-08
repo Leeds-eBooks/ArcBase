@@ -519,7 +519,31 @@ void async function() {
         FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`)
       },
 
-      async downloadTouringSheet(event, scope) {
+      async downloadTouringSheet() {
+        const buttonCache = this.innerHTML
+        try {
+          this.innerHTML = loadingGif
+          const doc = await touringSheet(model.currentAuthor);
+
+          window.pdfMake
+          .createPdf(doc)
+          .download(`${
+            alphaNumeric(swapNames(model.currentAuthor))
+          }-touring-sheet`)
+
+        } catch (e) {
+          console.error(e)
+          if (e.message.toLowerCase().includes('missing cover image')) {
+            alert('Missing cover image – add a cover image and try again.')
+          } else if (e.message.toLowerCase().includes('missing author photo')) {
+            alert('Missing author photo – add an author photo and try again.')
+          }
+        } finally {
+          this.innerHTML = buttonCache
+        }
+      },
+
+      async downloadCatalogueSheet(event, scope) {
         const textCache = this.textContent
         try {
           this.innerHTML = loadingGif

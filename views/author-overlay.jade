@@ -116,6 +116,8 @@
       rv-readonly='isEditing.author | opposite'
       placeholder='Postal address')
 
+    button.download-button.overlay-button-bottom-left(rv-on-click='downloadTouringSheet') #[img.icon-download(src="images/download-icon.png")] Touring sheet
+
     button.author-edit(
       rv-on-click='editAuthor'
       rv-html='authorButton'

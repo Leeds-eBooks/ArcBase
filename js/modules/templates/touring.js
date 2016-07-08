@@ -1,46 +1,74 @@
 import _ from 'underscore-contrib-up-to-date'
 import blobUtil from 'blob-util'
-import {formatISBN, joinMany} from '../templates'
+import {
+  authorString,
+  translatorString,
+  editorString,
+  introducerString
+} from '../template-helpers'
+import {model} from '../../index'
+import {
+  swapNames,
+  formatISBN,
+  joinMany,
+  cutAtNextFullStop
+} from '../util'
+import Lazy from 'lazy.js'
 
-export default async function(book) {
+async function getImageBase64(_id) {
+  return `data:image/jpeg;base64,${
+    await Kinvey.File.download(_id)
+      .then(res => res._data)
+      .then(blob => blobUtil.blobToBase64String(blob))
+  }`
+}
+
+function getLatestBook({name}) {
+  return Lazy(model.books)
+    .filter(book => book.authors.find(author => author.name === name))
+    .max(book => book.pubdate)
+}
+
+const spacing = 20
+
+export default async function(author) {
+  const book = getLatestBook(author)
+
   if (!book.cover_orig) throw new Error('missing cover image')
+  if (!author.author_photo._downloadURL) throw new Error('missing author photo')
+
   else return {
     info: {
-      title: `${book.title} Catalogue Page`
+      title: swapNames(author)
     },
     content: [
       {
-        text: book.title,
-        style: 'h1'
+        image: await getImageBase64(author.author_photo._id),
+        fit: [400, 250],
+        margin: [0, 0, 0, spacing]
       }, {
-        text:  joinMany(_.compact([
-          this.authorString(book),
-          this.translatorString(book),
-          this.editorString(book),
-          this.introducerString(book)
-        ])),
-        style: 'author'
+        text: swapNames(author),
+        style: 'h1',
+        margin: [0, 0, 0, spacing]
       }, {
-        margin: [0, 30],
+        text: cutAtNextFullStop(author.biog, 300),
+        margin: [0, 0, 0, spacing]
+      }, {
         columns: [
           {
-            image: `data:image/jpeg;base64,${
-              await Kinvey.File.download(book.cover_orig._id)
-                .then(res => res._data)
-                .then(blob => blobUtil.blobToBase64String(blob))
-              }`,
-            width: 130
+            text: book.shortdesc,
+            margin: [0, 50, 0, 0]
           }, {
-            text: book.shortdesc
+            image: await getImageBase64(book.cover_orig._id),
+            width: 200
           }
         ],
-        columnGap: 10
-      },
-      `Publication date: ${(new Date(book.pubdate)).toDateString()}`,
-      `${book.pages ? `${book.pages} pages` : ''}`,
-      `${book.ISBNs.pbk ? `${formatISBN(book.ISBNs.pbk)} paperback £${book.price.pbk || '?'}` : ''}`,
-      `${book.ISBNs.hbk ? `${formatISBN(book.ISBNs.hbk)} hardback £${book.price.hbk || '?'}` : ''}`,
-      `${book.ISBNs.ebk ? `${formatISBN(book.ISBNs.ebk)} ebook £${book.price.ebk || '?'}` : ''}`
+        columnGap: 10,
+        margin: [0, 0, 0, spacing]
+      }, {
+        text: `Publication date: ${(new Date(book.pubdate)).toDateString()}`,
+        alignment: 'right'
+      }
     ],
     styles: {
       h1: {
@@ -50,6 +78,6 @@ export default async function(book) {
         fontSize: 12
       }
     },
-    pageSize: 'A5'
+    pageSize: 'A4'
   }
 }

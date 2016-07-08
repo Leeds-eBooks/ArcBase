@@ -102,15 +102,23 @@
     &:active {
       top: 1.2em;
     }
-    &.author-edit, &.notes-edit, &.long-edit {
+    &.author-edit,
+    &.notes-edit,
+    &.long-edit {
       top: auto;
       bottom: 1em;
       &:active {
         bottom: 0.8em;
       }
     }
+    &.overlay-button-bottom-left {
+      top: auto;
+      bottom: 1em;
+      left: 1em;
+    }
   }
 }
+
 
 .author-photo-section {
   width: calc(40% - 1em);
