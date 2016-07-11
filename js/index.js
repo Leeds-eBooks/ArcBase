@@ -29,7 +29,7 @@ import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
 import touringSheet from './modules/templates/touring'
 
-import 'script!kinvey-html5/kinvey'
+// import 'script!kinvey-html5/kinvey'
 import 'script!../bower_components/pdfmake/build/pdfmake.min'
 import 'script!../bower_components/pdfmake/build/vfs_fonts.js'
 
