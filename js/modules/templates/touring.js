@@ -1,16 +1,7 @@
-import _ from 'underscore-contrib-up-to-date'
 import blobUtil from 'blob-util'
-import {
-  authorString,
-  translatorString,
-  editorString,
-  introducerString
-} from '../template-helpers'
 import {model} from '../../index'
 import {
   swapNames,
-  formatISBN,
-  joinMany,
   cutAtNextFullStop
 } from '../util'
 import Lazy from 'lazy.js'

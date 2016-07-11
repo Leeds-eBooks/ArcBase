@@ -1,5 +1,6 @@
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import {trans} from './util'
+import Lazy from 'lazy.js'
 
 /**
    * Drop-in modal with questions
@@ -68,15 +69,19 @@ export default function dropin(text, questionsArray) {
     submit.addEventListener('click', event => {
       event.preventDefault()
 
-      const requiredFields = _.pluck(questionsArray, 'required')
+      const requiredFields = _.map(questionsArray, 'required')
 
       async function complete() {
         await trans(overlay, 'remove', 'overlay-show')
         resolve(
-          _.chain(inputs)
-            .pluck('value')
-            .indexBy((q, i) => questionsArray[i].key)
-            .value()
+          Lazy(inputs)
+          .pluck('value')
+          .map((value, i) => [value, i])
+          .indexBy(
+            ([value, i]) => questionsArray[i].key, // eslint-disable-line no-unused-vars
+            ([value]) => value
+          )
+          .toObject()
         )
         overlay.parentNode.removeChild(overlay)
       }

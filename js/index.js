@@ -22,7 +22,7 @@ import searchContacts, {
   deleteContact as moduleDeleteContact
 } from './modules/contacts'
 import {saving} from './modules/ui'
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'

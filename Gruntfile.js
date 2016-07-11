@@ -17,6 +17,9 @@ var webpackConfig = {
         presets: [
           'es2015',
           'stage-3'
+        ],
+        plugins: [
+          'lodash'
         ]
       }
     }, {

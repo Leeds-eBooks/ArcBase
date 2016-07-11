@@ -2,13 +2,13 @@ import {model} from '../index'
 import resize from 'resize-image'
 import reader from './file-reader'
 import blob from 'blob-util'
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import freeze from 'deep-freeze-strict'
 
 export {freeze}
 
 export const $ = document.querySelector.bind(document)
-export const $$ = _.compose(Array.from, document.querySelectorAll.bind(document))
+export const $$ = _.flow(document.querySelectorAll.bind(document), Array.from)
 
 /**
   * Promisified CSS transition events

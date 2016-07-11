@@ -1,4 +1,4 @@
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import dedent from 'dedent'
 import {formatISBN, swapNames, joinMany} from './util'
 import {model} from '../index'

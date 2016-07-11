@@ -1,4 +1,4 @@
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 
 function handleClasses(el, toRemove, toAdd) {
   if (_.isElement(el)) {

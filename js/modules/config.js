@@ -1,5 +1,5 @@
 import 'sightglass'
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import rivets from 'rivets'
 import {alphaNumeric} from './util'
 import moment from 'moment'

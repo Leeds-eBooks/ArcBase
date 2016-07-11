@@ -1,4 +1,4 @@
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import {saved, failed} from './ui'
 import {rebuildArray} from './util'
 import Lazy from 'lazy.js'
@@ -23,7 +23,7 @@ export default function(model) {
         Lazy(contacts)
           .filter(contact =>
             JSON.stringify(
-              _.compact(_.values(contact))
+              _.compact(Object.values(contact))
             ).toLowerCase().includes(query)
           )
           .toArray()

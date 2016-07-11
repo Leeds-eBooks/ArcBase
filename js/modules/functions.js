@@ -1,6 +1,6 @@
 // import humane from './humane'
 import update from './update'
-import _ from 'underscore-contrib-up-to-date'
+import _ from 'lodash'
 import choosy from './choosy'
 
 export function chooseCover(parseBook) {
@@ -67,7 +67,7 @@ export async function getKinveyAuthors(authorsArray) {
   query.contains('name', authorsArray)
 
   const savedAuthors = await Kinvey.DataStore.find('Author', query),
-        savedAuthorNames = _.pluck(savedAuthors, 'name');
+        savedAuthorNames = _.map(savedAuthors, 'name');
 
   if (savedAuthorNames.length !== authorsArray.length) {
     return await Promise.all(
