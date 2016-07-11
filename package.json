@@ -1,6 +1,6 @@
 {
   "name": "Arcbase",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Fledgling Parse database front-end for (poetry) publishers",
   "main": "index.html",
   "dependencies": {
