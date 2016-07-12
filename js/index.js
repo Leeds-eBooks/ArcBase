@@ -27,6 +27,8 @@ import update from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
+import Clipboard from 'clipboard'
+import humane from './modules/humane'
 import touringSheet from './modules/templates/touring'
 
 // import 'script!kinvey-html5/kinvey'
@@ -646,6 +648,20 @@ void async function() {
         searchBoxes[parseInt(Lazy(combo).last(), 10) - 1].select()
       }
     )
+
+    const clipboard = new Clipboard('input[readonly], textarea[readonly]', {
+      target: trigger => trigger
+    })
+
+    clipboard.on('success', ({text}) => humane.success(`Copied ${text} to clipboard`))
+
+    clipboard.on('error', () => {
+      if (/(iPad|iPhone)/.test(window.navigator.userAgent)) {
+        humane.error('Not supported')
+      } else {
+        humane.success('Now press ⌘ + C to copy the selection to your clipboard')
+      }
+    })
 
   } catch (e) {
     window.alert(e.message || e)
