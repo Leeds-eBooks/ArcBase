@@ -162,7 +162,7 @@ tr.book-rows(
     textarea(
       maxlength='350'
       cols='30'
-      rows='10'
+      rows='7'
       rv-value='book.shortdesc'
       rv-on-click='selectAll'
       rv-readonly!='book.isEditing < button | opposite')
@@ -175,6 +175,9 @@ tr.book-rows(
     button(rv-on-click='showNotesModal') &#x2630;
     button(rv-on-click='showLongModal') &#x270E;
   td
-    button.download-button(rv-on-click='downloadAI') #[img.icon-download(src="images/download-icon.png")] AI
-    button.download-button(rv-on-click='downloadPR') #[img.icon-download(src="images/download-icon.png")] PR
-    button.download-button(rv-on-click='downloadCatalogueSheet') #[img.icon-download(src="images/download-icon.png")] Cat
+    button.download-button(rv-on-click='downloadAI')
+      | #[img.icon-download(src="images/download-icon.png")] AI
+    button.download-button(rv-on-click='downloadPR')
+      | #[img.icon-download(src="images/download-icon.png")] PR
+    //- button.download-button(rv-on-click='downloadCatalogueSheet')
+    //-   | #[img.icon-download(src="images/download-icon.png")] Cat

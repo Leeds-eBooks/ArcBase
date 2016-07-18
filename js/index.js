@@ -649,11 +649,25 @@ void async function() {
       }
     )
 
-    const clipboard = new Clipboard('input[readonly], textarea[readonly]', {
-      target: trigger => trigger
-    })
+    const clipboard = new Clipboard(
+      [
+        'input[readonly]:not(.author-button)',
+        'textarea[readonly]'
+      ].join(', '),
+      {
+        target: trigger => trigger
+      }
+    )
 
-    clipboard.on('success', ({text}) => humane.success(`Copied ${text} to clipboard`))
+    clipboard.on('success', ({text}) =>
+      humane.success(
+        `Copied "${
+          text.substr(0, 20)
+        }${
+          text.length > 20 ? '...' : ''
+        }" to clipboard`
+      )
+    )
 
     clipboard.on('error', () => {
       if (/(iPad|iPhone)/.test(window.navigator.userAgent)) {

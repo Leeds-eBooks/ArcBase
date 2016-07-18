@@ -1,9 +1,11 @@
-input[type="search"] {
+[type="search"] {
   border: none;
   background-color: lighten(cornflowerblue,25%);
   color: white;
 }
-input[type="checkbox"], input[type="radio"] {
+
+[type="checkbox"],
+[type="radio"] {
   width: 0;
   height: 0;
   display: none;
@@ -12,6 +14,9 @@ input[type="checkbox"], input[type="radio"] {
     color: white;
   }
 }
-td input[type="date"] {
-  max-width: 9.5em;
+
+td {
+  [type="date"] {
+    max-width: 9.5em;
+  }
 }
