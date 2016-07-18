@@ -660,7 +660,7 @@ void async function() {
     )
 
     clipboard.on('success', ({text}) =>
-      humane.success(
+      text && humane.success(
         `Copied "${
           text.substr(0, 20)
         }${
