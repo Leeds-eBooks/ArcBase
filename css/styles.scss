@@ -23,7 +23,7 @@
 }
 #search {
   height: 4em;
-  // background-color: steelblue;
+  // background-color: $brand-primary-dark;
 
   td {
     vertical-align: middle;
@@ -32,33 +32,33 @@
     width: 90%;
     padding-left: 0.3em;
     border-radius: 0.5em;
-    background-color: steelblue;
-    box-shadow: 0 0 0.7em rgba(200,34,34,0.8);
+    background-color: $brand-primary-dark;
+    box-shadow: 0 0 0.7em rgba($error, 0.8);
 
     &::-webkit-input-placeholder {
-      // color: firebrick;
-      color: white;
+      // color: $error;
+      color: $white;
     }
-    &:-moz-placeholder { /* Firefox 18- */
-      // color: firebrick;
-      color: white;
+    &:-moz-placeholder { // Firefox 18-
+      // color: $error;
+      color: $white;
     }
-    &::-moz-placeholder {  /* Firefox 19+ */
-      // color: firebrick;
-      color: white;
+    &::-moz-placeholder {  // Firefox 19+
+      // color: $error;
+      color: $white;
     }
     &:-ms-input-placeholder {
-      // color: firebrick;
-      color: white;
+      // color: $error;
+      color: $white;
     }
   }
 }
 #inputs {
-  border-bottom: 2px solid cornflowerblue;
-  background-color: linen;
+  border-bottom: 4px solid $brand-primary;
+  background-color: $new-book-area;
 }
 #instructions {
-  color: grey;
+  color: $info;
 }
 
 [readonly] {
@@ -80,11 +80,11 @@ label {
 @import 'input-types';
 
 %button {
-  border: 1px solid cornflowerblue;
+  border: 1px solid $brand-primary;
   padding: 0.2em;
   border-radius: 0.25em;
   &:active {
-    background-color: cornflowerblue;
+    background-color: $brand-primary;
   }
 }
 
@@ -98,14 +98,14 @@ label {
 }
 
 .warning {
-  background-color: firebrick !important;
-  color: white !important;
+  background-color: $error !important;
+  color: $white !important;
 }
 
 .authors {
   > div {
     min-width: 19em;
-    & + div {
+    + div {
       margin-top: 0.25em;
     }
   }
@@ -163,7 +163,7 @@ button.add-input {
 @import 'modals', 'travel', 'dialogs', 'dropin';
 
 .invalid {
-  background-color: red !important;
+  background-color: $error-bright !important;
 }
 
 @import 'humane-flatty';

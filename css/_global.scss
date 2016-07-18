@@ -17,35 +17,35 @@ body {
   width: auto;
   margin: auto;
   text-align: left;
-  background: white;
+  background: $white;
   padding: 50px 60px;
   border: solid #ddd;
   border-width: 0 1px 1px 1px;
 }
 
 button {
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   outline: none !important;
   position: relative;
-  background-color: slategrey;
-  color: white;
+  background-color: $brand-secondary;
+  color: $white;
   border: none;
   padding: 0.5em;
   border-radius: 0.3em;
-  box-shadow: 0 0.3em 1em rgba(0,0,0,0.3);
+  box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.3);
   &:active {
     top: 0.2em;
-    box-shadow: 0 0 0.3em rgba(0,0,0,0.3);
+    box-shadow: 0 0 0.3em rgba(0, 0, 0, 0.3);
   }
   &.delete {
     background-color: transparent;
-    color: red;
+    color: $error-bright;
     padding: 0;
     height: auto;
     min-width: 0;
     box-shadow: none;
     &:hover {
-      text-shadow: 0 0 0.3em rgba(255,0,0,0.5);
+      text-shadow: 0 0 0.3em rgba($error-bright,0.5);
     }
   }
   &.cover-upload {
@@ -55,12 +55,12 @@ button {
 
 input:focus,
 textarea:focus {
-  background-color: lighten(cornflowerblue, 25%);
+  background-color: lighten($brand-primary, 25%);
   outline: none;
 }
 
 tr {
-  background-image: linear-gradient(to bottom, #e7edf3,white);
+  background-image: linear-gradient(to bottom, #e7edf3, $white);
 }
 
 .load-more {
@@ -68,14 +68,14 @@ tr {
 }
 
 .info {
-  color: slategrey;
+  color: $brand-secondary;
 }
 
 .saving,
 .saved,
 .failed {
   @include basic-trans(box-shadow);
-  box-shadow: 0 0 0 3px gold;
+  box-shadow: 0 0 0 3px $warning;
 }
 
 .saved {
@@ -83,5 +83,5 @@ tr {
 }
 
 .failed {
-  box-shadow: 0 0 0 3px firebrick;
+  box-shadow: 0 0 0 3px $error;
 }
