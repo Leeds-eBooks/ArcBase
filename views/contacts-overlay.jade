@@ -24,6 +24,12 @@
 
       input(
         type='text'
+        placeholder='position / job title'
+        rv-value='contact.job_title'
+        rv-on-input='updateContact')
+
+      input(
+        type='text'
         placeholder='organization name'
         rv-value='contact.organization_name'
         rv-on-input='updateContact')
