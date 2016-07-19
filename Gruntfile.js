@@ -1,10 +1,10 @@
-var path                  = require('path')
-var OccurrenceOrderPlugin = require('webpack/lib/optimize/OccurrenceOrderPlugin')
-var DedupePlugin          = require('webpack/lib/optimize/DedupePlugin')
-var UglifyJsPlugin        = require('webpack/lib/optimize/UglifyJsPlugin')
-var packageJSON           = require('./package.json')
+const path                  = require('path')
+const OccurrenceOrderPlugin = require('webpack/lib/optimize/OccurrenceOrderPlugin')
+const DedupePlugin          = require('webpack/lib/optimize/DedupePlugin')
+const UglifyJsPlugin        = require('webpack/lib/optimize/UglifyJsPlugin')
+const packageJSON           = require('./package.json')
 
-var webpackConfig = {
+const webpackConfig = {
   loaders: [
     {
       loader: 'babel',
@@ -29,15 +29,15 @@ var webpackConfig = {
   ]
 }
 
-module.exports = function(grunt) {
+module.exports = grunt => {
 
   require('load-grunt-tasks')(grunt)
 
   grunt.initConfig({
 
-    "clean": ["dist"],
+    clean: ["dist"],
 
-    "copy": {
+    copy: {
       main: {
         files: [{
           expand: true,
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "jade": {
+    jade: {
       options: {
         data: {
           livereload: false,
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "webpack": {
+    webpack: {
       dev: {
         entry: ['./js/index.js'],
         output: {
@@ -99,7 +99,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "sass": {
+    sass: {
       dist: {
         options: {
           style: 'compressed'
@@ -130,7 +130,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "ftps_deploy": {
+    ftps_deploy: {
       arcpublications: {
         options: {
           auth: {
@@ -150,7 +150,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "watch": {
+    watch: {
       files: [
         'js/modules/**/*',
         'js/index.js',
@@ -169,7 +169,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "connect": {
+    connect: {
       dev: {
         options: {
           // livereload: true,
