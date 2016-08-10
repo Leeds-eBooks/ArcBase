@@ -14,7 +14,7 @@ import {
   pricing,
   loadingGif
 } from './modules/constants'
-import {alphaNumeric, resizer, $$, swapNames} from './modules/util'
+import {alphaNumeric, resizer, $, $$, swapNames} from './modules/util'
 import * as docTemplates from './modules/template-helpers'
 import './modules/config'
 import searchContacts, {
@@ -109,8 +109,10 @@ void async function() {
         })
       },
 
-      load150more() {
-        update(false, true)
+      async load150more() {
+        await update(false, true)
+        const currentSearch = $('input[type="search"].warning')
+        if (currentSearch) model.smartSearch.call(currentSearch)
       },
 
       submit(event, modelArg, bookToEdit) {
