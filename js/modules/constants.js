@@ -10,3 +10,5 @@ export const pricing = freeze({
 })
 
 export const loadingGif = '<img class="loading" src="images/loading.gif">'
+
+export const numberOfBooksToLoad = 200

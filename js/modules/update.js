@@ -3,9 +3,12 @@
 import {model, kvBookMap} from '../index'
 import {authorMapper, chooseCover} from './functions'
 import {clearInputs} from './util'
+import {numberOfBooksToLoad} from './constants'
+
+declare var Kinvey: Object
 
 function whenLoaded(results, newBook) {
-  if (results.length < 150) model.config.canLoadMore = false
+  if (results.length < numberOfBooksToLoad) model.config.canLoadMore = false
 
   results.forEach(kb => { // kb = kinveyBook
     const existingBook = model.books.find(book => book._id === kb._id),
@@ -76,16 +79,16 @@ function whenLoaded(results, newBook) {
   if (newBook) clearInputs()
 }
 
-export default async function(newBook, load150more) {
+export default async function(newBook: Object, loadMore: boolean) {
   const query = new Kinvey.Query(),
-        amountToSkip = load150more ? model.books.length : 0;
+        amountToSkip = loadMore ? model.books.length : 0;
 
   if (newBook) query.equalTo('_id', newBook._id)
 
   query
   .descending('pubdate')
   .skip(amountToSkip)
-  .limit(150)
+  .limit(numberOfBooksToLoad)
 
   try {
     whenLoaded(

@@ -12,7 +12,8 @@ import {
 } from './modules/functions'
 import {
   pricing,
-  loadingGif
+  loadingGif,
+  numberOfBooksToLoad
 } from './modules/constants'
 import {alphaNumeric, resizer, $, $$, swapNames} from './modules/util'
 import * as docTemplates from './modules/template-helpers'
@@ -42,7 +43,9 @@ const table = document.querySelector('#main table'),
 
 export const kvBookMap = new Map()
 
-export const model = {}
+export const model = {
+  numberOfBooksToLoad
+}
 
 void async function() {
   try {
@@ -109,7 +112,7 @@ void async function() {
         })
       },
 
-      async load150more() {
+      async loadMore() {
         await update(false, true)
         const currentSearch = $('input[type="search"].warning')
         if (currentSearch) model.smartSearch.call(currentSearch)
