@@ -1,0 +1,9 @@
+[ignore]
+.*/node_modules/babel-eslint/.*
+.*/node_modules/html-pdf/.*
+
+[include]
+
+[libs]
+
+[options]

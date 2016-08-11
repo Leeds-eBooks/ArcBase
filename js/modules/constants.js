@@ -1,3 +1,5 @@
+// @flow
+
 import {freeze} from './util.js'
 
 export const pricing = freeze({

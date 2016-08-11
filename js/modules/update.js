@@ -1,3 +1,5 @@
+// @flow
+
 import {model, kvBookMap} from '../index'
 import {authorMapper, chooseCover} from './functions'
 import {clearInputs} from './util'
@@ -7,7 +9,7 @@ function whenLoaded(results, newBook) {
 
   results.forEach(kb => { // kb = kinveyBook
     const existingBook = model.books.find(book => book._id === kb._id),
-          bookObj = {
+          bookObj: Object = {
             _id: kb._id,
             title: kb.title,
             cover_orig: kb.cover_orig,
@@ -49,7 +51,7 @@ function whenLoaded(results, newBook) {
       modelBook = Object.assign(existingBook, bookObj)
     } else {
       modelBook = Object.assign(bookObj, {
-        addAuthor(event,scope) {
+        addAuthor(event, scope) {
           scope.book.authors.push({
             name: '',
             roles: {

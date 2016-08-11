@@ -19,7 +19,8 @@ const webpackConfig = {
           'stage-3'
         ],
         plugins: [
-          'lodash'
+          'lodash',
+          'transform-flow-strip-types'
         ]
       }
     }, {
