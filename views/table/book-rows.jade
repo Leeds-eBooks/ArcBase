@@ -172,12 +172,12 @@ tr.book-rows(
       rv-html='book.button'
       rv-class-warning!='book.isEditing < button')
   td
-    button(rv-on-click='showNotesModal') &#x2630;
-    button(rv-on-click='showLongModal') &#x270E;
+    button.icon-button.ion-clipboard(rv-on-click='showNotesModal')
+    button.icon-button.ion-ios-bookmarks-outline(rv-on-click='showLongModal')
   td
-    button.download-button(rv-on-click='downloadAI')
-      | #[img.icon-download(src="images/download-icon.png")] AI
-    button.download-button(rv-on-click='downloadPR')
-      | #[img.icon-download(src="images/download-icon.png")] PR
+    button.icon-button-with-text.ion-ios-cloud-download-outline(rv-on-click='downloadAI')
+      | AI
+    button.icon-button-with-text.ion-ios-cloud-download-outline(rv-on-click='downloadPR')
+      | PR
     //- button.download-button(rv-on-click='downloadCatalogueSheet')
     //-   | #[img.icon-download(src="images/download-icon.png")] Cat

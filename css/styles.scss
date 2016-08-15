@@ -143,13 +143,14 @@ button.add-input {
   }
 }
 
-.download-button {
-  margin-right: 0.2em;
+.icon-button::before,
+.icon-button-with-text::before {
+  font-size: 1.8em;
+  vertical-align: middle;
 }
 
-.icon-download {
-  width: 1.5em;
-  margin-right: 0.5em;
+.icon-button-with-text::before {
+  margin-right: 0.2em;
 }
 
 .loading {
