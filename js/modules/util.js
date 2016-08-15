@@ -1,3 +1,5 @@
+// @flow
+
 import {model} from '../index'
 import resize from 'resize-image'
 import reader from './file-reader'
@@ -17,7 +19,7 @@ export const $$ = _.flow(document.querySelectorAll.bind(document), Array.from)
   * @param  {String}      className The className to be added/removed
   * @return {Promise}               Resolves on `transitionend` event
   */
-export const trans = (el, action, className) =>
+export const trans = (el: HTMLElement, action: string, className: string) =>
   new Promise(resolve => {
     const eventStr = el.style.transition ? 'transitionend' : 'webkitTransitionEnd'
     function end() {
@@ -25,7 +27,11 @@ export const trans = (el, action, className) =>
       resolve(el)
     }
     el.addEventListener(eventStr, end)
-    el.classList[action](className)
+
+    if      (action === 'add')    el.classList.add(className)
+    else if (action === 'remove') el.classList.remove(className)
+    else if (action === 'toggle') el.classList.toggle(className)
+    else throw new TypeError(`${action} is not a method of classList`)
   })
 
 /**
@@ -34,12 +40,16 @@ export const trans = (el, action, className) =>
  * @param  {String} replacement Replacement character
  * @return {String}             Output string
  */
-export function alphaNumeric(str, replacement = '-') {
+export function alphaNumeric(str: string, replacement: string = '-') {
   return str.replace(/\W+/g, replacement)
 }
 
-export function formatISBN(str) {
-  return str.insert(3, '-').insert(11, '-').insert(14, '-')
+export function formatISBN(str: string): string {
+  return _.flow([
+    stringInsert.bind(null, 3, '-'),
+    stringInsert.bind(null, 11, '-'),
+    stringInsert.bind(null, 14, '-')
+  ])(str)
 }
 
 export function clearInputs() {
@@ -76,7 +86,7 @@ function getTargetHeight(origWidth, targetWidth, origHeight) {
   return (targetWidth / origWidth) * origHeight
 }
 
-export function resizer(file, width) {
+export function resizer(file: File, width: number) {
   return new Promise(async (resolve) => {
     const img = new Image()
     img.onload = async function() {
@@ -95,7 +105,7 @@ export function resizer(file, width) {
   })
 }
 
-export function swapNames(authorObj) {
+export function swapNames(authorObj: {name: string}) {
   const name = authorObj.name,
         sep = name.indexOf(','),
         ln = name.substring(0, sep),
@@ -104,7 +114,7 @@ export function swapNames(authorObj) {
   return `${fn} ${ln}`
 }
 
-export function joinMany(array) {
+export function joinMany(array: Array<string>) {
   return {
     '0': 'Unknown',
     '1': array[0],
@@ -112,16 +122,20 @@ export function joinMany(array) {
   }[array.length < 2 ? `${array.length}` : '2+']
 }
 
-export function rebuildArray(oldArr, newArr) {
+export function rebuildArray(oldArr: Array<any>, newArr: Array<any>) {
   oldArr.length = 0
   return oldArr.push(...newArr)
 }
 
-export function cutAtNextFullStop(str, len) {
+export function cutAtNextFullStop(str: string, len: number) {
   const fullStopIndex = str.indexOf('.', len)
   if (fullStopIndex >= 0) {
     return str.substr(0, fullStopIndex + 1)
   } else {
     return str
   }
+}
+
+export function stringInsert(index: number, substr: string, targetStr: string) {
+  return targetStr.substring(0, index) + substr + targetStr.substr(index)
 }

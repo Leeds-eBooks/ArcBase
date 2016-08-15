@@ -1,19 +1,10 @@
+// @flow
+
 import 'sightglass'
 import _ from 'lodash'
 import rivets from 'rivets'
 import {alphaNumeric} from './util'
 import moment from 'moment'
-
-if (!String.prototype.insert) {
-  Object.defineProperty(
-    String.prototype, 'insert', {
-      enumerable: false,
-      value(index, substr) {
-        return this.substring(0, index) + substr + this.substr(index)
-      }
-    }
-  )
-}
 
 rivets.binders.readonly = (el, value) => el.readOnly = Boolean(value)
 
