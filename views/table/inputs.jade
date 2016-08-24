@@ -48,18 +48,21 @@ tr#inputs
       | pbk:
       input.ISBNs(
         rv-value='inputs.ISBNs.pbk'
-        rv-on-input='validateISBN', type='text')
+        rv-on-input='validateISBN'
+        type='text')
     br
     label#hbk
       | hbk:
       input.ISBNs(
         rv-value='inputs.ISBNs.hbk'
+        rv-on-input='validateISBN'
         type='text')
     br
     label#ebk
       | ebk:
       input.ISBNs(
         rv-value='inputs.ISBNs.ebk'
+        rv-on-input='validateISBN'
         type='text')
 
   td

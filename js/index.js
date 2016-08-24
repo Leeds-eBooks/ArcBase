@@ -331,8 +331,9 @@ void async function() {
       },
 
       validateISBN() {
-        if (this.value.length === 13) {
-          const ISBNArr = this.value.split('').map(d => parseInt(d, 10))
+        const sanitized = this.value.replace(/\D/g, '')
+        if (sanitized.length === 13) {
+          const ISBNArr = sanitized.split('').map(d => parseInt(d, 10))
 
           let even = 0,
               odd = 0,
@@ -346,9 +347,9 @@ void async function() {
           checkdigit = (10 - (even + odd) % 10) % 10
           if (ISBNArr[12] !== checkdigit) this.classList.add('invalid')
           else this.classList.remove('invalid')
-        } else if (this.value.length > 13) {
+        } else if (sanitized.length > 13) {
           this.classList.add('invalid')
-        } else if (this.value.length < 13) {
+        } else if (sanitized.length < 13) {
           this.classList.remove('invalid')
         }
       },

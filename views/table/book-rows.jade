@@ -90,6 +90,7 @@ tr.book-rows(
       input.ISBNs(
         rv-value='book.ISBNs.hbk'
         rv-on-click='selectAll'
+        rv-on-input='validateISBN'
         type='text'
         placeholder='ISBN'
         rv-readonly!='book.isEditing < button | opposite')
@@ -99,6 +100,7 @@ tr.book-rows(
       input.ISBNs(
         rv-value='book.ISBNs.ebk'
         rv-on-click='selectAll'
+        rv-on-input='validateISBN'
         type='text'
         placeholder='ISBN'
         rv-readonly!='book.isEditing < button | opposite')
