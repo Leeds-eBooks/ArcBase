@@ -59,6 +59,11 @@ export async function saveToKinvey(data: Object, bookToEdit: Object) {
       ),
       {relations: {authors: 'Author'}}
     )
+    humane.success(
+      `Success! Your changes to ${
+        bookToEdit ? `‘${bookToEdit.title}’` : 'this book'
+      } have been saved.`
+    )
     await update(newBook)
   } catch (e) {
     console.error(e)
