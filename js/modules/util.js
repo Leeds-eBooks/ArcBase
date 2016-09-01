@@ -139,3 +139,9 @@ export function cutAtNextFullStop(str: string, len: number) {
 export function stringInsert(index: number, substr: string, targetStr: string) {
   return targetStr.substring(0, index) + substr + targetStr.substr(index)
 }
+
+export function getKinveySaveError(e: {name: string, description: string, debug: string} | Error) {
+  return `ERROR: Your changes have not been saved. (${
+      e instanceof Error ? e.toString() : `${e.name}: ${e.description}`
+    })`
+}

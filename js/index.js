@@ -15,7 +15,14 @@ import {
   loadingGif,
   numberOfBooksToLoad
 } from './modules/constants'
-import {alphaNumeric, resizer, $, $$, swapNames} from './modules/util'
+import {
+  alphaNumeric,
+  resizer,
+  $,
+  $$,
+  swapNames,
+  getKinveySaveError
+} from './modules/util'
 import * as docTemplates from './modules/template-helpers'
 import './modules/config'
 import searchContacts, {
@@ -242,7 +249,8 @@ void async function() {
 
             await saveToKinvey(data, bookToEdit)
           } catch (e) {
-            console.error(e.message || e)
+            console.error(e)
+            humane.error(getKinveySaveError(e))
           }
         }
 

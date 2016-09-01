@@ -79,7 +79,7 @@ function whenLoaded(results, newBook) {
   if (newBook) clearInputs()
 }
 
-export default async function(newBook: Object, loadMore: boolean) {
+export default async function(newBook: Object, loadMore?: boolean) {
   const query = new Kinvey.Query(),
         amountToSkip = loadMore ? model.books.length : 0;
 

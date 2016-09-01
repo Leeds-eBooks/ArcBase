@@ -1,9 +1,14 @@
-// import humane from './humane'
+// @flow
+
+import humane from './humane'
 import update from './update'
 import _ from 'lodash'
 import choosy from './choosy'
+import {getKinveySaveError} from './util'
 
-export function chooseCover(parseBook) {
+declare var Kinvey: Object
+
+export function chooseCover(parseBook: Object) {
   return function() {
     const sizes = ['200', '600', 'full size']
     choosy(
@@ -17,7 +22,7 @@ export function chooseCover(parseBook) {
   }
 }
 
-export function authorMapper(author) {
+export function authorMapper(author: {name: string, _id: string}) {
   // this = kinvey book
   if (author) {
     return {
@@ -34,13 +39,15 @@ export function authorMapper(author) {
   }
 }
 
-export function preventAuthorEditing(i) {
+export function preventAuthorEditing(i: number) {
   const bookRows = Array.from(document.querySelectorAll('tr.book-rows')),
         authors = Array.from(bookRows[i].querySelectorAll('td.authors > div .author-button'))
-  authors.forEach(a => a.readOnly = true)
+  authors.forEach(a => {
+    if (a instanceof HTMLInputElement) a.readOnly = true
+  })
 }
 
-export async function saveToKinvey(data, bookToEdit) {
+export async function saveToKinvey(data: Object, bookToEdit: Object) {
   try {
     const newBook = await Kinvey.DataStore[bookToEdit ? 'update' : 'save'](
       'Book',
@@ -55,14 +62,12 @@ export async function saveToKinvey(data, bookToEdit) {
     await update(newBook)
   } catch (e) {
     console.error(e)
-    // if (error.code === 141) {
-    //   humane.error('The upload failed! Please try again.') // TODO handle Kinvey failed upload
-    //   update(book)
-    // }
+    humane.error(getKinveySaveError(e))
+    // TODO handle Kinvey failed upload
   }
 }
 
-export async function getKinveyAuthors(authorsArray) {
+export async function getKinveyAuthors(authorsArray: Array<Object>) {
   const query = new Kinvey.Query()
   query.contains('name', authorsArray)
 
