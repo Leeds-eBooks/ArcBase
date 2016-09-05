@@ -5,6 +5,7 @@ import resize from 'resize-image'
 import reader from './file-reader'
 import blob from 'blob-util'
 import _ from 'lodash'
+import {storageNames} from './constants'
 import freeze from 'deep-freeze-strict'
 
 export {freeze}
@@ -140,8 +141,26 @@ export function stringInsert(index: number, substr: string, targetStr: string) {
   return targetStr.substring(0, index) + substr + targetStr.substr(index)
 }
 
-export function getKinveySaveError(e: {name: string, description: string, debug: string} | Error) {
-  return `ERROR: Your changes have not been saved. (${
+export function getKinveySaveError(
+  e: {name: string, description: string, debug: string} | Error,
+  cache: ?Object
+): Array<string> {
+  const ret = [
+    'ERROR: Your changes have not been saved.',
+    `(${
       e instanceof Error ? e.toString() : `${e.name}: ${e.description}`
     })`
+  ]
+
+  if (cache) {
+    window.sessionStorage.setItem(
+      storageNames.newBookDataEntryCache,
+      JSON.stringify(cache)
+    )
+    ret.splice(1, 0,
+      'The details you have entered have been temporarily saved, please REFRESH THE PAGE and TRY AGAIN.'
+    )
+  }
+
+  return ret
 }

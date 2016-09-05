@@ -247,10 +247,12 @@ void async function() {
               })
             }
 
-            await saveToKinvey(data, bookToEdit)
+            await saveToKinvey(data, inputModel, bookToEdit)
           } catch (e) {
             console.error(e)
-            humane.error(getKinveySaveError(e))
+            humane.error(
+              getKinveySaveError(e, bookToEdit ? null : model.inputs)
+            )
           }
         }
 
@@ -690,6 +692,17 @@ void async function() {
         humane.success('Now press ⌘ + C to copy the selection to your clipboard')
       }
     })
+
+    const cachedInputModelString = window.sessionStorage.getItem(storageNames.newBookDataEntryCache)
+
+    if (cachedInputModelString) {
+      try {
+        const cachedInputModel = JSON.parse(cachedInputModelString)
+        Object.assign(model.inputs, cachedInputModel)
+      } catch (e) {
+        console.error(e)
+      }
+    }
 
   } catch (e) {
     window.alert(e.message || e)

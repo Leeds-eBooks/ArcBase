@@ -47,32 +47,40 @@ export function preventAuthorEditing(i: number) {
   })
 }
 
-export async function saveToKinvey(data: Object, bookToEdit: Object) {
+export async function saveToKinvey(data: Object, inputModel: Object, bookToEdit: Object) {
+  const isCreatingNewBook = !bookToEdit
+
   try {
-    const newBook = await Kinvey.DataStore[bookToEdit ? 'update' : 'save'](
+    const newBook = await Kinvey.DataStore[isCreatingNewBook ? 'save' : 'update'](
       'Book',
       Object.assign(
-        bookToEdit ?
-          await Kinvey.DataStore.get('Book', bookToEdit._id) :
-          {},
+        isCreatingNewBook ?
+          {} :
+          await Kinvey.DataStore.get('Book', bookToEdit._id),
         data
       ),
       {relations: {authors: 'Author'}}
-    )
+    );
+
     humane.success(
       `Success! Your changes to ${
-        bookToEdit ? `‘${bookToEdit.title}’` : 'this book'
+        isCreatingNewBook ? (data.title || 'this book') : `‘${bookToEdit.title}’`
       } have been saved.`
     )
+
     await update(newBook)
+
   } catch (e) {
     console.error(e)
-    humane.error(getKinveySaveError(e))
+
+    humane.error(
+      getKinveySaveError(e, isCreatingNewBook ? inputModel : null)
+    )
     // TODO handle Kinvey failed upload
   }
 }
 
-export async function getKinveyAuthors(authorsArray: Array<Object>) {
+export async function getKinveyAuthors(authorsArray: Array<Object>): Promise<> {
   const query = new Kinvey.Query()
   query.contains('name', authorsArray)
 
