@@ -1,3 +1,5 @@
+// @flow
+
 import humane from 'humane-js'
 
 Object.assign(humane, {

@@ -1,3 +1,5 @@
+// @flow
+
 import _ from 'lodash'
 
 function handleClasses(el, toRemove, toAdd) {
@@ -7,14 +9,14 @@ function handleClasses(el, toRemove, toAdd) {
   }
 }
 
-export function saving(el) {
+export function saving(el: HTMLElement) {
   return handleClasses(el, ['saved'], ['saving'])
 }
 
-export function saved(el) {
+export function saved(el: HTMLElement) {
   return handleClasses(el, ['saving'], ['saved'])
 }
 
-export function failed(el) {
+export function failed(el: HTMLElement) {
   return handleClasses(el, ['saving', 'saved'], ['failed'])
 }

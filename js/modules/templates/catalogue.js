@@ -1,13 +1,19 @@
+// @flow
+
 import _ from 'lodash'
 import blobUtil from 'blob-util'
 import {
   authorString,
   translatorString,
   editorString,
-  introducerString,
+  introducerString
+} from '../template-helpers'
+import {
   formatISBN,
   joinMany
-} from '../templates'
+} from '../util'
+
+declare var Kinvey: Object
 
 async function getImageBase64(_id) {
   return `data:image/jpeg;base64,${
@@ -17,7 +23,7 @@ async function getImageBase64(_id) {
   }`
 }
 
-export default async function(book) {
+export default async function(book: Object): Promise<Object> {
   if (!book.cover_orig) throw new Error('missing cover image')
   else return {
     info: {

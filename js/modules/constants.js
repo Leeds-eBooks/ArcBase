@@ -1,6 +1,6 @@
 // @flow
 
-import {freeze} from './util.js'
+import freeze from 'deep-freeze-strict'
 
 export const pricing = freeze({
   '0-112':   '9.99',

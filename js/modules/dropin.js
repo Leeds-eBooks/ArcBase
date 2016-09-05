@@ -1,6 +1,39 @@
+// @flow
+
 import _ from 'lodash'
 import {trans} from './util'
 import Lazy from 'lazy.js'
+
+type Question = {
+  key: string,
+  placeholder: string,
+  type: string,
+  value: string,
+  attributes: Object
+}
+
+function buildInput(q) {
+  let input
+
+  if (q.type === 'textarea') {
+    input = document.createElement('textarea')
+    input.rows = 5
+  } else {
+    input = document.createElement('input')
+    input.type = q.type
+  }
+
+  input.placeholder = q.placeholder
+
+  if (q.attributes) {
+    const inputCastObj: Object = input
+    _.each(q.attributes, (v, k) => inputCastObj[k] = v)
+  }
+
+  if (q.value) input.value = q.value
+
+  return input
+}
 
 /**
    * Drop-in modal with questions
@@ -9,7 +42,7 @@ import Lazy from 'lazy.js'
    *                                 and optional `value` to pre-fill
    * @return {Promise}               Resolves with key/val object
    */
-export default function dropin(text, questionsArray) {
+export default function dropin(text: string, questionsArray: Array<Question>) {
   return new Promise((resolve, reject) => {
     const frag = document.createDocumentFragment(),
           overlay = document.createElement('div'),
@@ -18,28 +51,15 @@ export default function dropin(text, questionsArray) {
           p = document.createElement('h3'),
           submit = document.createElement('button');
 
-    function buildInput(q) {
-      let input
-      if (q.type === 'textarea') {
-        input = document.createElement('textarea')
-        input.rows = 5
-      } else {
-        input = document.createElement('input')
-        input.type = q.type
-      }
-      input.placeholder = q.placeholder
-      _.each(q.attributes, (v, k) => input[k] = v)
-      if (q.value) input.value = q.value
-      return input
-    }
-
     const inputs = questionsArray.map(buildInput)
 
     p.innerHTML = text
 
     form.id = "dropin"
     form.appendChild(content)
+
     content.appendChild(p)
+
     inputs.forEach(function(q) {
       if (q.type === 'date') {
         const label = document.createElement('p')
@@ -61,7 +81,7 @@ export default function dropin(text, questionsArray) {
     overlay.addEventListener('click', async event => {
       if (event.target === event.currentTarget) {
         await trans(overlay, 'remove', 'overlay-show')
-        overlay.parentNode.removeChild(overlay)
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
         reject()
       }
     })
@@ -83,7 +103,7 @@ export default function dropin(text, questionsArray) {
           )
           .toObject()
         )
-        overlay.parentNode.removeChild(overlay)
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
       }
 
       if (_.some(requiredFields, _.identity)) { // required fields exist

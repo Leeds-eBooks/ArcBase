@@ -1,7 +1,11 @@
+// @flow
+
 import _ from 'lodash'
 import {saved, failed} from './ui'
 import {rebuildArray} from './util'
 import Lazy from 'lazy.js'
+
+declare var Kinvey: Object
 
 const contacts = []
 
@@ -11,7 +15,7 @@ async function refreshContacts(contacts = contacts) {
   rebuildArray(contacts, res)
 }
 
-export default function(model) {
+export default function(model: Object) {
   refreshContacts(contacts)
 
   return function() {
@@ -49,7 +53,7 @@ export const updateContact = _.debounce(
   500
 )
 
-export async function deleteContact(contact, foundList) {
+export async function deleteContact(contact: Object, foundList: Array<Object>) {
   const confirmMessage = 'Are you sure you want to delete this contact? You cannot undo this action!'
   if (window.confirm(confirmMessage)) {
     const foundIndex = foundList.indexOf(contact)

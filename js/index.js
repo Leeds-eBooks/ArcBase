@@ -1,10 +1,11 @@
+// @flow
+
 import 'babel-polyfill'
 import 'whatwg-fetch'
 import 'sightglass'
 import rivets from 'rivets'
 import FileSaver from '../bower_components/FileSaver/FileSaver.min'
 import ArcBase from '../keys'
-// import dropin from './modules/dropin'
 import {
   preventAuthorEditing,
   saveToKinvey,
@@ -13,7 +14,8 @@ import {
 import {
   pricing,
   loadingGif,
-  numberOfBooksToLoad
+  numberOfBooksToLoad,
+  storageNames
 } from './modules/constants'
 import {
   alphaNumeric,
@@ -39,9 +41,12 @@ import Clipboard from 'clipboard'
 import humane from './modules/humane'
 import touringSheet from './modules/templates/touring'
 
-// import 'script!kinvey-html5/kinvey'
+// $FlowIgnore
 import 'script!../bower_components/pdfmake/build/pdfmake.min'
+// $FlowIgnore
 import 'script!../bower_components/pdfmake/build/vfs_fonts.js'
+
+declare var Kinvey: Object
 
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
@@ -50,9 +55,7 @@ const table = document.querySelector('#main table'),
 
 export const kvBookMap = new Map()
 
-export const model = {
-  numberOfBooksToLoad
-}
+export const model = {}
 
 void async function() {
   try {
@@ -68,6 +71,8 @@ void async function() {
     if (!user) await Kinvey.User.login('default', 'qwertyui')
 
     Object.assign(model, {
+      numberOfBooksToLoad,
+
       authors: [],
       books: [],
       inputs: {
@@ -120,9 +125,9 @@ void async function() {
       },
 
       async loadMore() {
-        await update(false, true)
+        await update(model, null, true)
         const currentSearch = $('input[type="search"].warning')
-        if (currentSearch) model.smartSearch.call(currentSearch)
+        if (currentSearch instanceof HTMLInputElement) model.smartSearch.call(currentSearch)
       },
 
       submit(event, modelArg, bookToEdit) {
@@ -198,21 +203,25 @@ void async function() {
           }
 
           try {
+            let uploader = Promise.resolve([])
+
+            if (coverFile) {
+              uploader = Promise.all(
+                Lazy([coverFile.file, ...coverFile.resized])
+                .compact()
+                .map(async (file) => {
+                  const {_id} = await Kinvey.File.upload(file, {
+                    _filename: coverFile ? coverFile.filename : '',
+                    mimeType: file.type
+                  }, {public: true})
+                  return _id
+                }).toArray()
+              )
+            }
+
             const [returnedAuthors, images] = await Promise.all([
               getKinveyAuthors(authors),
-              coverFile ?
-                Promise.all(
-                  Lazy([coverFile.file, ...coverFile.resized])
-                  .compact()
-                  .map(async (file) => {
-                    const {_id} = await Kinvey.File.upload(file, {
-                      _filename: coverFile.filename,
-                      mimeType: file.type
-                    }, {public: true})
-                    return _id
-                  }).toArray()
-                ) :
-                Promise.resolve([])
+              uploader
             ])
 
             data.authors = returnedAuthors
@@ -259,6 +268,9 @@ void async function() {
         // submit() -->
         if (!inputModel.title.trim()) {
           alert('Every book needs a title...')
+          return false
+        } else if (!inputModel.pubdate || inputModel.pubdate.length < 10) {
+          alert('Please choose a full publication date (dd/mm/yyyy), otherwise this book will be placed at the bottom of the list and it will seem like it hasn’t saved correctly.\n\nIf you know the month but not the day, just choose the last day of the month.\n\nIf it is a forthcoming book without a publication date yet, just choose a date in the future. You can change it at any time.')
           return false
         } else if (inputModel.authors.some(v => v.name.trim() && !v.name.includes(','))) {
           alert('Author names must be Lastname, Firstname')
@@ -523,15 +535,19 @@ void async function() {
 
       downloadAI(event, scope) {
         const book = scope.book,
-              AI = docTemplates.AI(book, kvBookMap.get(book)),
-              blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
+              kvBook = kvBookMap.get(book);
 
-        FileSaver.saveAs(blob, `${book.title} AI.txt`)
+        if (kvBook) {
+          const AI = docTemplates.AI(model, book, kvBook),
+                blob = new Blob([AI], {type: "text/plain;charset=utf-8"});
+
+          FileSaver.saveAs(blob, `${book.title} AI.txt`)
+        }
       },
 
       downloadPR(event, scope) {
         const book = scope.book,
-              PR = docTemplates.PR(book),
+              PR = docTemplates.PR(model, book),
               blob = new Blob([PR], {type: "text/plain;charset=utf-8"});
 
         FileSaver.saveAs(blob, `Press Release Arc Publications - ${book.title}.txt`)
@@ -653,7 +669,7 @@ void async function() {
 
     window.model = model
 
-    update()
+    update(model)
 
     const searchBoxes = $$('tr#search input[type="search"]')
 
@@ -686,25 +702,26 @@ void async function() {
     )
 
     clipboard.on('error', () => {
-      if (/(iPad|iPhone)/.test(window.navigator.userAgent)) {
+      if (/(iPad|iPhone)/.test(navigator.userAgent)) {
         humane.error('Not supported')
       } else {
         humane.success('Now press ⌘ + C to copy the selection to your clipboard')
       }
     })
 
-    const cachedInputModelString = window.sessionStorage.getItem(storageNames.newBookDataEntryCache)
+    const cachedInputModelString = sessionStorage.getItem(storageNames.newBookDataEntryCache)
 
     if (cachedInputModelString) {
       try {
         const cachedInputModel = JSON.parse(cachedInputModelString)
         Object.assign(model.inputs, cachedInputModel)
+        sessionStorage.removeItem(storageNames.newBookDataEntryCache)
       } catch (e) {
         console.error(e)
       }
     }
 
   } catch (e) {
-    window.alert(e.message || e)
+    alert(e.message || e)
   }
 }()

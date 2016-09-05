@@ -1,14 +1,10 @@
 // @flow
 
-import {model} from '../index'
 import resize from 'resize-image'
 import reader from './file-reader'
 import blob from 'blob-util'
 import _ from 'lodash'
 import {storageNames} from './constants'
-import freeze from 'deep-freeze-strict'
-
-export {freeze}
 
 export const $ = document.querySelector.bind(document)
 export const $$ = _.flow(document.querySelectorAll.bind(document), Array.from)
@@ -53,7 +49,7 @@ export function formatISBN(str: string): string {
   ])(str)
 }
 
-export function clearInputs() {
+export function clearInputs(model: {inputs: Object}) {
   model.inputs = {
     title: '',
     authors: [{

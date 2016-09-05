@@ -1,49 +1,49 @@
+// @flow
+
 import _ from 'lodash'
 import dedent from 'dedent'
 import {formatISBN, swapNames, joinMany} from './util'
-import {model} from '../index'
 
-export const para = `
-`
+export const para = '\n'
 
-export function authorString(book) {
+export function authorString(book: Object) {
   const authors = book.authors.filter(author => author.roles.author).map(swapNames)
   return `by ${joinMany(authors)}`
 }
 
-export function translatorString(book) {
+export function translatorString(book: Object) {
   const translators = book.authors.filter(author => author.roles.translator).map(swapNames)
   return translators.length ? `translated by ${joinMany(translators)}` : ''
 }
 
-export function editorString(book) {
+export function editorString(book: Object) {
   const editors = book.authors.filter(author => author.roles.editor).map(swapNames)
   return editors.length ? `edited by ${joinMany(editors)}` : ''
 }
 
-export function introducerString(book) {
+export function introducerString(book: Object) {
   const introducers = book.authors.filter(author => author.roles.introducer).map(swapNames)
   return introducers.length ? `with an introduction by ${joinMany(introducers)}` : ''
 }
 
-export function bios(book) {
+function bios(model, book) {
   return book.authors.map(author => model.getCurrentAuthor(author.name))
     .filter(({biog}) => biog)
     .map(({biog}) => biog)
-    .join(this.para + this.para)
+    .join(para + para)
 }
 
   ////////////////////////////////////////
 
-export function AI(book, kvBook) {
+export function AI(model: Object, book: Object, kvBook: Object) {
   return dedent`
     ${book.title}
     ${
       joinMany(_.compact([
-        this.authorString(book),
-        this.translatorString(book),
-        this.editorString(book),
-        this.introducerString(book)
+        authorString(book),
+        translatorString(book),
+        editorString(book),
+        introducerString(book)
       ]))
     }
 
@@ -59,7 +59,7 @@ export function AI(book, kvBook) {
 
     About the Author(s)
 
-    ${this.bios(book)}
+    ${bios(model, book)}
 
 
     Bibliographic Details
@@ -72,7 +72,7 @@ export function AI(book, kvBook) {
   `
 }
 
-export function PR(book) {
+export function PR(model: Object, book: Object) {
   return dedent`
     <<< insert logo here >>>
     Nanholme Mill, Shaw Wood Road, Todmorden, LANCS OL14 6DA
@@ -88,16 +88,16 @@ export function PR(book) {
 
     ${
       _.compact([
-        this.authorString(book),
-        this.translatorString(book),
-        this.editorString(book),
-        this.introducerString(book)
-      ]).join(this.para)
+        authorString(book),
+        translatorString(book),
+        editorString(book),
+        introducerString(book)
+      ]).join(para)
     }
 
     ${book.shortdesc}
 
-    ${this.bios(book)}
+    ${bios(model, book)}
 
     ENDS
 
@@ -106,10 +106,10 @@ export function PR(book) {
     ${book.title}
     ${
       joinMany(_.compact([
-        this.authorString(book),
-        this.translatorString(book),
-        this.editorString(book),
-        this.introducerString(book)
+        authorString(book),
+        translatorString(book),
+        editorString(book),
+        introducerString(book)
       ]))
     }
     Publication date: ${(new Date(book.pubdate)).toDateString()}
