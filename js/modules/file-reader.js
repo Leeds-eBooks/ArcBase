@@ -1,6 +1,6 @@
 // @flow
 
-export default function(file: File) {
+export default function(file: Blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = function() {

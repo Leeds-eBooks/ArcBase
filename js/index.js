@@ -46,8 +46,6 @@ import 'script!../bower_components/pdfmake/build/pdfmake.min'
 // $FlowIgnore
 import 'script!../bower_components/pdfmake/build/vfs_fonts.js'
 
-declare var Kinvey: Object
-
 const table = document.querySelector('#main table'),
       notesOverlay = document.querySelector('.notes-overlay'),
       authorOverlay = document.querySelector('.author-overlay'),
@@ -171,7 +169,7 @@ void async function() {
                   })
                 )
             } else if (key === 'cover_orig') {
-              if (input instanceof File) {
+              if (input instanceof Blob) {
                 coverFile = {
                   file: input,
                   filename: `${alphaNumeric(inputModel.title)}.jpg`
@@ -522,6 +520,9 @@ void async function() {
 
         if (isEditing) {
           try {
+            if (!model.currentBook) {
+              throw new TypeError('model.currentBook is not defined')
+            }
             await Kinvey.DataStore.update('Book', model.currentBook)
             model[button] = 'Edit'
           } catch (e) {

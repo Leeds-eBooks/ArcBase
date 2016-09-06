@@ -83,7 +83,7 @@ function getTargetHeight(origWidth, targetWidth, origHeight) {
   return (targetWidth / origWidth) * origHeight
 }
 
-export function resizer(file: File, width: number) {
+export function resizer(file: Blob, width: number) {
   return new Promise(async (resolve) => {
     const img = new Image()
     img.onload = async function() {
