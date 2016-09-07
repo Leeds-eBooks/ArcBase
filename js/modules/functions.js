@@ -47,7 +47,7 @@ export function preventAuthorEditing(i: number) {
   })
 }
 
-export async function saveToKinvey(data: Object, inputModel: Object, bookToEdit: Object) {
+export async function saveToKinvey(model: Object, data: Object, inputModel: Object, bookToEdit: Object) {
   const isCreatingNewBook = !bookToEdit
 
   try {
@@ -68,7 +68,7 @@ export async function saveToKinvey(data: Object, inputModel: Object, bookToEdit:
       } have been saved.`
     )
 
-    await update(newBook)
+    await update(model, newBook)
 
   } catch (e) {
     console.error(e)

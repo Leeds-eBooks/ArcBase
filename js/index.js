@@ -254,7 +254,7 @@ void async function() {
               })
             }
 
-            await saveToKinvey(data, inputModel, bookToEdit)
+            await saveToKinvey(model, data, inputModel, bookToEdit)
           } catch (e) {
             console.error(e)
             humane.error(
