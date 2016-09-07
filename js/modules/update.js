@@ -5,8 +5,6 @@ import {authorMapper, chooseCover} from './functions'
 import {clearInputs} from './util'
 import {numberOfBooksToLoad} from './constants'
 
-declare var Kinvey: Object
-
 function whenLoaded(model, results, newBook) {
   if (model.books && model.authors && model.config) {
 

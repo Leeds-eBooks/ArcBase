@@ -5,8 +5,6 @@ import {saved, failed} from './ui'
 import {rebuildArray} from './util'
 import Lazy from 'lazy.js'
 
-declare var Kinvey: Object
-
 const contacts = []
 
 async function refreshContacts(contacts = contacts) {
