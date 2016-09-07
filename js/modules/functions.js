@@ -6,8 +6,6 @@ import _ from 'lodash'
 import choosy from './choosy'
 import {getKinveySaveError} from './util'
 
-declare var Kinvey: Object
-
 export function chooseCover(parseBook: Object) {
   return function() {
     const sizes = ['200', '600', 'full size']

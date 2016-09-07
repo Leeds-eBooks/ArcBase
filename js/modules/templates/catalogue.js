@@ -13,8 +13,6 @@ import {
   joinMany
 } from '../util'
 
-declare var Kinvey: Object
-
 async function getImageBase64(_id) {
   return `data:image/jpeg;base64,${
     await Kinvey.File.download(_id)
