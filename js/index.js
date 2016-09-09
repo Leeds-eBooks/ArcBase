@@ -23,7 +23,8 @@ import {
   $,
   $$,
   swapNames,
-  getKinveySaveError
+  getKinveySaveError,
+  pause
 } from './modules/util'
 import * as docTemplates from './modules/template-helpers'
 import './modules/config'
@@ -39,6 +40,8 @@ import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
 import Clipboard from 'clipboard'
 import humane from './modules/humane'
+import swal from './modules/sweetalert'
+import getConfirmer from './modules/author-name-confirmer'
 import touringSheet from './modules/templates/touring'
 
 // $FlowIgnore
@@ -128,7 +131,7 @@ void async function() {
         if (currentSearch instanceof HTMLInputElement) model.smartSearch.call(currentSearch)
       },
 
-      submit(event, modelArg, bookToEdit) {
+      async submit(event, modelArg, bookToEdit) {
         const data = {},
             authors = [],
             replacedAuthorMap = {},
@@ -265,63 +268,76 @@ void async function() {
 
         // submit() -->
         if (!inputModel.title.trim()) {
-          alert('Every book needs a title...')
+          swal({
+            title: 'Every book needs a title...',
+            type: 'error',
+            text: 'Please add a title for this book, even if it’s just temporary.'
+          })
           return false
         } else if (!inputModel.pubdate || inputModel.pubdate.length < 10) {
-          alert('Please choose a full publication date (dd/mm/yyyy), otherwise this book will be placed at the bottom of the list and it will seem like it hasn’t saved correctly.\n\nIf you know the month but not the day, just choose the last day of the month.\n\nIf it is a forthcoming book without a publication date yet, just choose a date in the future. You can change it at any time.')
+          swal({
+            title: 'Publication date required',
+            type: 'error',
+            text: 'Please choose a full publication date (dd/mm/yyyy), otherwise this book will be placed at the bottom of the list and it will seem like it hasn’t saved correctly.\n\nIf you know the month but not the day, just choose the last day of the month.\n\nIf it is a forthcoming book without a publication date yet, just choose a date in the future. You can change it at any time.'
+          })
           return false
         } else if (inputModel.authors.some(v => v.name.trim() && !v.name.includes(','))) {
-          alert('Author names must be Lastname, Firstname')
+          swal({
+            title: 'Incorrect author name',
+            type: 'error',
+            text: 'Author names must be: Lastname, Firstname'
+          })
           return false
         } else {
-          return Kinvey.execute('checkauthors', {authors: inputModel.authors})
-            .then(res => {
-              let cancelFlag = false
-              const replaced = res.filter(r => {
-                if (r.length === 1) {
-                  let name = r[0].author.name
-                  return confirm(
-                    `Did you mean ${name}?
+          try {
+            const res = await Kinvey.execute('checkauthors', {authors: inputModel.authors}),
+                  state = {
+                    cancelFlag: true,
+                    replaced: []
+                  },
+                  confirmers = res.map(matches => getConfirmer(matches, state));
 
-                    Ok for YES, I MEANT "${name}"
-                    Cancel for NO, I AM CORRECT`
-                  )
-                } else {
-                  cancelFlag = confirm(
-                    `There is an author with a similar name on the database already. If there's a typo, do you want to go back and fix it?
+            for (let i = 0, l = confirmers.length; i < l; i++) {
+              if (i > 0) await pause(500)
+              await confirmers[i]()
+            }
 
-                    Ok for YES, I MADE A MISTAKE
-                    Cancel for NO, I AM CORRECT`
-                  )
-                  return cancelFlag
-                }
-              })
-
-              if (replaced.length) {
-                if (!cancelFlag) continueSubmit(replaced)
-              } else {
-                continueSubmit()
-              }
-
-            }).catch(error => {
-              console.log('BL error caught', error)
-              console.log('continuing...')
+            if (state.cancelFlag) {
+              return false
+            } else if (state.replaced.length) {
+              continueSubmit(state.replaced)
+              return true
+            } else {
               continueSubmit()
-            })
+              return true
+            }
+
+          } catch (error) {
+            console.log('Kinvey Business Logic error caught', error)
+            console.log('continuing...')
+            continueSubmit()
+            return true
+          }
         }
       },
 
-      editOrSubmit(event, scope) {
+      async editOrSubmit(event, scope) {
         if (scope.book.button === 'Edit') {
           scope.book.button = 'Save'
           preventAuthorEditing(scope.index)
         } else {
-          if (model.submit(null, null, scope.book)) {
-            scope.book.button = loadingGif
+          scope.book.button = loadingGif
 
-            table
-            .querySelectorAll('.book-rows')[scope.index]
-            .querySelector('button.cover-upload').textContent = '⇧ cover'
+          try {
+            if (await model.submit(null, null, scope.book)) {
+              table
+                .querySelectorAll('.book-rows')[scope.index]
+                .querySelector('button.cover-upload').textContent = '⇧ cover'
+            } else {
+              scope.book.button = 'Save'
+            }
+          } catch (e) {
+            console.error(e)
           }
         }
       },

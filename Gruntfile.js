@@ -103,7 +103,8 @@ module.exports = grunt => {
     sass: {
       dist: {
         options: {
-          style: 'compressed'
+          style: 'compressed',
+          loadPath: './node_modules/'
         },
         files: {
           'dist/css/styles.css': 'css/styles.scss'
@@ -111,7 +112,8 @@ module.exports = grunt => {
       },
       dev: {
         options: {
-          style: 'expanded'
+          style: 'expanded',
+          loadPath: './node_modules/'
         },
         files: {
           'css/styles.css': 'css/styles.scss'

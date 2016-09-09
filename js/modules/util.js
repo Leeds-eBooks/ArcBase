@@ -6,6 +6,10 @@ import blob from 'blob-util'
 import _ from 'lodash'
 import {storageNames} from './constants'
 
+export function pause(millis: number = 0) {
+  return new Promise(resolve => setTimeout(resolve, millis))
+}
+
 export const $ = document.querySelector.bind(document)
 export const $$ = _.flow(document.querySelectorAll.bind(document), Array.from)
 

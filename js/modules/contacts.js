@@ -4,6 +4,7 @@ import _ from 'lodash'
 import {saved, failed} from './ui'
 import {rebuildArray} from './util'
 import Lazy from 'lazy.js'
+import swal from './sweetalert'
 
 const contacts = []
 
@@ -52,8 +53,14 @@ export const updateContact = _.debounce(
 )
 
 export async function deleteContact(contact: Object, foundList: Array<Object>) {
-  const confirmMessage = 'Are you sure you want to delete this contact? You cannot undo this action!'
-  if (window.confirm(confirmMessage)) {
+  try {
+    await swal({
+      title: 'Please confirm',
+      type: 'warning',
+      text: 'Are you sure you want to delete this contact? You cannot undo this action!',
+      showCancelButton: true
+    })
+
     const foundIndex = foundList.indexOf(contact)
     try {
       await Kinvey.DataStore.destroy('Contact', contact._id)
@@ -62,5 +69,7 @@ export async function deleteContact(contact: Object, foundList: Array<Object>) {
     } catch (e) {
       console.error(e)
     }
+  } catch (e) {
+    console.error(e)
   }
 }
