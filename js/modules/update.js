@@ -112,3 +112,11 @@ export default async function(model: Object, newBook: ?Object, loadMore?: boolea
     console.error(e)
   }
 }
+
+export async function refreshAuthor(target: Object, id: string = target._id) {
+  if (!id) throw new TypeError('author _id not defined')
+  Object.assign(
+    target,
+    await Kinvey.DataStore.get('Author', id)
+  )
+}

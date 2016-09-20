@@ -34,7 +34,7 @@ import searchContacts, {
 } from './modules/contacts'
 import {saving} from './modules/ui'
 import _ from 'lodash'
-import update from './modules/update'
+import update, {refreshAuthor} from './modules/update'
 import moment from 'moment'
 import Lazy from 'lazy.js'
 import Mousetrap from 'mousetrap'
@@ -403,10 +403,19 @@ void async function() {
         return this.authors.find(author => author.name === name)
       },
 
-      showAuthorModal(event, scope) {
+      async showAuthorModal(event, scope) {
         if (this.readOnly) {
           model.currentAuthor = model.getCurrentAuthor(scope.author.name)
           model.currentAuthorOldName = model.currentAuthor.name
+
+          try {
+            // HACK because Kinvey is not resolving book authors with all the
+            // authors' data
+            await refreshAuthor(model.currentAuthor)
+          } catch (e) {
+            humane.error(e)
+          }
+
           authorOverlay.classList.add('modal-in')
         }
       },
@@ -469,10 +478,7 @@ void async function() {
             )
 
             const {_id} = await Kinvey.DataStore.update('Author', model.currentAuthor)
-            Object.assign(
-              model.currentAuthor,
-              await Kinvey.DataStore.get('Author', _id)
-            )
+            await refreshAuthor(model.currentAuthor, _id)
 
           } catch (e) {
             console.error(e)
