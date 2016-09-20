@@ -658,6 +658,7 @@ void async function() {
       openContacts() {
         const el = document.querySelector('.contacts-overlay')
         el.classList.add('modal-in')
+        el.querySelector(`input[type="search"]`).focus()
       },
 
       closeContacts(event) {
