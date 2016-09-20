@@ -7,10 +7,7 @@ html {
   height: 100%;
 }
 body {
-  width: 103rem;
-  background: #eee;
   text-align: center;
-  padding: 0 25px;
 }
 
 #main {
@@ -18,9 +15,11 @@ body {
   margin: auto;
   text-align: left;
   background: $white;
-  padding: 50px 60px;
-  border: solid #ddd;
-  border-width: 0 1px 1px 1px;
+  padding: 1em;
+
+  table {
+    margin: auto;
+  }
 }
 
 button {
@@ -64,7 +63,12 @@ tr {
 }
 
 .load-more {
-  width: 100%;
+  display: block;
+  margin: auto;
+  padding: {
+    left: 3em;
+    right: 3em;
+  }
 }
 
 .info {
