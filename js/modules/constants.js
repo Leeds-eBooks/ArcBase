@@ -11,7 +11,7 @@ export const pricing = freeze({
 
 export const loadingGif = '<img class="loading" src="images/loading.gif">'
 
-export const numberOfBooksToLoad = 100
+export const numberOfBooksToLoad = 50
 
 export const storageNames = freeze({
   newBookDataEntryCache: 'new book data entry cache'

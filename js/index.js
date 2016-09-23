@@ -693,7 +693,14 @@ void async function() {
 
     window.model = model
 
-    update(model)
+    void async function() {
+      try {
+        await update(model)
+        await update(model, null, true)
+      } catch (e) {
+        console.error(e)
+      }
+    }()
 
     const searchBoxes = $$('tr#search input[type="search"]')
 
