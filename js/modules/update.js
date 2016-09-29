@@ -25,7 +25,7 @@ function whenLoaded(model, results, newBook) {
               pages: kb.pages,
               shortdesc: kb.shortdesc,
               ISBNs: kb.ISBNs && kb.ISBNs.reduce((obj, current) => {
-                obj[current.type]=current.value
+                obj[current.type] = current.value
                 return obj
               }, {}),
               price: kb.price ?

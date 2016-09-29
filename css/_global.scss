@@ -75,6 +75,11 @@ tr {
   color: $brand-secondary;
 }
 
+.small-button {
+  font-size: 0.8em;
+  height: auto;
+}
+
 .saving,
 .saved,
 .failed {

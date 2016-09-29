@@ -3,7 +3,7 @@
 import 'sightglass'
 import _ from 'lodash'
 import rivets from 'rivets'
-import {alphaNumeric} from './util'
+import {alphaNumeric, formatISBN} from './util'
 import moment from 'moment'
 
 rivets.binders.readonly = (el, value) => el.readOnly = Boolean(value)
@@ -33,4 +33,18 @@ rivets.formatters.parseDate = {
 rivets.formatters.toBool = {
   read: v => v,
   publish: v => ({true: true, false: false}[v])
+}
+
+rivets.formatters.getBibliographicDetails = book => {
+  const {pbk, hbk, ebk} = book.ISBNs,
+        {pages} = book;
+
+  let str = '';
+
+  if (pbk) str += `ISBN pbk ${formatISBN(pbk)}`
+  if (hbk) str += `\nISBN hbk ${formatISBN(hbk)}`
+  if (ebk) str += `\nISBN ebk ${formatISBN(ebk)}`
+  if (pages) str += `\n${pages} pages`
+
+  return str
 }

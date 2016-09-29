@@ -105,6 +105,9 @@ tr.book-rows(
         placeholder='ISBN'
         rv-readonly!='book.isEditing < button | opposite')
 
+    button.small-button(
+      rv-data-clipboard-text='book | getBibliographicDetails') Copy bibliographic details
+
   td
     input(
       rv-value='book.pages'

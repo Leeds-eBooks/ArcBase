@@ -715,7 +715,8 @@ void async function() {
     const clipboard = new Clipboard(
       [
         'input[readonly]:not(.author-button)',
-        'textarea[readonly]'
+        'textarea[readonly]',
+        '[data-clipboard-text]'
       ].join(', '),
       {
         target: trigger => trigger
