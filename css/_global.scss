@@ -23,6 +23,7 @@ body {
 }
 
 button {
+  @include quick-trans(background-color);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   outline: none !important;
   position: relative;
@@ -49,6 +50,9 @@ button {
   }
   &.cover-upload {
     height: auto;
+  }
+  &:focus, &:hover {
+    background-color: lighten($brand-secondary, 15%);
   }
 }
 

@@ -5,6 +5,13 @@
           transition-property: $properties;
 }
 
+@mixin quick-trans($properties...) {
+  -webkit-transition: all 0.1s ease-out;
+          transition: all 0.1s ease-out;
+  -webkit-transition-property: $properties;
+          transition-property: $properties;
+}
+
 @mixin v-center {
   margin-top: 0;
   top: 50%;
