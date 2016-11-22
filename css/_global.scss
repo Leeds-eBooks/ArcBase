@@ -23,7 +23,7 @@ body {
 }
 
 button {
-  @include quick-trans(background-color);
+  @include quick-trans(opacity);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   outline: none !important;
   position: relative;
@@ -52,7 +52,7 @@ button {
     height: auto;
   }
   &:focus, &:hover {
-    background-color: lighten($brand-secondary, 15%);
+    opacity: 0.7;
   }
 }
 
