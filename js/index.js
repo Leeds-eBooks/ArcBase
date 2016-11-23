@@ -697,6 +697,16 @@ void async function() {
       try {
         await update(model)
         await update(model, null, true)
+
+        // URL search
+        const search = window.location.search.substr(1)
+        if (search) {
+          const searchBox = $('[data-search-column="title"]')
+          if (searchBox instanceof HTMLInputElement) {
+            searchBox.value = search
+            searchBox.dispatchEvent(new Event('input'))
+          }
+        }
       } catch (e) {
         console.error(e)
       }
