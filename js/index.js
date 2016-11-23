@@ -403,20 +403,23 @@ void async function() {
         return this.authors.find(author => author.name === name)
       },
 
-      async showAuthorModal(event, scope) {
+      async showAuthorModal(event, {author: {name}}) {
         if (this.readOnly) {
-          model.currentAuthor = model.getCurrentAuthor(scope.author.name)
-          model.currentAuthorOldName = model.currentAuthor.name
+          model.currentAuthor = model.getCurrentAuthor(name)
 
-          try {
-            // HACK because Kinvey is not resolving book authors with all the
-            // authors' data
-            await refreshAuthor(model.currentAuthor)
-          } catch (e) {
-            humane.error(e)
+          if (model.currentAuthor) {
+            model.currentAuthorOldName = model.currentAuthor.name
+
+            try {
+              // HACK because Kinvey is not resolving book authors with all the
+              // authors' data
+              await refreshAuthor(model.currentAuthor)
+            } catch (e) {
+              humane.error(e)
+            }
+
+            authorOverlay.classList.add('modal-in')
           }
-
-          authorOverlay.classList.add('modal-in')
         }
       },
 
@@ -439,14 +442,18 @@ void async function() {
       authorButton: 'Edit',
 
       addTravelAvailDateRange() {
-        model.currentAuthor.addUnique('travel_avail_dates', ['',''])
-        model.currentAuthor.change() // TODO kv
+        if (model.currentAuthor) {
+          model.currentAuthor.addUnique('travel_avail_dates', ['',''])
+          model.currentAuthor.change() // TODO kv
+        }
       },
 
       delTravelAvailDateRange(event, scope) {
-        const range = model.currentAuthor.travel_avail_dates[scope.index]
-        model.currentAuthor.remove('travel_avail_dates', range) // FIXME can't remove() after add() without saving in-between
-        model.currentAuthor.change() // TODO kv
+        if (model.currentAuthor) {
+          const range = model.currentAuthor.travel_avail_dates[scope.index]
+          model.currentAuthor.remove('travel_avail_dates', range) // FIXME can't remove() after add() without saving in-between
+          model.currentAuthor.change() // TODO kv
+        }
       },
 
       async editAuthor() {
@@ -455,8 +462,7 @@ void async function() {
           loadingGif : 'Save'
         model.isEditing.author = !isEditing
 
-        if (isEditing) {
-          console.log(model.currentAuthor)
+        if (isEditing && model.currentAuthor) {
           try {
             if (model.currentAuthor.author_photo instanceof File) {
 
@@ -577,26 +583,28 @@ void async function() {
       },
 
       async downloadTouringSheet() {
-        const buttonCache = this.innerHTML
-        try {
-          this.innerHTML = loadingGif
-          const doc = await touringSheet(model.currentAuthor);
+        if (model.currentAuthor) {
+          const buttonCache = this.innerHTML
+          try {
+            this.innerHTML = loadingGif
+            const doc = await touringSheet(model.currentAuthor);
 
-          window.pdfMake
-          .createPdf(doc)
-          .download(`${
-            alphaNumeric(swapNames(model.currentAuthor))
-          }-touring-sheet`)
+            window.pdfMake
+            .createPdf(doc)
+            .download(`${
+              alphaNumeric(swapNames(model.currentAuthor))
+            }-touring-sheet`)
 
-        } catch (e) {
-          console.error(e)
-          if (e.message.toLowerCase().includes('missing cover image')) {
-            alert('Missing cover image – add a cover image and try again.')
-          } else if (e.message.toLowerCase().includes('missing author photo')) {
-            alert('Missing author photo – add an author photo and try again.')
+          } catch (e) {
+            console.error(e)
+            if (e.message.toLowerCase().includes('missing cover image')) {
+              alert('Missing cover image – add a cover image and try again.')
+            } else if (e.message.toLowerCase().includes('missing author photo')) {
+              alert('Missing author photo – add an author photo and try again.')
+            }
+          } finally {
+            this.innerHTML = buttonCache
           }
-        } finally {
-          this.innerHTML = buttonCache
         }
       },
 
