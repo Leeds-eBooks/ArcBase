@@ -44,6 +44,7 @@ module.exports = grunt => {
           expand: true,
           src: [
             'LICENSE',
+            'search.xml',
             'css/reset.css',
             'images/**/*'
           ],
